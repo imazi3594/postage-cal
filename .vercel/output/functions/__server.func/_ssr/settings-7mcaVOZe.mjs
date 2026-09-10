@@ -3,9 +3,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { _ as Link, y as require_jsx_runtime } from "../_libs/@tanstack/react-router+[...].mjs";
 import { a as Minus, i as Plus, r as RotateCcw, s as ChevronLeft } from "../_libs/lucide-react.mjs";
 import { t as cva } from "../_libs/class-variance-authority+clsx.mjs";
-import { a as cn, c as parseAmountToCents, l as patchSaved, o as formatMoney, r as StampFace, s as loadSaved, t as DEFAULT_CENTS } from "./stamp-settings-BAklc8aY.mjs";
+import { a as cn, c as parseAmountToCents, l as patchSaved, o as formatMoney, r as StampFace, s as loadSaved, t as DEFAULT_CENTS } from "./stamp-settings-BgEuDH8h.mjs";
 import { t as Slot } from "../_libs/radix-ui__react-slot.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/settings-zDwiCQqJ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/settings-7mcaVOZe.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var buttonVariants = cva("inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-[background-color,color,box-shadow,transform,opacity] duration-(--motion-quick) ease-(--ease-smooth-out) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:not-disabled:scale-(--scale-press)", {

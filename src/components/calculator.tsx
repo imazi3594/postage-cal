@@ -80,6 +80,11 @@ export function StampCalculator() {
     return [...set].sort((a, b) => a - b);
   }, [enabled, extras]);
 
+  const missing = useMemo(
+    () => DEFAULT_CENTS.filter((cents) => !enabled.includes(cents)),
+    [enabled],
+  );
+
   const combo = useMemo(() => {
     if (targetCents === null || targetCents === 0) return null;
     return solve(targetCents, pool);
@@ -129,7 +134,22 @@ export function StampCalculator() {
           <p className="font-display text-2xs font-medium tracking-wide text-primary">
             Postage combination calculator
           </p>
-          <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-ink">郵票組合計數機</h1>
+          <h1 className="mt-0.5 flex items-center gap-1.5 text-lg font-semibold tracking-tight text-ink">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-5 shrink-0 text-primary"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <rect x="6.5" y="7.5" width="11" height="9" rx="1" />
+            </svg>
+            郵票組合計數機
+          </h1>
         </div>
         <Link
           to="/settings"
@@ -144,6 +164,16 @@ export function StampCalculator() {
         <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4" aria-live="polite">
           <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
         </section>
+
+        {missing.length > 0 || extras.length > 0 ? (
+          <Link
+            to="/settings"
+            aria-label="設定郵票面額"
+            className="rounded-xl bg-surface px-3 py-2 shadow-(--shadow-border) sm:px-4"
+          >
+            <StockStrip missing={missing} extras={extras} />
+          </Link>
+        ) : null}
 
         <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4">
           <div className="flex items-center gap-2 rounded-lg bg-bg px-3 py-2 sm:px-4 sm:py-3">
@@ -242,7 +272,7 @@ function ComboStrip({
   if (!amount || amount === "0" || amount === "0.") {
     return (
       <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
-        <p className="px-4 text-center text-sm text-muted">輸入郵費之後，郵票會出現喺呢度</p>
+        <p className="px-4 text-center text-sm text-muted">請輸入郵費</p>
       </div>
     );
   }
@@ -281,6 +311,62 @@ function ComboStrip({
         {lines.map((line) => (
           <StampFace key={line.cents} cents={line.cents} count={line.count} />
         ))}
+      </div>
+    </div>
+  );
+}
+
+function StockStrip({ missing, extras }: { missing: number[]; extras: number[] }) {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const clusterRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const frame = frameRef.current;
+    const cluster = clusterRef.current;
+    if (!frame || !cluster) {
+      setScale(1);
+      return;
+    }
+    const fit = () => {
+      const next = Math.min(1, frame.clientWidth / cluster.offsetWidth);
+      const clamped = Number.isFinite(next) && next > 0 ? next : 1;
+      setScale((prev) => (Math.abs(prev - clamped) < 0.01 ? prev : clamped));
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(frame);
+    observer.observe(cluster);
+    return () => observer.disconnect();
+  }, [missing, extras]);
+
+  return (
+    <div ref={frameRef} className="flex h-12 w-full items-center overflow-hidden">
+      <div
+        ref={clusterRef}
+        className="flex w-max items-center gap-3"
+        style={{ transform: `scale(${scale})`, transformOrigin: "left center" }}
+      >
+        {missing.length > 0 ? (
+          <div className="flex items-center gap-2">
+            <p className="text-2xs font-medium tracking-wide text-muted">缺貨</p>
+            <div className="flex items-center gap-1.5">
+              {missing.map((cents) => (
+                <StampFace key={cents} cents={cents} size="xs" muted />
+              ))}
+            </div>
+          </div>
+        ) : null}
+        {extras.length > 0 ? (
+          <div className="flex items-center gap-2">
+            <p className="text-2xs font-medium tracking-wide text-primary">自訂</p>
+            <div className="flex items-center gap-1.5">
+              {extras.map((cents) => (
+                <StampFace key={cents} cents={cents} size="xs" />
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

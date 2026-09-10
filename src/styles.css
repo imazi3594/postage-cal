@@ -136,6 +136,11 @@
   padding-inline: 0.2rem;
 }
 
+.stamp-face[data-size="xs"] {
+  height: 2.5rem;
+  padding-inline: 0.15rem;
+}
+
 .stamp-face[data-off="true"] {
   opacity: 0.38;
   filter: grayscale(0.8);

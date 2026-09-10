@@ -1,7 +1,7 @@
 import { y as require_jsx_runtime } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as clsx } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/stamp-settings-BAklc8aY.js
+//#region node_modules/.nitro/vite/services/ssr/assets/stamp-settings-BgEuDH8h.js
 var import_jsx_runtime = require_jsx_runtime();
 var DEFAULT_CENTS = [
 	.1,
@@ -181,10 +181,9 @@ function stampTone(cents) {
 }
 function StampFace({ cents, count = 1, size = "md", muted = false, className, style }) {
 	const label = formatMoney(cents);
-	const compact = size === "sm";
 	const custom = !DEFAULT_CENTS.includes(cents);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: cn("relative", compact ? "w-full" : "w-20", className),
+		className: cn("relative", size === "sm" ? "w-full" : size === "xs" ? "w-14" : "w-20", className),
 		style,
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "stamp-face",
@@ -193,7 +192,7 @@ function StampFace({ cents, count = 1, size = "md", muted = false, className, st
 			"data-off": muted ? "true" : void 0,
 			"data-custom": custom ? "true" : void 0,
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-				className: cn("relative z-10 font-display font-semibold tabular-nums leading-none tracking-tight", compact ? "text-lg" : "text-xl"),
+				className: cn("relative z-10 font-display font-semibold tabular-nums leading-none tracking-tight", size === "xs" ? "text-sm" : size === "sm" ? "text-lg" : "text-xl"),
 				children: label
 			})
 		}), count > 1 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {

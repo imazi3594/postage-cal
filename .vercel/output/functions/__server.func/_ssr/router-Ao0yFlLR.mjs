@@ -3,8 +3,8 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { f as createRouter, g as createRootRoute, h as createFileRoute, l as Scripts, m as lazyRouteComponent, p as Outlet, u as HeadContent, v as useRouter, y as require_jsx_runtime } from "../_libs/@tanstack/react-router+[...].mjs";
 import { t as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-BI9XsIqD.js
-var router_BI9XsIqD_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
+//#region node_modules/.nitro/vite/services/ssr/assets/router-Ao0yFlLR.js
+var router_Ao0yFlLR_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
@@ -298,7 +298,7 @@ function PreviewHostBridge() {
 	}, [router]);
 	return null;
 }
-var styles_default = "/assets/styles-DqR7Lhu5.css";
+var styles_default = "/assets/styles-nwzO37uS.css";
 var APP_NAME = "郵票組合計數機";
 var Route$2 = createRootRoute({
 	head: () => ({
@@ -362,9 +362,9 @@ var Route$2 = createRootRoute({
 		] })]
 	})
 });
-var $$splitComponentImporter$1 = () => import("./routes-DQ9THy1I.mjs");
+var $$splitComponentImporter$1 = () => import("./routes-B0IgRhGE.mjs");
 var Route$1 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter$1, "component") });
-var $$splitComponentImporter = () => import("./settings-zDwiCQqJ.mjs");
+var $$splitComponentImporter = () => import("./settings-7mcaVOZe.mjs");
 var Route = createFileRoute("/settings")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: () => ({ meta: [{ title: "設定 · 郵票組合計數機" }] })
@@ -389,4 +389,4 @@ function getRouter() {
 	});
 }
 //#endregion
-export { getRouter, router_BI9XsIqD_exports as t };
+export { getRouter, router_Ao0yFlLR_exports as t };

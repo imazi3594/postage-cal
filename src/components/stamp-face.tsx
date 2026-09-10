@@ -17,17 +17,23 @@ export function StampFace({
 }: {
   cents: number;
   count?: number;
-  size?: "md" | "sm";
+  size?: "md" | "sm" | "xs";
   muted?: boolean;
   className?: string;
   style?: CSSProperties;
 }) {
   const label = formatMoney(cents);
-  const compact = size === "sm";
   const custom = !DEFAULT_CENTS.includes(cents);
 
   return (
-    <div className={cn("relative", compact ? "w-full" : "w-20", className)} style={style}>
+    <div
+      className={cn(
+        "relative",
+        size === "sm" ? "w-full" : size === "xs" ? "w-14" : "w-20",
+        className,
+      )}
+      style={style}
+    >
       <div
         className="stamp-face"
         data-tone={stampTone(cents)}
@@ -38,7 +44,7 @@ export function StampFace({
         <span
           className={cn(
             "relative z-10 font-display font-semibold tabular-nums leading-none tracking-tight",
-            compact ? "text-lg" : "text-xl",
+            size === "xs" ? "text-sm" : size === "sm" ? "text-lg" : "text-xl",
           )}
         >
           {label}
