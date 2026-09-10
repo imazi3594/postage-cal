@@ -5,7 +5,7 @@ export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
   return (
-    <main className="min-h-dvh bg-bg">
+    <main className="h-dvh overflow-hidden bg-bg">
       <StampCalculator />
     </main>
   );

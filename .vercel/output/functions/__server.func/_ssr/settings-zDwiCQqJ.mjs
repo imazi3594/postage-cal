@@ -5,7 +5,7 @@ import { a as Minus, i as Plus, r as RotateCcw, s as ChevronLeft } from "../_lib
 import { t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { a as cn, c as parseAmountToCents, l as patchSaved, o as formatMoney, r as StampFace, s as loadSaved, t as DEFAULT_CENTS } from "./stamp-settings-BAklc8aY.mjs";
 import { t as Slot } from "../_libs/radix-ui__react-slot.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/settings-BJbCleQx.js
+//#region node_modules/.nitro/vite/services/ssr/assets/settings-zDwiCQqJ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var buttonVariants = cva("inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-[background-color,color,box-shadow,transform,opacity] duration-(--motion-quick) ease-(--ease-smooth-out) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:not-disabled:scale-(--scale-press)", {
@@ -106,28 +106,28 @@ function SettingsPage() {
 		setCustom("");
 	}
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "relative mx-auto flex w-full max-w-lg flex-col gap-5 px-4 py-8 sm:px-6 sm:py-10",
+		className: "relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-				className: "stagger-in flex items-start gap-2",
+				className: "flex items-center gap-1",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 					to: "/",
 					"aria-label": "返回計數機",
-					className: "mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2",
+					className: "inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronLeft, { className: "size-5" })
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "min-w-0 pt-1",
+					className: "min-w-0",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm font-medium tracking-mark text-primary",
-							children: "HONGKONG POST"
+							className: "font-display text-2xs font-medium tracking-wide text-primary",
+							children: "Postage combination calculator"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-							className: "mt-2 font-sans text-4xl font-semibold tracking-tight text-ink",
+							className: "mt-0.5 text-lg font-semibold tracking-tight text-ink",
 							children: "設定"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "mt-3 text-muted",
+							className: "mt-1 text-sm text-muted",
 							children: "揀計數機用邊啲郵票面額。"
 						})
 					]

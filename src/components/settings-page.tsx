@@ -77,19 +77,21 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-lg flex-col gap-5 px-4 py-8 sm:px-6 sm:py-10">
-      <header className="stagger-in flex items-start gap-2">
+    <div className="relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6">
+      <header className="flex items-center gap-1">
         <Link
           to="/"
           aria-label="返回計數機"
-          className="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
         >
           <ChevronLeft className="size-5" />
         </Link>
-        <div className="min-w-0 pt-1">
-          <p className="text-sm font-medium tracking-mark text-primary">HONGKONG POST</p>
-          <h1 className="mt-2 font-sans text-4xl font-semibold tracking-tight text-ink">設定</h1>
-          <p className="mt-3 text-muted">揀計數機用邊啲郵票面額。</p>
+        <div className="min-w-0">
+          <p className="font-display text-2xs font-medium tracking-wide text-primary">
+            Postage combination calculator
+          </p>
+          <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-ink">設定</h1>
+          <p className="mt-1 text-sm text-muted">揀計數機用邊啲郵票面額。</p>
         </div>
       </header>
 

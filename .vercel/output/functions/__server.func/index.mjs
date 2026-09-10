@@ -12,7 +12,7 @@ var install_page_default = "<!DOCTYPE html>\n<html lang=\"en\" class=\"device-de
 //#endregion
 //#region \0virtual:grok-og-identity
 var grokOgIdentity = { "site": {
-	"title": "郵票計數機",
+	"title": "郵票組合計數機",
 	"color": "1A6B4A"
 } };
 //#endregion

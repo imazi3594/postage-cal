@@ -4,7 +4,7 @@ import { SettingsPage } from "@/components/settings-page";
 export const Route = createFileRoute("/settings")({
   component: Settings,
   head: () => ({
-    meta: [{ title: "設定 · 郵票計數機" }],
+    meta: [{ title: "設定 · 郵票組合計數機" }],
   }),
 });
 

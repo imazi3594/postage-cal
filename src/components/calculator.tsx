@@ -123,41 +123,33 @@ export function StampCalculator() {
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-lg flex-col gap-5 px-4 py-8 sm:px-6 sm:py-10">
-      <header className="stagger-in flex items-start justify-between gap-3">
+    <div className="relative mx-auto flex h-dvh w-full max-w-lg flex-col gap-3 overflow-hidden px-4 py-3 sm:gap-4 sm:px-6 sm:py-5">
+      <header className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium tracking-mark text-primary">HONGKONG POST</p>
-          <h1 className="mt-2 font-sans text-4xl font-semibold tracking-tight text-ink">
-            郵票計數機
-          </h1>
-          <p className="mt-3 text-muted">用鍵盤輸入郵費，砌出剛好嘅郵票組合。</p>
+          <p className="font-display text-2xs font-medium tracking-wide text-primary">
+            Postage combination calculator
+          </p>
+          <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-ink">郵票組合計數機</h1>
         </div>
         <Link
           to="/settings"
           aria-label="設定"
-          className="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
         >
           <Settings className="size-5" />
         </Link>
       </header>
 
-      <div className="flex flex-col gap-3">
-        <section
-          className="stagger-in rounded-xl bg-surface p-4 shadow-(--shadow-border)"
-          style={{ animationDelay: "60ms" }}
-          aria-live="polite"
-        >
+      <div className="flex min-h-0 flex-1 flex-col gap-3">
+        <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4" aria-live="polite">
           <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
         </section>
 
-        <section
-          className="stagger-in rounded-xl bg-surface p-4 shadow-(--shadow-border) sm:p-5"
-          style={{ animationDelay: "100ms" }}
-        >
-          <div className="flex items-stretch gap-2 rounded-lg bg-bg px-4 py-3">
+        <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4">
+          <div className="flex items-center gap-2 rounded-lg bg-bg px-3 py-2 sm:px-4 sm:py-3">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-muted">郵費</p>
-              <p className="mt-1 truncate font-display text-4xl font-semibold tabular-nums tracking-tight text-ink">
+              <p className="text-xs font-medium text-muted">郵費</p>
+              <p className="mt-0.5 truncate font-display text-3xl font-semibold tabular-nums tracking-tight text-ink">
                 <span className="mr-1 text-subtle">$</span>
                 {typeof amount === "string" && amount ? amount : "0"}
               </p>
@@ -167,13 +159,13 @@ export function StampCalculator() {
               aria-label="刪除一位"
               onPointerDown={(event) => onPadPointerDown(event, "back")}
               onClick={() => onPadClick("back")}
-              className="mt-auto mb-0.5 inline-flex size-11 touch-manipulation items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
+              className="inline-flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-md bg-surface-2 text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-border"
             >
-              <Delete className="size-5" />
+              <Delete className="size-6" />
             </button>
           </div>
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="mt-2 grid grid-cols-3 gap-2 sm:mt-3">
             {KEY_ROWS.flat().map((key) => (
               <button
                 key={key}
@@ -181,7 +173,7 @@ export function StampCalculator() {
                 onPointerDown={(event) => onPadPointerDown(event, key)}
                 onClick={() => onPadClick(key)}
                 className={cn(
-                  "inline-flex h-14 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  "inline-flex h-12 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out) sm:h-14",
                   key === "C"
                     ? "bg-primary-soft text-stamp-ink hover:bg-primary/15"
                     : "bg-surface-2 text-ink hover:bg-border",
@@ -249,7 +241,7 @@ function ComboStrip({
 
   if (!amount || amount === "0" || amount === "0.") {
     return (
-      <div className="flex h-28 w-full items-center justify-center overflow-hidden">
+      <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
         <p className="px-4 text-center text-sm text-muted">輸入郵費之後，郵票會出現喺呢度</p>
       </div>
     );
@@ -257,7 +249,7 @@ function ComboStrip({
 
   if (targetCents === null) {
     return (
-      <div className="flex h-28 w-full items-center justify-center overflow-hidden">
+      <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
         <p className="text-sm text-muted">繼續輸入金額…</p>
       </div>
     );
@@ -265,7 +257,7 @@ function ComboStrip({
 
   if (poolEmpty) {
     return (
-      <div className="flex h-28 w-full items-center justify-center overflow-hidden">
+      <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
         <p className="text-sm text-muted">至少揀一種郵票面額。</p>
       </div>
     );
@@ -273,14 +265,14 @@ function ComboStrip({
 
   if (!combo) {
     return (
-      <div className="flex h-28 w-full items-center justify-center overflow-hidden">
+      <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
         <p className="px-4 text-center text-sm text-muted">湊唔到剛好呢個金額</p>
       </div>
     );
   }
 
   return (
-    <div ref={frameRef} className="flex h-28 w-full items-center justify-center overflow-hidden">
+    <div ref={frameRef} className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
       <div
         ref={clusterRef}
         className="flex w-max items-center justify-center gap-2"
