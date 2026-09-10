@@ -92,11 +92,12 @@
 
 .stamp-face {
   --stamp-hue: 152;
-  --stamp-paper: oklch(0.94 0.038 var(--stamp-hue));
-  --stamp-ink: oklch(0.39 0.075 var(--stamp-hue));
+  --stamp-paper: oklch(0.93 0.09 var(--stamp-hue));
+  --stamp-ink: oklch(0.36 0.13 var(--stamp-hue));
   --stamp-hole: var(--color-surface);
   --stamp-pitch: 8px;
   --stamp-tooth: 2.5px;
+  --sparkle: 0deg;
   position: relative;
   isolation: isolate;
   display: flex;
@@ -109,26 +110,27 @@
   background-color: var(--stamp-paper);
 }
 
-.stamp-face[data-tone="0"] { --stamp-hue: 145; }
-.stamp-face[data-tone="1"] { --stamp-hue: 162; }
-.stamp-face[data-tone="2"] { --stamp-hue: 178; }
-.stamp-face[data-tone="3"] { --stamp-hue: 194; }
-.stamp-face[data-tone="4"] { --stamp-hue: 128; }
-.stamp-face[data-tone="5"] { --stamp-hue: 112; }
-.stamp-face[data-tone="6"] { --stamp-hue: 98; }
-.stamp-face[data-tone="7"] { --stamp-hue: 84; }
-.stamp-face[data-tone="8"] { --stamp-hue: 155; }
-.stamp-face[data-tone="9"] { --stamp-hue: 170; }
-.stamp-face[data-tone="10"] { --stamp-hue: 186; }
-.stamp-face[data-tone="11"] { --stamp-hue: 202; }
-.stamp-face[data-tone="12"] { --stamp-hue: 136; }
-.stamp-face[data-tone="13"] { --stamp-hue: 118; }
-.stamp-face[data-tone="14"] { --stamp-hue: 90; }
-.stamp-face[data-tone="15"] { --stamp-hue: 210; }
+.stamp-face[data-tone="0"] { --stamp-hue: 18; }
+.stamp-face[data-tone="1"] { --stamp-hue: 40; }
+.stamp-face[data-tone="2"] { --stamp-hue: 62; }
+.stamp-face[data-tone="3"] { --stamp-hue: 85; }
+.stamp-face[data-tone="4"] { --stamp-hue: 108; }
+.stamp-face[data-tone="5"] { --stamp-hue: 130; }
+.stamp-face[data-tone="6"] { --stamp-hue: 152; }
+.stamp-face[data-tone="7"] { --stamp-hue: 175; }
+.stamp-face[data-tone="8"] { --stamp-hue: 198; }
+.stamp-face[data-tone="9"] { --stamp-hue: 220; }
+.stamp-face[data-tone="10"] { --stamp-hue: 242; }
+.stamp-face[data-tone="11"] { --stamp-hue: 265; }
+.stamp-face[data-tone="12"] { --stamp-hue: 288; }
+.stamp-face[data-tone="13"] { --stamp-hue: 310; }
+.stamp-face[data-tone="14"] { --stamp-hue: 332; }
+.stamp-face[data-tone="15"] { --stamp-hue: 355; }
 
 .stamp-face[data-custom="true"] {
-  --stamp-paper: oklch(0.93 0.055 48);
-  --stamp-ink: oklch(0.42 0.1 42);
+  --stamp-paper: oklch(0.9 0.1 78);
+  --stamp-ink: oklch(0.34 0.13 50);
+  box-shadow: 0 0 10px rgb(255 196 80 / 0.4);
 }
 
 .stamp-face[data-size="sm"] {
@@ -177,19 +179,39 @@
   pointer-events: none;
 }
 
-.stamp-face[data-custom="true"]::after {
-  animation: stamp-glow 2.6s ease-in-out infinite;
+@property --sparkle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
 }
 
-@keyframes stamp-glow {
-  0%,
-  100% {
-    border-color: color-mix(in oklab, var(--stamp-ink) 28%, transparent);
-    box-shadow: inset 0 0 0 0 transparent;
-  }
-  50% {
-    border-color: color-mix(in oklab, var(--stamp-ink) 78%, transparent);
-    box-shadow: inset 0 0 6px color-mix(in oklab, var(--stamp-ink) 28%, transparent);
+.stamp-face[data-custom="true"]::after {
+  inset: 4px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--stamp-paper), var(--stamp-paper)) padding-box,
+    conic-gradient(
+      from var(--sparkle),
+      #ffd36a 0deg,
+      #fff4c2 45deg,
+      #ff8acb 90deg,
+      #8ec5ff 140deg,
+      #7dffc4 190deg,
+      #ffe36a 250deg,
+      #ffb347 300deg,
+      #ffd36a 360deg
+    ) border-box;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow:
+    inset 0 0 6px rgb(255 214 120 / 0.45),
+    0 0 6px rgb(255 196 80 / 0.4);
+  animation: stamp-rainbow-gold 2.2s linear infinite;
+}
+
+@keyframes stamp-rainbow-gold {
+  to {
+    --sparkle: 360deg;
   }
 }
 

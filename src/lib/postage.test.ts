@@ -161,6 +161,46 @@ test("empty denoms or zero target", () => {
   assert.equal(solve(0, DEFAULT_CENTS), null);
 });
 
+test("fewest stamps beats greedy $5+$2+$1 for $8", () => {
+  const exact = solve(800, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(describeCombo(exact), "$4 + $4");
+});
+
+test("fewest stamps beats greedy for $4.4 and $9.9", () => {
+  const a = solve(440, DEFAULT_CENTS);
+  assert.ok(a);
+  assert.equal(a.stampCount, 2);
+  assert.equal(describeCombo(a), "$2.2 + $2.2");
+  const b = solve(990, DEFAULT_CENTS);
+  assert.ok(b);
+  assert.equal(b.stampCount, 3);
+  assert.equal(b.lines.reduce((n, l) => n + l.count, 0), 3);
+});
+
+test("every amount up to $40 uses the true minimum stamp count", () => {
+  const INF = 1e9;
+  function minStamps(target: number) {
+    const dp = new Int32Array(target + 1);
+    dp.fill(INF);
+    dp[0] = 0;
+    for (let amount = 0; amount <= target; amount++) {
+      if (dp[amount] === INF) continue;
+      for (const denom of DEFAULT_CENTS) {
+        const next = amount + denom;
+        if (next <= target && dp[amount] + 1 < dp[next]!) dp[next] = dp[amount] + 1;
+      }
+    }
+    return dp[target] === INF ? null : dp[target];
+  }
+  for (let cents = 10; cents <= 4000; cents += 10) {
+    const got = solve(cents, DEFAULT_CENTS);
+    const min = minStamps(cents);
+    assert.equal(got?.stampCount ?? null, min, `$${cents / 100}`);
+  }
+});
+
 test("dollarsToCents rounds binary fractions", () => {
   assert.equal(dollarsToCents(2.2), 220);
   assert.equal(dollarsToCents(2.8), 280);

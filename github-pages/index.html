@@ -70,9 +70,10 @@
     .grid .stamp { width: 100%; }
     .stamp-face {
       --hue: 152;
-      --paper: oklch(0.94 0.038 var(--hue));
-      --ink-s: oklch(0.39 0.075 var(--hue));
+      --paper: oklch(0.93 0.09 var(--hue));
+      --ink-s: oklch(0.36 0.13 var(--hue));
       --hole: var(--surface);
+      --sparkle: 0deg;
       position: relative; isolation: isolate; display: flex; height: 4rem; align-items: center; justify-content: center;
       overflow: hidden; padding: 0 0.35rem; color: var(--ink-s); background: var(--paper);
     }
@@ -89,15 +90,15 @@
     .stock-group.custom p { color: var(--primary); }
     .stock-stamps { display: flex; align-items: center; gap: 0.375rem; }
     .stamp-face.off { opacity: 0.38; filter: grayscale(0.8); }
-    .stamp-face[data-tone="0"] { --hue: 145; } .stamp-face[data-tone="1"] { --hue: 162; }
-    .stamp-face[data-tone="2"] { --hue: 178; } .stamp-face[data-tone="3"] { --hue: 194; }
-    .stamp-face[data-tone="4"] { --hue: 128; } .stamp-face[data-tone="5"] { --hue: 112; }
-    .stamp-face[data-tone="6"] { --hue: 98; } .stamp-face[data-tone="7"] { --hue: 84; }
-    .stamp-face[data-tone="8"] { --hue: 155; } .stamp-face[data-tone="9"] { --hue: 170; }
-    .stamp-face[data-tone="10"] { --hue: 186; } .stamp-face[data-tone="11"] { --hue: 202; }
-    .stamp-face[data-tone="12"] { --hue: 136; } .stamp-face[data-tone="13"] { --hue: 118; }
-    .stamp-face[data-tone="14"] { --hue: 90; } .stamp-face[data-tone="15"] { --hue: 210; }
-    .stamp-face.custom { --paper: oklch(0.93 0.055 48); --ink-s: oklch(0.42 0.1 42); }
+    .stamp-face[data-tone="0"] { --hue: 18; } .stamp-face[data-tone="1"] { --hue: 40; }
+    .stamp-face[data-tone="2"] { --hue: 62; } .stamp-face[data-tone="3"] { --hue: 85; }
+    .stamp-face[data-tone="4"] { --hue: 108; } .stamp-face[data-tone="5"] { --hue: 130; }
+    .stamp-face[data-tone="6"] { --hue: 152; } .stamp-face[data-tone="7"] { --hue: 175; }
+    .stamp-face[data-tone="8"] { --hue: 198; } .stamp-face[data-tone="9"] { --hue: 220; }
+    .stamp-face[data-tone="10"] { --hue: 242; } .stamp-face[data-tone="11"] { --hue: 265; }
+    .stamp-face[data-tone="12"] { --hue: 288; } .stamp-face[data-tone="13"] { --hue: 310; }
+    .stamp-face[data-tone="14"] { --hue: 332; } .stamp-face[data-tone="15"] { --hue: 355; }
+    .stamp-face.custom { --paper: oklch(0.9 0.1 78); --ink-s: oklch(0.34 0.13 50); box-shadow: 0 0 10px rgb(255 196 80 / 0.4); }
     .stamp-face span { position: relative; z-index: 1; font-family: var(--display); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1; font-size: 1.25rem; }
     .stamp-face.sm span { font-size: 1.125rem; }
     .stamp-face::before {
@@ -115,11 +116,17 @@
       content: ""; position: absolute; inset: 6px; pointer-events: none;
       border: 1px solid color-mix(in oklab, var(--ink-s) 38%, transparent);
     }
-    .stamp-face.custom::after { animation: glow 2.6s ease-in-out infinite; }
-    @keyframes glow {
-      0%, 100% { border-color: color-mix(in oklab, var(--ink-s) 28%, transparent); box-shadow: inset 0 0 0 0 transparent; }
-      50% { border-color: color-mix(in oklab, var(--ink-s) 78%, transparent); box-shadow: inset 0 0 6px color-mix(in oklab, var(--ink-s) 28%, transparent); }
+    @property --sparkle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+    .stamp-face.custom::after {
+      inset: 4px; border: 2px solid transparent;
+      background:
+        linear-gradient(var(--paper), var(--paper)) padding-box,
+        conic-gradient(from var(--sparkle), #ffd36a 0deg, #fff4c2 45deg, #ff8acb 90deg, #8ec5ff 140deg, #7dffc4 190deg, #ffe36a 250deg, #ffb347 300deg, #ffd36a 360deg) border-box;
+      background-origin: border-box; background-clip: padding-box, border-box;
+      box-shadow: inset 0 0 6px rgb(255 214 120 / 0.45), 0 0 6px rgb(255 196 80 / 0.4);
+      animation: stamp-rainbow-gold 2.2s linear infinite;
     }
+    @keyframes stamp-rainbow-gold { to { --sparkle: 360deg; } }
     .badge {
       position: absolute; top: -0.5rem; right: -0.5rem; z-index: 2; min-width: 1.75rem; height: 1.75rem; padding: 0 0.375rem;
       display: flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--primary); color: var(--primary-fg);
@@ -275,12 +282,26 @@
       if (targetCents <= 0 || denoms.length === 0) return null;
       const bits = denoms.map((_, i) => (i < 31 ? 1 << i : 0));
       const dp = new Int32Array(targetCents + 1);
+      dp.fill(INF);
+      dp[0] = 0;
+      for (let amount = 0; amount <= targetCents; amount++) {
+        const current = dp[amount];
+        if (current === INF) continue;
+        for (let i = 0; i < denoms.length; i++) {
+          const next = amount + denoms[i];
+          if (next > targetCents) continue;
+          const candidate = current + 1;
+          if (candidate < dp[next]) dp[next] = candidate;
+        }
+      }
+      if (dp[targetCents] === INF) return null;
       const kinds = new Int32Array(targetCents + 1);
       const wholes = new Int32Array(targetCents + 1);
       const parent = new Int32Array(targetCents + 1);
       const used = new Int32Array(targetCents + 1);
       const mask = new Uint32Array(targetCents + 1);
-      dp.fill(INF); kinds.fill(INF); dp[0] = 0; kinds[0] = 0;
+      kinds.fill(INF);
+      kinds[0] = 0;
       for (let amount = 0; amount <= targetCents; amount++) {
         const current = dp[amount];
         if (current === INF) continue;
@@ -289,23 +310,22 @@
         for (let i = 0; i < denoms.length; i++) {
           const denom = denoms[i];
           const next = amount + denom;
-          if (next > targetCents) continue;
-          const candidate = current + 1;
-          const existing = dp[next];
+          if (next > targetCents || dp[next] !== current + 1) continue;
           const nextMask = currentMask | bits[i];
           const nextKinds = bitCount(nextMask);
           const nextWholes = currentWholes + (denom % 100 === 0 ? 1 : 0);
           const better =
-            candidate < existing ||
-            (candidate === existing && nextKinds < kinds[next]) ||
-            (candidate === existing && nextKinds === kinds[next] && nextWholes > wholes[next]) ||
-            (candidate === existing && nextKinds === kinds[next] && nextWholes === wholes[next] && denom > used[next]);
+            nextKinds < kinds[next] ||
+            (nextKinds === kinds[next] && nextWholes > wholes[next]) ||
+            (nextKinds === kinds[next] && nextWholes === wholes[next] && denom > used[next]);
           if (!better) continue;
-          dp[next] = candidate; kinds[next] = nextKinds; wholes[next] = nextWholes;
-          parent[next] = amount; used[next] = denom; mask[next] = nextMask;
+          kinds[next] = nextKinds;
+          wholes[next] = nextWholes;
+          parent[next] = amount;
+          used[next] = denom;
+          mask[next] = nextMask;
         }
       }
-      if (dp[targetCents] === INF) return null;
       const counts = new Map();
       let cursor = targetCents, stampCount = 0;
       while (cursor > 0) {

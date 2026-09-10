@@ -99,7 +99,7 @@ function bitCount(n: number): number {
   return count;
 }
 
-/** Fewest stamps; then fewest faces; then as many whole-dollar stamps as possible. */
+/** Fewest stamps first; then fewest faces; then as many whole-dollar stamps as possible. */
 export function solve(targetCents: number, denomCents: number[]): Combination | null {
   const denoms = [...new Set(denomCents.filter((d) => Number.isInteger(d) && d > 0))].sort(
     (a, b) => b - a,
@@ -108,14 +108,28 @@ export function solve(targetCents: number, denomCents: number[]): Combination | 
 
   const bits = denoms.map((_, i) => (i < 31 ? 1 << i : 0));
   const dp = new Int32Array(targetCents + 1);
+  dp.fill(INF);
+  dp[0] = 0;
+
+  for (let amount = 0; amount <= targetCents; amount++) {
+    const current = dp[amount]!;
+    if (current === INF) continue;
+    for (let i = 0; i < denoms.length; i++) {
+      const next = amount + denoms[i]!;
+      if (next > targetCents) continue;
+      const candidate = current + 1;
+      if (candidate < dp[next]!) dp[next] = candidate;
+    }
+  }
+
+  if (dp[targetCents] === INF) return null;
+
   const kinds = new Int32Array(targetCents + 1);
   const wholes = new Int32Array(targetCents + 1);
   const parent = new Int32Array(targetCents + 1);
   const used = new Int32Array(targetCents + 1);
   const mask = new Uint32Array(targetCents + 1);
-  dp.fill(INF);
   kinds.fill(INF);
-  dp[0] = 0;
   kinds[0] = 0;
 
   for (let amount = 0; amount <= targetCents; amount++) {
@@ -126,24 +140,15 @@ export function solve(targetCents: number, denomCents: number[]): Combination | 
     for (let i = 0; i < denoms.length; i++) {
       const denom = denoms[i]!;
       const next = amount + denom;
-      if (next > targetCents) continue;
-      const candidate = current + 1;
-      const existing = dp[next]!;
+      if (next > targetCents || dp[next] !== current + 1) continue;
       const nextMask = currentMask | bits[i]!;
       const nextKinds = bitCount(nextMask);
       const nextWholes = currentWholes + (denom % 100 === 0 ? 1 : 0);
-      const existingKinds = kinds[next]!;
-      const existingWholes = wholes[next]!;
       const better =
-        candidate < existing ||
-        (candidate === existing && nextKinds < existingKinds) ||
-        (candidate === existing && nextKinds === existingKinds && nextWholes > existingWholes) ||
-        (candidate === existing &&
-          nextKinds === existingKinds &&
-          nextWholes === existingWholes &&
-          denom > used[next]!);
+        nextKinds < kinds[next]! ||
+        (nextKinds === kinds[next]! && nextWholes > wholes[next]!) ||
+        (nextKinds === kinds[next]! && nextWholes === wholes[next]! && denom > used[next]!);
       if (!better) continue;
-      dp[next] = candidate;
       kinds[next] = nextKinds;
       wholes[next] = nextWholes;
       parent[next] = amount;
@@ -152,7 +157,6 @@ export function solve(targetCents: number, denomCents: number[]): Combination | 
     }
   }
 
-  if (dp[targetCents] === INF) return null;
   return toCombo(targetCents, parent, used);
 }
 
