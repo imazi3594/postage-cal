@@ -1,0 +1,169 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import {
+  DEFAULT_CENTS,
+  applyAmountKey,
+  describeCombo,
+  dollarsToCents,
+  formatMoney,
+  parseAmountToCents,
+  solve,
+} from "./postage.ts";
+
+function lineMap(combo: ReturnType<typeof solve>) {
+  assert.ok(combo);
+  return Object.fromEntries(combo.lines.map((l) => [l.cents, l.count]));
+}
+
+test("parse amount", () => {
+  assert.equal(parseAmountToCents("14.9"), 1490);
+  assert.equal(parseAmountToCents("5.6"), 560);
+  assert.equal(parseAmountToCents("$2.2"), 220);
+  assert.equal(parseAmountToCents("14."), 1400);
+  assert.equal(parseAmountToCents("24."), 2400);
+  assert.equal(parseAmountToCents("24.8"), 2480);
+  assert.equal(parseAmountToCents("14.99"), null);
+  assert.equal(parseAmountToCents("abc"), null);
+  assert.equal(parseAmountToCents("-1"), null);
+  assert.equal(parseAmountToCents("9999.9"), 999990);
+  assert.equal(parseAmountToCents("10000"), null);
+});
+
+test("format money strips trailing zeros", () => {
+  assert.equal(formatMoney(10), "$0.1");
+  assert.equal(formatMoney(400), "$4");
+  assert.equal(formatMoney(550), "$5.5");
+  assert.equal(formatMoney(1490), "$14.9");
+  assert.equal(formatMoney(220), "$2.2");
+});
+
+test("keypad typing 14.9", () => {
+  let value = "";
+  for (const key of ["1", "4", ".", "9"]) value = applyAmountKey(value, key).value;
+  assert.equal(value, "14.9");
+  assert.deepEqual(applyAmountKey("14.9", "5"), { value: "14.9", overLimit: false });
+  assert.equal(applyAmountKey("14.9", "back").value, "14.");
+  assert.equal(applyAmountKey("14.", "back").value, "14");
+  assert.equal(applyAmountKey("0", "5").value, "5");
+  assert.equal(applyAmountKey("", ".").value, "0.");
+  assert.equal(applyAmountKey("1.2", ".").value, "1.2");
+  assert.equal(applyAmountKey("14.9", "clear").value, "");
+});
+
+test("keypad rejects extra digits past $9999.9", () => {
+  assert.deepEqual(applyAmountKey("9999", "0"), { value: "9999", overLimit: true });
+  assert.deepEqual(applyAmountKey("9999.", "9"), { value: "9999.9", overLimit: false });
+  assert.deepEqual(applyAmountKey("9999.9", "1"), { value: "9999.9", overLimit: false });
+  assert.equal(applyAmountKey("999", "9").value, "9999");
+});
+
+test("$14.9 → $5.5 + $5.4 + $4", () => {
+  const exact = solve(1490, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 3);
+  const map = lineMap(exact);
+  assert.equal(map[550], 1);
+  assert.equal(map[540], 1);
+  assert.equal(map[400], 1);
+  assert.equal(describeCombo(exact), "$5.5 + $5.4 + $4");
+});
+
+test("$5.6 → $2.8 × 2", () => {
+  const exact = solve(560, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(exact.lines.length, 1);
+  const map = lineMap(exact);
+  assert.equal(map[280], 2);
+});
+
+test("$11 → $5.5 × 2", () => {
+  const exact = solve(1100, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(exact.lines.length, 1);
+  assert.equal(exact.lines[0]?.cents, 550);
+  assert.equal(exact.lines[0]?.count, 2);
+});
+
+test("$8 → $4 × 2", () => {
+  const exact = solve(800, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(exact.lines.length, 1);
+  assert.equal(exact.lines[0]?.cents, 400);
+  assert.equal(exact.lines[0]?.count, 2);
+});
+
+test("$8.4 → $2.8 × 3", () => {
+  const exact = solve(840, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 3);
+  assert.equal(exact.lines.length, 1);
+  assert.equal(exact.lines[0]?.cents, 280);
+  assert.equal(exact.lines[0]?.count, 3);
+});
+
+test("$8.2 → $5.4 + $2.8", () => {
+  const exact = solve(820, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  const map = lineMap(exact);
+  assert.equal(map[540], 1);
+  assert.equal(map[280], 1);
+});
+
+test("$3 → $2 + $1, not $2.8 + $0.2", () => {
+  const exact = solve(300, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(describeCombo(exact), "$2 + $1");
+});
+
+test("$6 → $5 + $1", () => {
+  const exact = solve(600, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(describeCombo(exact), "$5 + $1");
+});
+
+test("$9 → $5 + $4", () => {
+  const exact = solve(900, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  assert.equal(describeCombo(exact), "$5 + $4");
+});
+
+test("$2.4 → $2.2 + $0.2", () => {
+  const exact = solve(240, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 2);
+  const map = lineMap(exact);
+  assert.equal(map[220], 1);
+  assert.equal(map[20], 1);
+});
+
+test("single matching denomination is one stamp", () => {
+  const exact = solve(220, DEFAULT_CENTS);
+  assert.ok(exact);
+  assert.equal(exact.stampCount, 1);
+  assert.equal(exact.lines[0]?.cents, 220);
+  assert.equal(describeCombo(exact), "$2.2");
+});
+
+test("exact-only: no solution when small stamps disabled", () => {
+  const denoms = DEFAULT_CENTS.filter((c) => c !== 10 && c !== 20);
+  assert.equal(solve(240, denoms), null);
+});
+
+test("empty denoms or zero target", () => {
+  assert.equal(solve(100, []), null);
+  assert.equal(solve(0, DEFAULT_CENTS), null);
+});
+
+test("dollarsToCents rounds binary fractions", () => {
+  assert.equal(dollarsToCents(2.2), 220);
+  assert.equal(dollarsToCents(2.8), 280);
+  assert.equal(dollarsToCents(3.7), 370);
+  assert.equal(dollarsToCents(5.4), 540);
+});
