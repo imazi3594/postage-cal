@@ -41,7 +41,7 @@
     .card { background: var(--surface); border-radius: 1.25rem; padding: 0.75rem; box-shadow: var(--shadow); }
     .combo { height: 6rem; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .combo p { margin: 0; padding: 0 1rem; text-align: center; font-size: 0.875rem; color: var(--muted); }
-    .cluster { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: max-content; transform-origin: center; }
+    .cluster { display: flex; align-items: center; justify-content: center; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: center; }
     .amount-row { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); border-radius: 0.75rem; padding: 0.5rem 0.75rem; }
     .amount-row .label { margin: 0; font-size: 0.75rem; font-weight: 500; color: var(--muted); }
     .amount-row .value { margin: 0.125rem 0 0; font-family: var(--display); font-size: 1.875rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -53,16 +53,18 @@
     .keys button:hover { background: var(--border); }
     .keys .clear { background: var(--primary-soft); color: #14553b; }
     .keys .clear:hover { background: color-mix(in oklab, var(--primary) 15%, var(--primary-soft)); }
-    .head-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+    .head-row { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+    .head-row > div { min-width: 0; flex: 1; }
+    .head-row .btn { flex-shrink: 0; }
     h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
     .hint { margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--muted); }
     .actions { display: flex; gap: 0.5rem; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0 0.75rem; border: 0; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
     .btn:hover { background: var(--surface-2); }
     .btn.ghost { box-shadow: none; }
     .btn.secondary { height: 2.75rem; padding: 0 1rem; background: var(--surface-2); box-shadow: none; }
     .grid { margin-top: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
-    .grid button { border: 0; background: transparent; padding: 0; touch-action: manipulation; border-radius: 0.25rem; }
+    .grid button { border: 0; background: transparent; padding: 0; touch-action: manipulation; border-radius: 0.25rem; overflow: visible; position: relative; }
     .custom-form { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
     @media (min-width: 640px) { .custom-form { flex-direction: row; } }
     .custom-form input { height: 2.75rem; width: 100%; max-width: 14rem; border: 0; border-radius: 0.5rem; padding: 0 0.75rem; background: var(--bg); color: var(--ink); font: inherit; box-shadow: var(--shadow); }
@@ -83,13 +85,18 @@
     .stamp.xs { width: 3.5rem; }
     .stock { display: none; width: 100%; padding: 0.5rem 0.75rem; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
     .stock.show { display: block; }
-    .stock-frame { height: 3rem; display: flex; align-items: center; overflow: hidden; }
-    .stock-cluster { display: flex; align-items: center; gap: 0.75rem; width: max-content; transform-origin: left center; }
-    .stock-group { display: flex; align-items: center; gap: 0.5rem; }
-    .stock-group p { margin: 0; font-size: 0.625rem; font-weight: 500; letter-spacing: 0.04em; color: var(--muted); white-space: nowrap; }
-    .stock-group.custom p { color: var(--primary); }
-    .stock-stamps { display: flex; align-items: center; gap: 0.375rem; }
+    .stock-line { margin: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; }
+    .stock-line + .stock-line { margin-top: 0.125rem; }
+    .stock-line.oos { color: #dc2626; }
+    .stock-line.custom { color: #2563eb; }
     .stamp-face.off { opacity: 0.38; filter: grayscale(0.8); }
+    .oos-tag {
+      position: absolute; top: 0.2rem; right: -0.2rem; z-index: 12;
+      padding: 0.18rem 0.4rem; border-radius: 0.2rem; background: #dc2626; color: #fff;
+      font-family: var(--sans); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.06em; line-height: 1;
+      white-space: nowrap; transform: rotate(28deg); box-shadow: 0 1px 3px rgb(127 29 29 / 0.35); pointer-events: none;
+    }
+    .stamp.xs .oos-tag { top: 0.05rem; right: -0.25rem; font-size: 0.5rem; padding: 0.12rem 0.28rem; }
     .stamp-face[data-tone="0"] { --hue: 18; } .stamp-face[data-tone="1"] { --hue: 40; }
     .stamp-face[data-tone="2"] { --hue: 62; } .stamp-face[data-tone="3"] { --hue: 85; }
     .stamp-face[data-tone="4"] { --hue: 108; } .stamp-face[data-tone="5"] { --hue: 130; }
@@ -98,7 +105,7 @@
     .stamp-face[data-tone="10"] { --hue: 242; } .stamp-face[data-tone="11"] { --hue: 265; }
     .stamp-face[data-tone="12"] { --hue: 288; } .stamp-face[data-tone="13"] { --hue: 310; }
     .stamp-face[data-tone="14"] { --hue: 332; } .stamp-face[data-tone="15"] { --hue: 355; }
-    .stamp-face.custom { --paper: oklch(0.9 0.1 78); --ink-s: oklch(0.34 0.13 50); box-shadow: 0 0 10px rgb(255 196 80 / 0.4); }
+    .stamp-face.custom { --paper: oklch(0.92 0.11 var(--hue)); --ink-s: #1d4ed8; box-shadow: 0 0 10px rgb(255 196 80 / 0.4); }
     .stamp-face span { position: relative; z-index: 1; font-family: var(--display); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1; font-size: 1.25rem; }
     .stamp-face.sm span { font-size: 1.125rem; }
     .stamp-face::before {
@@ -128,15 +135,16 @@
     }
     @keyframes stamp-rainbow-gold { to { --sparkle: 360deg; } }
     .badge {
-      position: absolute; top: -0.5rem; right: -0.5rem; z-index: 2; min-width: 1.75rem; height: 1.75rem; padding: 0 0.375rem;
+      position: absolute; top: 0; right: 0; z-index: 2; min-width: 1.75rem; height: 1.75rem; padding: 0 0.375rem;
       display: flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--primary); color: var(--primary-fg);
       font-family: var(--display); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums;
     }
+    .stamp.pad { padding-top: 0.5rem; padding-right: 0.5rem; }
     .toast-host { pointer-events: none; position: fixed; inset: 1rem 1rem auto; z-index: 20; display: flex; justify-content: center; opacity: 0; transform: translateY(-0.5rem); transition: opacity 250ms var(--ease), transform 250ms var(--ease); }
     .toast-host.show { opacity: 1; transform: none; }
-    .toast { width: min(24rem, 100%); border-radius: 1.75rem; background: var(--surface); padding: 1rem 1.5rem; text-align: center; box-shadow: var(--shadow); }
-    .toast .kicker { margin: 0; font-size: 0.875rem; font-weight: 500; color: var(--primary); }
-    .toast .msg { margin: 0.25rem 0 0; font-size: 1.125rem; font-weight: 600; }
+    .toast { display: flex; align-items: center; gap: 0.75rem; width: min(24rem, 100%); border-radius: 1rem; background: #fca5a5; color: #7f1d1d; padding: 0.9rem 1.25rem; box-shadow: var(--shadow); }
+    .toast .bang { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
+    .toast .msg { margin: 0; font-size: 1.125rem; font-weight: 600; }
     .hidden { display: none !important; }
     @media (prefers-reduced-motion: reduce) {
       .stamp-face.custom::after { animation: none; }
@@ -160,7 +168,7 @@
     </header>
     <section class="card" aria-live="polite"><div id="combo" class="combo"></div></section>
     <button type="button" id="stock" class="card stock" data-go="settings" aria-label="設定郵票面額">
-      <div class="stock-frame"><div id="stock-cluster" class="stock-cluster"></div></div>
+      <div id="stock-cluster"></div>
     </button>
     <section class="card pad">
       <div class="amount-row">
@@ -203,18 +211,24 @@
     <section class="card" style="padding:1.25rem">
       <div class="head-row">
         <div>
-          <h2>可用面額</h2>
-          <p class="hint">熄咗嘅面額唔會用。只計剛好湊齊嘅組合。</p>
+          <h2>通用郵票庫存</h2>
+          <p class="hint">點擊以切換庫存狀態</p>
         </div>
-        <div class="actions">
-          <button type="button" class="btn" id="select-all">全選預設</button>
-          <button type="button" class="btn ghost" id="reset">重設</button>
-        </div>
+        <button type="button" class="btn" id="reset">重設</button>
       </div>
       <div id="denom-grid" class="grid"></div>
+    </section>
+    <section class="card" style="padding:1.25rem">
+      <div class="head-row">
+        <div>
+          <h2>自訂面額</h2>
+          <p class="hint">加入自訂面額郵票或特別郵票</p>
+        </div>
+        <button type="button" class="btn" id="reset-extras">重設</button>
+      </div>
       <div id="extra-grid" class="grid"></div>
       <form id="custom-form" class="custom-form">
-        <input id="custom-input" inputmode="decimal" placeholder="自訂面額，例如 2.4" aria-label="自訂郵票面額" />
+        <input id="custom-input" inputmode="decimal" placeholder="例如 2.4，上限 $50" aria-label="自訂郵票面額" />
         <button type="submit" class="btn secondary">加入面額</button>
       </form>
     </section>
@@ -222,7 +236,7 @@
 
   <div id="toast" class="toast-host" aria-hidden="true">
     <div class="toast" role="alert">
-      <p class="kicker">提示</p>
+      <svg class="bang" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
       <p class="msg" id="toast-msg">&nbsp;</p>
     </div>
   </div>
@@ -231,6 +245,7 @@
     const DEFAULT_DOLLARS = [0.1, 0.2, 0.5, 1, 2, 2.2, 2.8, 3.7, 4, 5, 5.4, 5.5, 10, 15.5, 20, 50];
     const DEFAULT_CENTS = DEFAULT_DOLLARS.map(dollarsToCents);
     const MAX_AMOUNT = 9999.9;
+    const MAX_CUSTOM = 50;
     const MAX_LABEL = "$9999.9";
     const INF = 0x3f3f3f3f;
     const STORAGE_KEY = "stamp-calc-v2";
@@ -271,6 +286,39 @@
       }
       if (value.length >= 4) return { value, overLimit: true };
       return { value: value + key, overLimit: false };
+    }
+    function sanitizeCustomDenom(raw) {
+      const stripped = String(raw || "").replace(/[$,\s]/g, "");
+      if (!stripped) return { value: "", overLimit: false };
+      let intPart = "";
+      let frac = null;
+      for (const ch of stripped) {
+        if (ch === ".") {
+          if (frac !== null) continue;
+          frac = "";
+          continue;
+        }
+        if (ch < "0" || ch > "9") continue;
+        if (frac !== null) {
+          if (frac.length >= 1) continue;
+          frac += ch;
+        } else if (intPart === "0") intPart = ch;
+        else intPart += ch;
+      }
+      if (!intPart && frac !== null) intPart = "0";
+      let value = frac !== null ? `${intPart}.${frac}` : intPart;
+      let overLimit = false;
+      const numeric = (text) => Number(text.endsWith(".") ? text.slice(0, -1) : text);
+      while (value && Number.isFinite(numeric(value)) && numeric(value) > MAX_CUSTOM) {
+        overLimit = true;
+        value = value.slice(0, -1);
+      }
+      return { value, overLimit };
+    }
+    function parseCustomDenomToCents(input) {
+      const cents = parseAmountToCents(input);
+      if (cents === null || cents === 0 || cents > dollarsToCents(MAX_CUSTOM)) return null;
+      return cents;
     }
     function bitCount(n) {
       let bits = n >>> 0, count = 0;
@@ -354,7 +402,7 @@
         return {
           amount,
           enabled: Array.isArray(parsed.enabled) ? parsed.enabled.filter(Number.isInteger) : [...DEFAULT_CENTS],
-          extras: Array.isArray(parsed.extras) ? parsed.extras.filter((n) => Number.isInteger(n) && n > 0) : [],
+          extras: Array.isArray(parsed.extras) ? parsed.extras.filter((n) => Number.isInteger(n) && n > 0 && n <= dollarsToCents(MAX_CUSTOM)) : [],
         };
       } catch {
         return { amount: "", enabled: [...DEFAULT_CENTS], extras: [] };
@@ -404,12 +452,14 @@
       const known = DEFAULT_CENTS.indexOf(cents);
       const custom = known < 0;
       const tone = known >= 0 ? known : 0;
+      const hue = custom ? ((Math.imul(cents, 137) >>> 0) % 360) : tone;
       const badge = count > 1
         ? `<span class="badge">×${count}</span>`
         : opts && opts.remove
           ? `<span class="badge" aria-hidden="true">−</span>`
           : "";
-      return `<div class="stamp${size === "xs" ? " xs" : ""}"><div class="stamp-face ${size === "sm" ? "sm" : ""} ${size === "xs" ? "xs" : ""} ${off ? "off" : ""} ${custom ? "custom" : ""}" data-tone="${tone}"><span>${formatMoney(cents)}</span></div>${badge}</div>`;
+      const oos = off ? `<span class="oos-tag" aria-hidden="true">缺貨</span>` : "";
+      return `<div class="stamp${size === "xs" ? " xs" : ""}${count > 1 || size === "md" ? " pad" : ""}"><div class="stamp-face ${size === "sm" ? "sm" : ""} ${size === "xs" ? "xs" : ""} ${off ? "off" : ""} ${custom ? "custom" : ""}" data-tone="${tone}" style="${custom ? `--hue:${hue}` : ""}"><span>${formatMoney(cents)}</span></div>${oos}${badge}</div>`;
     }
     function pool() {
       return [...new Set([...enabled, ...extras])].sort((a, b) => a - b);
@@ -460,24 +510,22 @@
       stockEl.classList.add("show");
       const bits = [];
       if (missing.length) {
-        bits.push(`<div class="stock-group"><p>缺貨</p><div class="stock-stamps">${missing.map((c) => stampHTML(c, { size: "xs", off: true })).join("")}</div></div>`);
+        bits.push(`<p class="stock-line oos">缺貨 ${missing.map(formatMoney).join("、")}</p>`);
       }
       if (extras.length) {
-        bits.push(`<div class="stock-group custom"><p>自訂</p><div class="stock-stamps">${extras.map((c) => stampHTML(c, { size: "xs" })).join("")}</div></div>`);
+        bits.push(`<p class="stock-line custom">自訂 ${extras.map(formatMoney).join("、")}</p>`);
       }
       cluster.innerHTML = bits.join("");
-      const frame = stockEl.querySelector(".stock-frame");
-      const next = Math.min(1, frame.clientWidth / Math.max(cluster.offsetWidth, 1));
-      cluster.style.transform = `scale(${Number.isFinite(next) && next > 0 ? next : 1})`;
     }
     function renderSettings() {
       denomGrid.innerHTML = DEFAULT_CENTS.map((cents) => {
         const on = enabled.includes(cents);
-        return `<button type="button" data-toggle="${cents}" aria-pressed="${on}" aria-label="${formatMoney(cents)}">${stampHTML(cents, { size: "sm", off: !on })}</button>`;
+        return `<button type="button" data-toggle="${cents}" aria-pressed="${on}" aria-label="${on ? formatMoney(cents) : formatMoney(cents) + " 缺貨"}">${stampHTML(cents, { size: "sm", off: !on })}</button>`;
       }).join("");
       extraGrid.innerHTML = extras.map((cents) => (
         `<button type="button" data-remove="${cents}" aria-label="移除 ${formatMoney(cents)}">${stampHTML(cents, { size: "sm", remove: true })}</button>`
       )).join("");
+      extraGrid.style.display = extras.length ? "" : "none";
     }
     function press(key) {
       const result = applyAmountKey(amount, key === "C" ? "clear" : key);
@@ -550,13 +598,12 @@
         renderSettings();
       }
     });
-    document.getElementById("select-all").addEventListener("click", () => {
+    document.getElementById("reset").addEventListener("click", () => {
       enabled = [...DEFAULT_CENTS];
       save();
       renderSettings();
     });
-    document.getElementById("reset").addEventListener("click", () => {
-      enabled = [...DEFAULT_CENTS];
+    document.getElementById("reset-extras").addEventListener("click", () => {
       extras = [];
       save();
       renderSettings();
@@ -564,9 +611,10 @@
     document.getElementById("custom-form").addEventListener("submit", (event) => {
       event.preventDefault();
       const input = document.getElementById("custom-input");
-      const cents = parseAmountToCents(input.value);
-      if (cents === null || cents === 0) {
-        showToast("請輸入有效面額，例如 2.4");
+      const cents = parseCustomDenomToCents(input.value);
+      if (cents === null) {
+        const attempt = sanitizeCustomDenom(input.value);
+        showToast(attempt.overLimit || Number(input.value) > MAX_CUSTOM ? "上限為 $50" : "請輸入有效面額，例如 2.4");
         return;
       }
       if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
@@ -582,6 +630,11 @@
       input.value = "";
       save();
       renderSettings();
+    });
+    document.getElementById("custom-input").addEventListener("input", (event) => {
+      const result = sanitizeCustomDenom(event.target.value);
+      if (result.overLimit) showToast("上限為 $50");
+      event.target.value = result.value;
     });
     window.addEventListener("keydown", (event) => {
       if (settingsEl.classList.contains("hidden") === false) return;

@@ -7,6 +7,10 @@ function stampTone(cents: number): number {
   return known >= 0 ? known : 0;
 }
 
+function customHue(cents: number): number {
+  return (Math.imul(cents, 137) >>> 0) % 360;
+}
+
 export function StampFace({
   cents,
   count = 1,
@@ -40,6 +44,7 @@ export function StampFace({
         data-size={size}
         data-off={muted ? "true" : undefined}
         data-custom={custom ? "true" : undefined}
+        style={custom ? ({ "--stamp-hue": String(customHue(cents)) } as CSSProperties) : undefined}
       >
         <span
           className={cn(
@@ -50,8 +55,13 @@ export function StampFace({
           {label}
         </span>
       </div>
+      {muted ? (
+        <span className={cn("oos-tag", size === "xs" && "oos-tag-xs")} aria-hidden="true">
+          缺貨
+        </span>
+      ) : null}
       {count > 1 ? (
-        <span className="absolute -top-2 -right-2 z-10 flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-1.5 font-semibold text-xs tabular-nums text-primary-fg">
+        <span className="absolute top-0 right-0 z-10 flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-1.5 font-semibold text-xs tabular-nums text-primary-fg">
           ×{count}
         </span>
       ) : null}

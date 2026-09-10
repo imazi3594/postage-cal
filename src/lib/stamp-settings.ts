@@ -1,4 +1,4 @@
-import { DEFAULT_CENTS, applyAmountKey } from "@/lib/postage";
+import { DEFAULT_CENTS, MAX_CUSTOM_CENTS, applyAmountKey } from "@/lib/postage";
 
 export const STORAGE_KEY = "stamp-calc-v2";
 
@@ -34,7 +34,9 @@ export function loadSaved(): Saved {
     return {
       amount: typeof parsed.amount === "string" ? clampSavedAmount(parsed.amount) : "",
       enabled: Array.isArray(parsed.enabled) ? parsed.enabled.filter((n) => Number.isInteger(n)) : [...DEFAULT_CENTS],
-      extras: Array.isArray(parsed.extras) ? parsed.extras.filter((n) => Number.isInteger(n) && n > 0) : [],
+      extras: Array.isArray(parsed.extras)
+        ? parsed.extras.filter((n) => Number.isInteger(n) && n > 0 && n <= MAX_CUSTOM_CENTS)
+        : [],
     };
   } catch {
     return defaultSaved();

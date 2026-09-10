@@ -128,8 +128,8 @@
 .stamp-face[data-tone="15"] { --stamp-hue: 355; }
 
 .stamp-face[data-custom="true"] {
-  --stamp-paper: oklch(0.9 0.1 78);
-  --stamp-ink: oklch(0.34 0.13 50);
+  --stamp-paper: oklch(0.92 0.11 var(--stamp-hue));
+  --stamp-ink: #1d4ed8;
   box-shadow: 0 0 10px rgb(255 196 80 / 0.4);
 }
 
@@ -146,6 +146,33 @@
 .stamp-face[data-off="true"] {
   opacity: 0.38;
   filter: grayscale(0.8);
+}
+
+.oos-tag {
+  position: absolute;
+  top: 0.2rem;
+  right: -0.2rem;
+  z-index: 12;
+  padding: 0.18rem 0.4rem;
+  border-radius: 0.2rem;
+  background: #dc2626;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  white-space: nowrap;
+  transform: rotate(28deg);
+  box-shadow: 0 1px 3px rgb(127 29 29 / 0.35);
+  pointer-events: none;
+}
+
+.oos-tag-xs {
+  top: 0.05rem;
+  right: -0.25rem;
+  font-size: 0.5rem;
+  padding: 0.12rem 0.28rem;
 }
 
 .stamp-face::before {

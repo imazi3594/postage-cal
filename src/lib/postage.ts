@@ -17,6 +17,9 @@ const INF = 0x3f3f3f3f;
 export const MAX_AMOUNT_DOLLARS = 9999.9;
 export const MAX_TARGET_CENTS = dollarsToCents(MAX_AMOUNT_DOLLARS);
 export const MAX_AMOUNT_LABEL = "$9999.9";
+export const MAX_CUSTOM_DOLLARS = 50;
+export const MAX_CUSTOM_CENTS = dollarsToCents(MAX_CUSTOM_DOLLARS);
+export const MAX_CUSTOM_LABEL = "$50";
 const MAX_INT_DIGITS = 4;
 const MAX_FRAC_DIGITS = 1;
 
@@ -71,6 +74,45 @@ export function applyAmountKey(
   }
   if (value.length >= MAX_INT_DIGITS) return { value, overLimit: true };
   return { value: value + key, overLimit: false };
+}
+
+/** Custom stamp face: at most $50, one decimal place. */
+export function sanitizeCustomDenom(raw: string): { value: string; overLimit: boolean } {
+  const stripped = typeof raw === "string" ? raw.replace(/[$,\s]/g, "") : "";
+  if (!stripped) return { value: "", overLimit: false };
+  let intPart = "";
+  let frac: string | null = null;
+  for (const ch of stripped) {
+    if (ch === ".") {
+      if (frac !== null) continue;
+      frac = "";
+      continue;
+    }
+    if (ch < "0" || ch > "9") continue;
+    if (frac !== null) {
+      if (frac.length >= MAX_FRAC_DIGITS) continue;
+      frac += ch;
+    } else if (intPart === "0") {
+      intPart = ch;
+    } else {
+      intPart += ch;
+    }
+  }
+  if (!intPart && frac !== null) intPart = "0";
+  let value = frac !== null ? `${intPart}.${frac}` : intPart;
+  let overLimit = false;
+  const numeric = (text: string) => Number(text.endsWith(".") ? text.slice(0, -1) : text);
+  while (value && Number.isFinite(numeric(value)) && numeric(value) > MAX_CUSTOM_DOLLARS) {
+    overLimit = true;
+    value = value.slice(0, -1);
+  }
+  return { value, overLimit };
+}
+
+export function parseCustomDenomToCents(input: string): number | null {
+  const cents = parseAmountToCents(input);
+  if (cents === null || cents === 0 || cents > MAX_CUSTOM_CENTS) return null;
+  return cents;
 }
 
 function toCombo(amount: number, parent: Int32Array, used: Int32Array): Combination {

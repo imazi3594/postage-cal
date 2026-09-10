@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft, Minus, Plus, RotateCcw } from "lucide-react";
+import { ChevronLeft, CircleAlert, Minus, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StampFace } from "@/components/stamp-face";
-import { DEFAULT_CENTS, formatMoney, parseAmountToCents } from "@/lib/postage";
+import { DEFAULT_CENTS, formatMoney, parseCustomDenomToCents, sanitizeCustomDenom, MAX_CUSTOM_LABEL } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
 import { cn } from "@/lib/utils";
 
@@ -60,8 +60,13 @@ export function SettingsPage() {
   }
 
   function addCustom() {
-    const cents = parseAmountToCents(custom);
-    if (cents === null || cents === 0) {
+    const cents = parseCustomDenomToCents(custom);
+    if (cents === null) {
+      const attempt = sanitizeCustomDenom(custom);
+      if (attempt.overLimit || Number(custom) > 50) {
+        showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
+        return;
+      }
       showToast("請輸入有效面額，例如 2.4");
       return;
     }
@@ -96,28 +101,21 @@ export function SettingsPage() {
       </header>
 
       <section className="stagger-in rounded-xl bg-surface p-5 shadow-(--shadow-border)" style={{ animationDelay: "80ms" }}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="font-sans text-xl font-semibold">可用面額</h2>
-            <p className="mt-1 text-sm text-muted">熄咗嘅面額唔會用。只計剛好湊齊嘅組合。</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-sans text-xl font-semibold">通用郵票庫存</h2>
+            <p className="mt-1 text-sm text-muted">點擊以切換庫存狀態</p>
           </div>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setEnabled([...DEFAULT_CENTS])}>
-              全選預設
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setEnabled([...DEFAULT_CENTS]);
-                setExtras([]);
-              }}
-            >
-              <RotateCcw />
-              重設
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="shrink-0 border border-border"
+            onClick={() => setEnabled([...DEFAULT_CENTS])}
+          >
+            <RotateCcw />
+            重設
+          </Button>
         </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
@@ -128,15 +126,34 @@ export function SettingsPage() {
                 key={cents}
                 type="button"
                 aria-pressed={on}
-                aria-label={formatMoney(cents)}
+                aria-label={on ? formatMoney(cents) : `${formatMoney(cents)} 缺貨`}
                 onPointerDown={(event) => onStampPointerDown(event, () => toggleDenom(cents))}
                 onClick={() => onStampClick(() => toggleDenom(cents))}
-                className="touch-manipulation rounded-sm transition-[opacity,filter] duration-(--motion-quick) ease-(--ease-smooth-out) hover:opacity-90"
+                className="relative overflow-visible touch-manipulation rounded-sm transition-[opacity,filter] duration-(--motion-quick) ease-(--ease-smooth-out) hover:opacity-90"
               >
                 <StampFace cents={cents} size="sm" muted={!on} />
               </button>
             );
           })}
+        </div>
+      </section>
+
+      <section className="stagger-in rounded-xl bg-surface p-5 shadow-(--shadow-border)" style={{ animationDelay: "140ms" }}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-sans text-xl font-semibold">自訂面額</h2>
+            <p className="mt-1 text-sm text-muted">加入自訂面額郵票或特別郵票</p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="shrink-0 border border-border"
+            onClick={() => setExtras([])}
+          >
+            <RotateCcw />
+            重設
+          </Button>
         </div>
 
         {extras.length > 0 ? (
@@ -171,8 +188,12 @@ export function SettingsPage() {
         >
           <Input
             value={custom}
-            onChange={(event) => setCustom(event.target.value)}
-            placeholder="自訂面額，例如 2.4"
+            onChange={(event) => {
+              const result = sanitizeCustomDenom(event.target.value);
+              if (result.overLimit) showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
+              setCustom(result.value);
+            }}
+            placeholder="例如 2.4，上限 $50"
             inputMode="decimal"
             aria-label="自訂郵票面額"
             className="sm:max-w-56"
@@ -191,9 +212,9 @@ export function SettingsPage() {
         )}
         aria-hidden={!toast}
       >
-        <div role="alert" className="w-full max-w-sm rounded-xl bg-surface px-6 py-4 text-center shadow-(--shadow-border)">
-          <p className="text-sm font-medium tracking-wide text-primary">提示</p>
-          <p className="mt-1 font-sans text-lg font-semibold text-ink">{toast || "\u00a0"}</p>
+        <div role="alert" className="flex w-full max-w-sm items-center gap-3 rounded-xl bg-red-300 px-5 py-3.5 text-red-900 shadow-(--shadow-border)">
+          <CircleAlert className="size-6 shrink-0" aria-hidden="true" />
+          <p className="font-sans text-lg font-semibold">{toast || "\u00a0"}</p>
         </div>
       </div>
     </div>

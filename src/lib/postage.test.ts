@@ -7,6 +7,8 @@ import {
   dollarsToCents,
   formatMoney,
   parseAmountToCents,
+  parseCustomDenomToCents,
+  sanitizeCustomDenom,
   solve,
 } from "./postage.ts";
 
@@ -55,6 +57,19 @@ test("keypad rejects extra digits past $9999.9", () => {
   assert.deepEqual(applyAmountKey("9999.", "9"), { value: "9999.9", overLimit: false });
   assert.deepEqual(applyAmountKey("9999.9", "1"), { value: "9999.9", overLimit: false });
   assert.equal(applyAmountKey("999", "9").value, "9999");
+});
+
+test("custom denom max $50 and one decimal", () => {
+  assert.deepEqual(sanitizeCustomDenom("2.4"), { value: "2.4", overLimit: false });
+  assert.deepEqual(sanitizeCustomDenom("2.45"), { value: "2.4", overLimit: false });
+  assert.deepEqual(sanitizeCustomDenom("50"), { value: "50", overLimit: false });
+  assert.deepEqual(sanitizeCustomDenom("50.0"), { value: "50.0", overLimit: false });
+  assert.deepEqual(sanitizeCustomDenom("50.1"), { value: "50.", overLimit: true });
+  assert.deepEqual(sanitizeCustomDenom("51"), { value: "5", overLimit: true });
+  assert.equal(parseCustomDenomToCents("50"), 5000);
+  assert.equal(parseCustomDenomToCents("50.1"), null);
+  assert.equal(parseCustomDenomToCents("2.45"), null);
+  assert.equal(parseCustomDenomToCents("0"), null);
 });
 
 test("$14.9 → $5.5 + $5.4 + $4", () => {

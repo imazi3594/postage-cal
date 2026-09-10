@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { Delete, Settings } from "lucide-react";
+import { CircleAlert, Delete, Settings } from "lucide-react";
 import { StampFace } from "@/components/stamp-face";
 import {
   DEFAULT_CENTS,
   MAX_AMOUNT_LABEL,
   applyAmountKey,
+  formatMoney,
   parseAmountToCents,
   solve,
   type Combination,
@@ -223,9 +224,9 @@ export function StampCalculator() {
         )}
         aria-hidden={!toast}
       >
-        <div role="alert" className="w-full max-w-sm rounded-xl bg-surface px-6 py-4 text-center shadow-(--shadow-border)">
-          <p className="text-sm font-medium tracking-wide text-primary">提示</p>
-          <p className="mt-1 font-sans text-lg font-semibold text-ink">{toast || "\u00a0"}</p>
+        <div role="alert" className="flex w-full max-w-sm items-center gap-3 rounded-xl bg-red-300 px-5 py-3.5 text-red-900 shadow-(--shadow-border)">
+          <CircleAlert className="size-6 shrink-0" aria-hidden="true" />
+          <p className="font-sans text-lg font-semibold">{toast || "\u00a0"}</p>
         </div>
       </div>
     </div>
@@ -305,11 +306,11 @@ function ComboStrip({
     <div ref={frameRef} className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
       <div
         ref={clusterRef}
-        className="flex w-max items-center justify-center gap-2"
+        className="flex w-max shrink-0 items-center justify-center gap-1 px-1 pt-1"
         style={{ transform: `scale(${scale})`, transformOrigin: "center center" }}
       >
         {lines.map((line) => (
-          <StampFace key={line.cents} cents={line.cents} count={line.count} />
+          <StampFace key={line.cents} cents={line.cents} count={line.count} className="pt-2 pr-2" />
         ))}
       </div>
     </div>
@@ -317,57 +318,14 @@ function ComboStrip({
 }
 
 function StockStrip({ missing, extras }: { missing: number[]; extras: number[] }) {
-  const frameRef = useRef<HTMLDivElement>(null);
-  const clusterRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useLayoutEffect(() => {
-    const frame = frameRef.current;
-    const cluster = clusterRef.current;
-    if (!frame || !cluster) {
-      setScale(1);
-      return;
-    }
-    const fit = () => {
-      const next = Math.min(1, frame.clientWidth / cluster.offsetWidth);
-      const clamped = Number.isFinite(next) && next > 0 ? next : 1;
-      setScale((prev) => (Math.abs(prev - clamped) < 0.01 ? prev : clamped));
-    };
-    fit();
-    const observer = new ResizeObserver(fit);
-    observer.observe(frame);
-    observer.observe(cluster);
-    return () => observer.disconnect();
-  }, [missing, extras]);
-
   return (
-    <div ref={frameRef} className="flex h-12 w-full items-center overflow-hidden">
-      <div
-        ref={clusterRef}
-        className="flex w-max items-center gap-3"
-        style={{ transform: `scale(${scale})`, transformOrigin: "left center" }}
-      >
-        {missing.length > 0 ? (
-          <div className="flex items-center gap-2">
-            <p className="text-2xs font-medium tracking-wide text-muted">缺貨</p>
-            <div className="flex items-center gap-1.5">
-              {missing.map((cents) => (
-                <StampFace key={cents} cents={cents} size="xs" muted />
-              ))}
-            </div>
-          </div>
-        ) : null}
-        {extras.length > 0 ? (
-          <div className="flex items-center gap-2">
-            <p className="text-2xs font-medium tracking-wide text-primary">自訂</p>
-            <div className="flex items-center gap-1.5">
-              {extras.map((cents) => (
-                <StampFace key={cents} cents={cents} size="xs" />
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </div>
+    <div className="flex w-full min-w-0 flex-col gap-0.5 py-0.5 text-sm font-medium leading-snug">
+      {missing.length > 0 ? (
+        <p className="break-words text-red-600">缺貨 {missing.map(formatMoney).join("、")}</p>
+      ) : null}
+      {extras.length > 0 ? (
+        <p className="break-words text-blue-600">自訂 {extras.map(formatMoney).join("、")}</p>
+      ) : null}
     </div>
   );
 }
