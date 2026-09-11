@@ -460,7 +460,7 @@ function ComboStrip({
         style={{ transform: `scale(${scale})`, transformOrigin: "center center" }}
       >
         {lines.map((line) => (
-          <StampFace key={line.cents} cents={line.cents} count={line.count} className="pt-2 pr-2" />
+          <StampFace key={line.cents} cents={line.cents} count={line.count} className="pt-3.5 pr-3.5" />
         ))}
       </div>
     </div>
