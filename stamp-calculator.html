@@ -129,6 +129,10 @@
     .custom-form input { height: 2.75rem; flex: 1 1 auto; min-width: 0; width: auto; max-width: none; border: 0; border-radius: 0.5rem; padding: 0 0.75rem; background: var(--bg); color: var(--ink); font: inherit; box-shadow: var(--shadow); }
     .custom-form .btn.secondary { flex: 0 0 auto; height: 2.75rem; white-space: nowrap; }
     .top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; }
+    .top > h1 { flex: 1; margin: 0; }
+    .brand { min-width: 0; }
+    .card.roomy { padding: 1.25rem; }
+    .amount-copy { flex: 1; min-width: 0; }
     .mark { margin: 0; font-family: var(--display); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.04em; color: var(--primary); }
     h1 { margin: 0.125rem 0 0; display: flex; align-items: center; gap: 0.375rem; font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
     h1 .title-pack { font-size: 1.15rem; line-height: 1; flex: 0 0 auto; }
@@ -365,7 +369,7 @@
     .toast { display: flex; align-items: center; gap: 0.75rem; width: min(24rem, 100%); border-radius: 1rem; background: #fca5a5; color: #7f1d1d; padding: 0.9rem 1.25rem; box-shadow: var(--shadow); }
     .toast .bang { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
     .toast .msg { margin: 0; font-size: 1.125rem; font-weight: 600; }
-    .hidden { display: none !important; }
+    .hidden, [hidden] { display: none !important; }
     .install-btn { display: none; height: 2rem; border: 1px dashed var(--border); border-radius: 0.5rem; background: var(--surface); color: var(--muted); font: inherit; font-size: 0.75rem; font-weight: 500; box-shadow: none; align-items: center; justify-content: center; gap: 0.35rem; flex: 0 0 auto; }
     .install-btn.show { display: flex; }
     .install-btn:hover { background: var(--bg); color: var(--ink); }
@@ -392,16 +396,16 @@
   </style>
 </head>
 <body>
-  <div id="home" class="wrap">
+  <main id="home" class="wrap">
     <header class="top">
-      <div>
+      <div class="brand">
         <p class="mark">Postage combination calculator</p>
         <h1>
           <span class="title-pack" aria-hidden="true">📦</span>
           郵票組合計數機
         </h1>
       </div>
-      <div class="icon-row">
+      <nav class="icon-row" aria-label="頁面">
         <button type="button" class="icon-btn" id="theme-btn" aria-label="切換至深色">
           <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
           <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
@@ -415,9 +419,9 @@
         <button type="button" class="icon-btn" data-go="settings" aria-label="設定">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
-      </div>
+      </nav>
     </header>
-    <div class="combo-block">
+    <section class="combo-block" aria-label="郵票組合">
       <section class="card" aria-live="polite">
         <div class="mode-switch" role="group" aria-label="組合邏輯，現正最少枚郵票">
           <button type="button" class="mode-on" data-mode="stamps">最少枚郵票</button>
@@ -426,13 +430,13 @@
         <div id="combo" class="combo"></div>
         <p id="combo-stats" class="combo-stats">&nbsp;</p>
       </section>
-    </div>
+    </section>
     <button type="button" id="stock" class="card stock" data-go="settings" aria-label="設定郵票面值">
       <div id="stock-cluster"></div>
     </button>
-    <section class="card pad" id="pad">
+    <section class="card pad" id="pad" aria-label="郵費鍵盤">
       <div class="amount-row">
-        <div style="flex:1;min-width:0">
+        <div class="amount-copy">
           <p class="label">郵費</p>
           <p class="value"><span>$</span><b id="amount">0</b></p>
         </div>
@@ -444,7 +448,7 @@
           </svg>
         </button>
       </div>
-      <div class="keys">
+      <div class="keys" role="group" aria-label="數字鍵盤">
         <button type="button" data-key="7">7</button>
         <button type="button" data-key="8">8</button>
         <button type="button" data-key="9">9</button>
@@ -485,18 +489,16 @@
         <span class="ai">AI</span>
       </a>
     </footer>
-  </div>
+  </main>
 
-  <div id="settings" class="wrap settings hidden">
+  <main id="settings" class="wrap settings hidden" hidden aria-hidden="true">
     <header class="top">
       <button type="button" class="icon-btn" data-go="home" aria-label="返回計數機">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </button>
-      <div style="flex:1">
-        <h1>設定</h1>
-      </div>
+      <h1>設定</h1>
     </header>
-    <section class="card" style="padding:1.25rem">
+    <section class="card roomy">
       <div class="head-row">
         <div>
           <h2>通用郵票庫存</h2>
@@ -509,7 +511,7 @@
       </div>
       <div id="denom-grid" class="grid"></div>
     </section>
-    <section class="card" style="padding:1.25rem">
+    <section class="card roomy">
       <div class="head-row">
         <div>
           <h2>自訂面值</h2>
@@ -529,16 +531,14 @@
       </form>
       <div id="extra-grid" class="grid"></div>
     </section>
-  </div>
+  </main>
 
-  <div id="about" class="wrap about hidden">
+  <main id="about" class="wrap about hidden" hidden aria-hidden="true">
     <header class="top">
       <button type="button" class="icon-btn" data-go="home" aria-label="返回計數機">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </button>
-      <div style="flex:1">
-        <h1>關於</h1>
-      </div>
+      <h1>關於</h1>
     </header>
     <section class="about-hero">
       <div class="hero-stage" aria-hidden="true">
@@ -690,7 +690,7 @@
         <a class="home" href="#home" data-go="home">返回首頁</a>
       </div>
     </footer>
-  </div>
+  </main>
 
   <div id="install-sheet" class="install-sheet">
     <div class="install-card" role="dialog" aria-label="加入主畫面">
@@ -989,9 +989,12 @@
     }
     function showPage(name) {
       if (name !== "home" && name !== "settings" && name !== "about") name = "home";
-      homeEl.classList.toggle("hidden", name !== "home");
-      settingsEl.classList.toggle("hidden", name !== "settings");
-      aboutEl.classList.toggle("hidden", name !== "about");
+      [["home", homeEl], ["settings", settingsEl], ["about", aboutEl]].forEach(function (pair) {
+        const on = name === pair[0];
+        pair[1].classList.toggle("hidden", !on);
+        pair[1].toggleAttribute("hidden", !on);
+        pair[1].setAttribute("aria-hidden", on ? "false" : "true");
+      });
       location.hash = name === "home" ? "" : name;
       if (name === "settings") renderSettings();
       if (name === "home") renderHome();

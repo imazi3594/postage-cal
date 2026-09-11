@@ -195,7 +195,7 @@ export function StampCalculator() {
             郵票組合計數機
           </h1>
         </div>
-        <div className="flex shrink-0 items-center">
+        <nav className="flex shrink-0 items-center" aria-label="頁面">
           <ThemeToggle />
           <button
             type="button"
@@ -219,7 +219,7 @@ export function StampCalculator() {
           >
             <Settings className="size-5" />
           </Link>
-        </div>
+        </nav>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3">

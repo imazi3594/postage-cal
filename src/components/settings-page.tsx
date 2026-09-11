@@ -146,9 +146,7 @@ export function SettingsPage() {
         >
           <ArrowLeft className="size-5" />
         </Link>
-        <div className="min-w-0">
-          <h1 className="text-lg font-semibold tracking-tight text-ink">設定</h1>
-        </div>
+        <h1 className="text-lg font-semibold tracking-tight text-ink">設定</h1>
       </header>
 
       <section className="stagger-in rounded-xl bg-surface p-5 shadow-(--shadow-border)" style={{ animationDelay: "80ms" }}>
