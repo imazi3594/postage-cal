@@ -201,31 +201,31 @@ export function StampCalculator() {
             <div
               className="mb-2 flex isolate rounded-lg bg-bg p-0.5 [forced-color-adjust:none]"
               role="group"
-              aria-label={mode === "stamps" ? "組合邏輯，現正枚數優先" : "組合邏輯，現正款式優先"}
+              aria-label={mode === "stamps" ? "組合邏輯，現正最少枚郵票" : "組合邏輯，現正最少款面值"}
             >
               <button
                 type="button"
                 {...modeHandlers("stamps")}
                 className={cn(
-                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs transition-[background-color,color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs whitespace-nowrap transition-[background-color,color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out)",
                   mode === "stamps"
                     ? "bg-primary-soft font-bold text-stamp-ink opacity-100"
                     : "bg-transparent font-medium text-subtle opacity-40",
                 )}
               >
-                枚數優先
+                最少枚郵票
               </button>
               <button
                 type="button"
                 {...modeHandlers("types")}
                 className={cn(
-                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs transition-[background-color,color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs whitespace-nowrap transition-[background-color,color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out)",
                   mode === "types"
                     ? "bg-primary-soft font-bold text-stamp-ink opacity-100"
                     : "bg-transparent font-medium text-subtle opacity-40",
                 )}
               >
-                款式優先
+                最少款面值
               </button>
             </div>
             <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
@@ -240,7 +240,7 @@ export function StampCalculator() {
         {missing.length > 0 || extras.length > 0 ? (
           <Link
             to="/settings"
-            aria-label="設定郵票面額"
+            aria-label="設定郵票面值"
             className="min-w-0 shrink-0 overflow-x-hidden rounded-xl bg-surface px-3 py-2 shadow-(--shadow-border) sm:px-4"
           >
             <StockStrip missing={missing} extras={extras} />

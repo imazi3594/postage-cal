@@ -151,7 +151,7 @@
     .pad.locked .closed-panel { display: flex; }
     .combo-stats { margin: 0.15rem 0 0; min-height: 1rem; text-align: center; font-size: 0.75rem; color: var(--muted); }
     .mode-switch { display: flex; margin: 0 0 0.5rem; padding: 0.15rem; border-radius: 0.55rem; background: var(--bg); isolation: isolate; forced-color-adjust: none; }
-    .mode-switch button { flex: 1; height: 1.75rem; border: 0; border-radius: 0.4rem; background: transparent; color: var(--subtle); font: inherit; font-size: 0.75rem; font-weight: 500; opacity: 0.4; -webkit-appearance: none; appearance: none; }
+    .mode-switch button { flex: 1; height: 1.75rem; border: 0; border-radius: 0.4rem; background: transparent; color: var(--subtle); font: inherit; font-size: 0.75rem; font-weight: 500; opacity: 0.4; white-space: nowrap; -webkit-appearance: none; appearance: none; }
     .mode-switch button.mode-on { background: var(--primary-soft); color: var(--primary); font-weight: 700; opacity: 1; box-shadow: none; }
     .cluster { display: flex; align-items: center; justify-content: center; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: center; }
     .combo-block { flex-shrink: 0; }
@@ -353,15 +353,15 @@
     </header>
     <div class="combo-block">
       <section class="card" aria-live="polite">
-        <div class="mode-switch" role="group" aria-label="組合邏輯，現正枚數優先">
-          <button type="button" class="mode-on" data-mode="stamps">枚數優先</button>
-          <button type="button" data-mode="types">款式優先</button>
+        <div class="mode-switch" role="group" aria-label="組合邏輯，現正最少枚郵票">
+          <button type="button" class="mode-on" data-mode="stamps">最少枚郵票</button>
+          <button type="button" data-mode="types">最少款面值</button>
         </div>
         <div id="combo" class="combo"></div>
         <p id="combo-stats" class="combo-stats">&nbsp;</p>
       </section>
     </div>
-    <button type="button" id="stock" class="card stock" data-go="settings" aria-label="設定郵票面額">
+    <button type="button" id="stock" class="card stock" data-go="settings" aria-label="設定郵票面值">
       <div id="stock-cluster"></div>
     </button>
     <section class="card pad" id="pad">
@@ -418,7 +418,7 @@
       <div style="flex:1">
         <p class="mark">Postage combination calculator</p>
         <h1>設定</h1>
-        <p class="hint">揀計數機用邊啲郵票面額。</p>
+        <p class="hint">揀計數機用邊啲郵票面值。</p>
       </div>
     </header>
     <section class="card" style="padding:1.25rem">
@@ -437,8 +437,8 @@
     <section class="card" style="padding:1.25rem">
       <div class="head-row">
         <div>
-          <h2>自訂面額</h2>
-          <p class="hint">加入自訂面額郵票或特別郵票</p>
+          <h2>自訂面值</h2>
+          <p class="hint">加入自訂面值郵票或特別郵票</p>
         </div>
         <button type="button" class="btn" id="reset-extras">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -446,7 +446,7 @@
         </button>
       </div>
       <form id="custom-form" class="custom-form">
-        <input id="custom-input" inputmode="decimal" placeholder="例如 2.4，上限 $50" aria-label="自訂郵票面額" />
+        <input id="custom-input" inputmode="decimal" placeholder="例如 2.4，上限 $50" aria-label="自訂郵票面值" />
         <button type="submit" class="btn secondary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           加入
@@ -499,7 +499,7 @@
       </div>
       <div class="about-body">
         <h2>點樣揀郵票</h2>
-        <p class="about-copy">先求最少枚，唔好貼到成幅牆。同枚數就揀最少款式，同款一次過撕。再嚟先用整數面額，$3 會用 $2+$1，唔會用 $2.8+$0.2 咁麻。</p>
+        <p class="about-copy">先求最少枚，唔好貼到成幅牆。同枚數就揀最少款式，同款一次過撕。再嚟先用整數面值，$3 會用 $2+$1，唔會用 $2.8+$0.2 咁麻。</p>
       </div>
     </section>
     <section class="card about-row" style="padding:1.25rem;overflow:hidden">
@@ -511,7 +511,7 @@
       </div>
       <div class="about-body">
         <h2>庫存同特別郵票</h2>
-        <p class="about-copy">十六款通用面額可以喺設定標缺貨。紀念郵票、舊票、口袋底嗰隻 $2.4，都可以加做自訂面額，上限 $50。</p>
+        <p class="about-copy">十六款通用面值可以喺設定標缺貨。紀念郵票、舊票、口袋底嗰隻 $2.4，都可以加做自訂面值，上限 $50。</p>
       </div>
     </section>
     <section class="card about-row" style="padding:1.25rem;overflow:hidden">
@@ -933,7 +933,7 @@
         btn.classList.toggle("mode-on", on);
       });
       const switchEl = document.querySelector(".mode-switch");
-      if (switchEl) switchEl.setAttribute("aria-label", mode === "types" ? "組合邏輯，現正款式優先" : "組合邏輯，現正枚數優先");
+      if (switchEl) switchEl.setAttribute("aria-label", mode === "types" ? "組合邏輯，現正最少款面值" : "組合邏輯，現正最少枚郵票");
       renderCombo();
       renderStock();
     }
@@ -1076,11 +1076,11 @@
       const cents = parseCustomDenomToCents(input.value);
       if (cents === null) {
         const attempt = sanitizeCustomDenom(input.value);
-        showToast(attempt.overLimit || Number(input.value) > MAX_CUSTOM ? "上限為 $50" : "請輸入有效面額，例如 2.4");
+        showToast(attempt.overLimit || Number(input.value) > MAX_CUSTOM ? "上限為 $50" : "請輸入有效面值，例如 2.4");
         return;
       }
       if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
-        showToast("呢個面額已經有");
+        showToast("呢個面值已經有");
         if (!enabled.includes(cents) && DEFAULT_CENTS.includes(cents)) {
           enabled = [...enabled, cents].sort((a, b) => a - b);
           save();

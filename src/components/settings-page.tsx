@@ -102,11 +102,11 @@ export function SettingsPage() {
         showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
         return;
       }
-      showToast("請輸入有效面額，例如 2.4");
+      showToast("請輸入有效面值，例如 2.4");
       return;
     }
     if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
-      showToast("呢個面額已經有");
+      showToast("呢個面值已經有");
       if (!enabled.includes(cents) && DEFAULT_CENTS.includes(cents)) {
         setEnabled((prev) => [...prev, cents].sort((a, b) => a - b));
       }
@@ -135,7 +135,7 @@ export function SettingsPage() {
             Postage combination calculator
           </p>
           <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-ink">設定</h1>
-          <p className="mt-1 text-sm text-muted">揀計數機用邊啲郵票面額。</p>
+          <p className="mt-1 text-sm text-muted">揀計數機用邊啲郵票面值。</p>
         </div>
       </header>
 
@@ -179,8 +179,8 @@ export function SettingsPage() {
       <section className="stagger-in rounded-xl bg-surface p-5 shadow-(--shadow-border)" style={{ animationDelay: "140ms" }}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <h2 className="font-sans text-xl font-semibold">自訂面額</h2>
-            <p className="mt-1 text-sm text-muted">加入自訂面額郵票或特別郵票</p>
+            <h2 className="font-sans text-xl font-semibold">自訂面值</h2>
+            <p className="mt-1 text-sm text-muted">加入自訂面值郵票或特別郵票</p>
           </div>
           <Button
             type="button"
@@ -212,7 +212,7 @@ export function SettingsPage() {
             onFocus={revealForm}
             placeholder="例如 2.4，上限 $50"
             inputMode="decimal"
-            aria-label="自訂郵票面額"
+            aria-label="自訂郵票面值"
             className="min-w-0 flex-1"
           />
           <Button type="submit" variant="secondary" className="shrink-0 px-3">
@@ -230,7 +230,7 @@ export function SettingsPage() {
                 aria-label={`移除 ${formatMoney(cents)}`}
                 {...stampHandlers(() => setExtras((prev) => prev.filter((c) => c !== cents)))}
                 className="relative overflow-visible touch-manipulation rounded-sm"
-                title="移除自訂面額"
+                title="移除自訂面值"
               >
                 <StampFace cents={cents} size="sm" />
                 <span className="absolute -top-2 -right-2 z-10 flex size-5 items-center justify-center rounded-full bg-red-600 text-white shadow-sm ring-2 ring-surface">

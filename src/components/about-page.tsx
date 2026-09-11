@@ -27,12 +27,12 @@ const SECTIONS: { title: string; body: string; illo: ReactNode }[] = [
   },
   {
     title: "點樣揀郵票",
-    body: "先求最少枚，唔好貼到成幅牆。同枚數就揀最少款式，同款一次過撕。再嚟先用整數面額，$3 會用 $2+$1，唔會用 $2.8+$0.2 咁麻。",
+    body: "先求最少枚，唔好貼到成幅牆。同枚數就揀最少款式，同款一次過撕。再嚟先用整數面值，$3 會用 $2+$1，唔會用 $2.8+$0.2 咁麻。",
     illo: <StampFace cents={280} count={2} size="xs" className="w-12 pt-2 pr-2" />,
   },
   {
     title: "庫存同特別郵票",
-    body: "十六款通用面額可以喺設定標缺貨。紀念郵票、舊票、口袋底嗰隻 $2.4，都可以加做自訂面額，上限 $50。",
+    body: "十六款通用面值可以喺設定標缺貨。紀念郵票、舊票、口袋底嗰隻 $2.4，都可以加做自訂面值，上限 $50。",
     illo: (
       <div className="flex items-end justify-center gap-3 px-2 pt-2">
         <StampFace cents={10} size="xs" muted className="w-10" />
