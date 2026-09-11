@@ -12,6 +12,7 @@ import {
   parseAmountToCents,
   solve,
   type Combination,
+  type SolveMode,
 } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
 import { applyCrisis } from "@/lib/theme";
@@ -30,6 +31,7 @@ export function StampCalculator() {
   const [amount, setAmount] = useState("");
   const [enabled, setEnabled] = useState<number[]>([...DEFAULT_CENTS]);
   const [extras, setExtras] = useState<number[]>([]);
+  const [mode, setMode] = useState<SolveMode>("stamps");
   const [toast, setToast] = useState("");
   const amountRef = useRef(amount);
   const toastTimer = useRef<number>(0);
@@ -42,13 +44,14 @@ export function StampCalculator() {
     setAmount(saved.amount);
     setEnabled(saved.enabled);
     setExtras(saved.extras);
+    setMode(saved.mode);
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    patchSaved({ amount });
-  }, [amount, hydrated]);
+    patchSaved({ amount, mode });
+  }, [amount, mode, hydrated]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -94,8 +97,8 @@ export function StampCalculator() {
 
   const combo = useMemo(() => {
     if (targetCents === null || targetCents === 0) return null;
-    return solve(targetCents, pool);
-  }, [targetCents, pool]);
+    return solve(targetCents, pool, mode);
+  }, [targetCents, pool, mode]);
 
   const closed = pool.length === 0;
   closedRef.current = closed;
@@ -128,6 +131,15 @@ export function StampCalculator() {
       return;
     }
     applyInput(key);
+  }
+
+  function modeHandlers(next: SolveMode) {
+    return {
+      onPointerDown: tap.onPointerDown,
+      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => tap.onPointerUp(event, () => setMode(next)),
+      onPointerCancel: tap.onPointerCancel,
+      onClick: () => tap.onClick(() => setMode(next)),
+    };
   }
 
   function padHandlers(key: string) {
@@ -185,13 +197,39 @@ export function StampCalculator() {
       <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3">
         <div className="shrink-0">
           <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4" aria-live="polite">
+            <div
+              className="mb-2 flex isolate rounded-lg bg-bg p-0.5 [forced-color-adjust:none]"
+              role="group"
+              aria-label={mode === "stamps" ? "組合邏輯，現正枚數優先" : "組合邏輯，現正款式優先"}
+            >
+              <button
+                type="button"
+                {...modeHandlers("stamps")}
+                className={cn(
+                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs font-semibold transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  mode === "stamps" ? "bg-primary-soft text-stamp-ink" : "bg-transparent text-muted",
+                )}
+              >
+                枚數優先
+              </button>
+              <button
+                type="button"
+                {...modeHandlers("types")}
+                className={cn(
+                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs font-semibold transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  mode === "types" ? "bg-primary-soft text-stamp-ink" : "bg-transparent text-muted",
+                )}
+              >
+                款式優先
+              </button>
+            </div>
             <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
+            <p className="mt-1 min-h-4 text-center text-xs text-muted">
+              {combo && amount && amount !== "0" && amount !== "0."
+                ? `郵票${combo.stampCount}個\u3000款式${combo.lines.length}種`
+                : "\u00a0"}
+            </p>
           </section>
-          <p className="mt-1 min-h-4 px-1 text-center text-xs text-muted" aria-live="polite">
-            {combo && amount && amount !== "0" && amount !== "0."
-              ? `郵票${combo.stampCount}個\u3000款式${combo.lines.length}種`
-              : "\u00a0"}
-          </p>
         </div>
 
         {missing.length > 0 || extras.length > 0 ? (
@@ -349,7 +387,7 @@ function ComboStrip({
   }
 
   return (
-    <div ref={frameRef} className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
+    <div ref={frameRef} className="flex h-24 w-full isolate items-center justify-center overflow-hidden sm:h-28">
       <div
         ref={clusterRef}
         className="flex w-max shrink-0 items-center justify-center gap-1 px-1 pt-1"

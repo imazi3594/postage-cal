@@ -141,8 +141,18 @@ function bitCount(n: number): number {
   return count;
 }
 
-/** Fewest stamps first; then fewest faces; then as many whole-dollar stamps as possible. */
-export function solve(targetCents: number, denomCents: number[]): Combination | null {
+export type SolveMode = "stamps" | "types";
+
+function stampCap(minStamps: number): number {
+  return Math.min(minStamps * 2 + 2, minStamps + 8);
+}
+
+/** Fewest stamps, or fewest types with stamp count kept in a reasonable range. */
+export function solve(
+  targetCents: number,
+  denomCents: number[],
+  mode: SolveMode = "stamps",
+): Combination | null {
   const denoms = [...new Set(denomCents.filter((d) => Number.isInteger(d) && d > 0))].sort(
     (a, b) => b - a,
   );
@@ -166,32 +176,46 @@ export function solve(targetCents: number, denomCents: number[]): Combination | 
 
   if (dp[targetCents] === INF) return null;
 
+  const minStamps = dp[targetCents]!;
+  const cap = mode === "types" ? stampCap(minStamps) : minStamps;
+  const stamps = new Int32Array(targetCents + 1);
   const kinds = new Int32Array(targetCents + 1);
   const wholes = new Int32Array(targetCents + 1);
   const parent = new Int32Array(targetCents + 1);
   const used = new Int32Array(targetCents + 1);
   const mask = new Uint32Array(targetCents + 1);
+  stamps.fill(INF);
   kinds.fill(INF);
+  stamps[0] = 0;
   kinds[0] = 0;
 
   for (let amount = 0; amount <= targetCents; amount++) {
-    const current = dp[amount]!;
-    if (current === INF) continue;
+    if (kinds[amount] === INF) continue;
+    const currentStamps = stamps[amount]!;
+    if (currentStamps >= cap) continue;
     const currentMask = mask[amount]!;
     const currentWholes = wholes[amount]!;
     for (let i = 0; i < denoms.length; i++) {
       const denom = denoms[i]!;
       const next = amount + denom;
-      if (next > targetCents || dp[next] !== current + 1) continue;
+      if (next > targetCents) continue;
+      const nextStamps = currentStamps + 1;
+      if (nextStamps > cap) continue;
+      if (mode === "stamps" && dp[next] !== nextStamps) continue;
       const nextMask = currentMask | bits[i]!;
       const nextKinds = bitCount(nextMask);
       const nextWholes = currentWholes + (denom % 100 === 0 ? 1 : 0);
       const better =
         nextKinds < kinds[next]! ||
-        (nextKinds === kinds[next]! && nextWholes > wholes[next]!) ||
-        (nextKinds === kinds[next]! && nextWholes === wholes[next]! && denom > used[next]!);
+        (nextKinds === kinds[next]! && nextStamps < stamps[next]!) ||
+        (nextKinds === kinds[next]! && nextStamps === stamps[next]! && nextWholes > wholes[next]!) ||
+        (nextKinds === kinds[next]! &&
+          nextStamps === stamps[next]! &&
+          nextWholes === wholes[next]! &&
+          denom > used[next]!);
       if (!better) continue;
       kinds[next] = nextKinds;
+      stamps[next] = nextStamps;
       wholes[next] = nextWholes;
       parent[next] = amount;
       used[next] = denom;

@@ -138,6 +138,8 @@ html.crisis .stamp-face {
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-bg);
     color: var(--color-ink);
+    accent-color: #009247;
+    forced-color-adjust: none;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
@@ -188,6 +190,12 @@ html.crisis .stamp-face {
       transparent 27px,
       rgb(21 36 28 / 0.035) 28px
     );
+}
+
+@property --stamp-hue {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 152;
 }
 
 .stamp-face {

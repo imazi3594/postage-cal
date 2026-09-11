@@ -222,3 +222,23 @@ test("dollarsToCents rounds binary fractions", () => {
   assert.equal(dollarsToCents(3.7), 370);
   assert.equal(dollarsToCents(5.4), 540);
 });
+
+test("$8.8 款式優先 → $2.2 × 4", () => {
+  const min = solve(880, DEFAULT_CENTS);
+  assert.ok(min);
+  assert.equal(min.stampCount, 3);
+  assert.equal(min.lines.length, 3);
+  const types = solve(880, DEFAULT_CENTS, "types");
+  assert.ok(types);
+  assert.equal(types.stampCount, 4);
+  assert.equal(types.lines.length, 1);
+  assert.equal(types.lines[0]?.cents, 220);
+  assert.equal(types.lines[0]?.count, 4);
+});
+
+test("款式優先 keeps stamp count reasonable vs $0.1 repeats", () => {
+  const types = solve(890, DEFAULT_CENTS, "types");
+  assert.ok(types);
+  assert.ok(types.stampCount <= 10);
+  assert.ok(types.lines.length <= 3);
+});
