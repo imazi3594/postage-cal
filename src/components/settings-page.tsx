@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { StampFace } from "@/components/stamp-face";
 import { DEFAULT_CENTS, formatMoney, parseCustomDenomToCents, sanitizeCustomDenom, MAX_CUSTOM_LABEL } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
+import { applyCrisis } from "@/lib/theme";
 import { createTapTracker } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ export function SettingsPage() {
   const [custom, setCustom] = useState("");
   const [toast, setToast] = useState("");
   const toastTimer = useRef<number>(0);
+  const formRef = useRef<HTMLFormElement>(null);
   const tap = useRef(createTapTracker()).current;
 
   useEffect(() => {
@@ -30,7 +32,45 @@ export function SettingsPage() {
     patchSaved({ enabled, extras });
   }, [enabled, extras, hydrated]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    applyCrisis(enabled.length === 0 && extras.length === 0);
+  }, [enabled, extras, hydrated]);
+
+  useEffect(() => {
+    if (formRef.current?.contains(document.activeElement)) revealForm();
+  }, [extras]);
+
   useEffect(() => () => window.clearTimeout(toastTimer.current), []);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const sync = () => {
+      const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      document.documentElement.style.setProperty("--kb", `${inset}px`);
+    };
+    sync();
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    return () => {
+      vv.removeEventListener("resize", sync);
+      vv.removeEventListener("scroll", sync);
+      document.documentElement.style.removeProperty("--kb");
+    };
+  }, []);
+
+  function revealForm() {
+    window.setTimeout(() => {
+      const el = formRef.current;
+      const vv = window.visualViewport;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+      const overlap = rect.bottom - (visibleBottom - 16);
+      if (overlap > 0) window.scrollBy(0, overlap);
+    }, 50);
+  }
 
   function showToast(message: string) {
     setToast(message);
@@ -73,10 +113,14 @@ export function SettingsPage() {
     }
     setExtras((prev) => [...prev, cents].sort((a, b) => a - b));
     setCustom("");
+    revealForm();
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6">
+    <div
+      className="relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6"
+      style={{ paddingBottom: "calc(1.5rem + var(--kb, 0px))" }}
+    >
       <header className="flex items-center gap-1">
         <Link
           to="/"
@@ -149,6 +193,33 @@ export function SettingsPage() {
           </Button>
         </div>
 
+        <form
+          ref={formRef}
+          className="mt-4 flex scroll-mb-4 flex-row items-stretch gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            addCustom();
+          }}
+        >
+          <Input
+            value={custom}
+            onChange={(event) => {
+              const result = sanitizeCustomDenom(event.target.value);
+              if (result.overLimit) showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
+              setCustom(result.value);
+            }}
+            onFocus={revealForm}
+            placeholder="例如 2.4，上限 $50"
+            inputMode="decimal"
+            aria-label="自訂郵票面額"
+            className="min-w-0 flex-1"
+          />
+          <Button type="submit" variant="secondary" className="shrink-0 px-3">
+            <Plus />
+            加入
+          </Button>
+        </form>
+
         {extras.length > 0 ? (
           <div className="mt-4 grid grid-cols-4 gap-3 overflow-visible">
             {extras.map((cents) => (
@@ -168,31 +239,6 @@ export function SettingsPage() {
             ))}
           </div>
         ) : null}
-
-        <form
-          className="mt-4 flex flex-col gap-2 sm:flex-row"
-          onSubmit={(event) => {
-            event.preventDefault();
-            addCustom();
-          }}
-        >
-          <Input
-            value={custom}
-            onChange={(event) => {
-              const result = sanitizeCustomDenom(event.target.value);
-              if (result.overLimit) showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
-              setCustom(result.value);
-            }}
-            placeholder="例如 2.4，上限 $50"
-            inputMode="decimal"
-            aria-label="自訂郵票面額"
-            className="sm:max-w-56"
-          />
-          <Button type="submit" variant="secondary">
-            <Plus />
-            加入面額
-          </Button>
-        </form>
       </section>
 
       <div

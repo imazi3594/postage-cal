@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { CircleAlert, Delete, Settings } from "lucide-react";
+import { CircleAlert, CircleHelp, Delete, Hand, Settings, X } from "lucide-react";
 import { StampFace } from "@/components/stamp-face";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallAppButton } from "@/components/install-app-button";
@@ -14,6 +14,7 @@ import {
   type Combination,
 } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
+import { applyCrisis } from "@/lib/theme";
 import { createTapTracker } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export function StampCalculator() {
   const amountRef = useRef(amount);
   const toastTimer = useRef<number>(0);
   const tap = useRef(createTapTracker()).current;
+  const closedRef = useRef(false);
   amountRef.current = typeof amount === "string" ? amount : "";
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export function StampCalculator() {
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
+      if (closedRef.current) return;
       const target = event.target as HTMLElement | null;
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
       if (event.key >= "0" && event.key <= "9") {
@@ -94,6 +97,13 @@ export function StampCalculator() {
     return solve(targetCents, pool);
   }, [targetCents, pool]);
 
+  const closed = pool.length === 0;
+  closedRef.current = closed;
+
+  useEffect(() => {
+    applyCrisis(closed);
+  }, [closed]);
+
   function showToast(message: string) {
     setToast(message);
     window.clearTimeout(toastTimer.current);
@@ -112,6 +122,7 @@ export function StampCalculator() {
   }
 
   function press(key: string) {
+    if (closedRef.current) return;
     if (key === "C") {
       applyInput("clear");
       return;
@@ -129,8 +140,8 @@ export function StampCalculator() {
   }
 
   return (
-    <div className="relative mx-auto flex h-dvh w-full max-w-lg flex-col gap-3 overflow-hidden px-4 py-3 sm:gap-4 sm:px-6 sm:py-5">
-      <header className="flex items-center justify-between gap-3">
+    <div className="relative mx-auto flex h-dvh max-h-svh w-full max-w-lg flex-col gap-2 overflow-hidden px-4 py-3 sm:gap-4 sm:px-6 sm:py-5">
+      <header className="flex shrink-0 items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="font-display text-2xs font-medium tracking-wide text-primary">
             Postage combination calculator
@@ -155,6 +166,13 @@ export function StampCalculator() {
         <div className="flex shrink-0 items-center">
           <ThemeToggle />
           <Link
+            to="/about"
+            aria-label="關於"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
+          >
+            <CircleHelp className="size-5" />
+          </Link>
+          <Link
             to="/settings"
             aria-label="設定"
             className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
@@ -164,7 +182,7 @@ export function StampCalculator() {
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3">
         <div className="shrink-0">
           <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4" aria-live="polite">
             <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
@@ -180,48 +198,64 @@ export function StampCalculator() {
           <Link
             to="/settings"
             aria-label="設定郵票面額"
-            className="min-w-0 overflow-hidden rounded-xl bg-surface px-3 py-2 shadow-(--shadow-border) sm:px-4"
+            className="min-w-0 shrink-0 overflow-x-hidden rounded-xl bg-surface px-3 py-2 shadow-(--shadow-border) sm:px-4"
           >
             <StockStrip missing={missing} extras={extras} />
           </Link>
         ) : null}
 
-        <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4">
-          <div className="flex items-center gap-2 rounded-lg bg-bg px-3 py-2 sm:px-4 sm:py-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-muted">郵費</p>
-              <p className="mt-0.5 truncate font-display text-3xl font-semibold tabular-nums tracking-tight text-ink">
-                <span className="mr-1 text-subtle">$</span>
-                {typeof amount === "string" && amount ? amount : "0"}
-              </p>
-            </div>
-            <button
-              type="button"
-              aria-label="刪除一位"
-              {...padHandlers("back")}
-              className="inline-flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-md bg-surface-2 text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-border"
-            >
-              <Delete className="size-6" />
-            </button>
-          </div>
-
-          <div className="mt-2 grid grid-cols-3 gap-2 sm:mt-3">
-            {KEY_ROWS.flat().map((key) => (
-              <button
-                key={key}
-                type="button"
-                {...padHandlers(key)}
-                className={cn(
-                  "inline-flex h-12 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out) sm:h-14",
-                  key === "C"
-                    ? "bg-primary-soft text-stamp-ink hover:bg-primary/15"
-                    : "bg-surface-2 text-ink hover:bg-border",
-                )}
+        <section className="flex min-h-0 flex-1 flex-col rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4">
+          {closed ? (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 px-4 py-3 text-center">
+              <Hand className="size-16 text-primary" strokeWidth={2} aria-hidden="true" />
+              <p className="text-lg font-bold text-primary">鍵盤已停用</p>
+              <p className="text-xs text-muted">請到設定檢查庫存</p>
+              <Link
+                to="/settings"
+                className="mt-2 inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-fg transition-[background-color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out) hover:opacity-90"
               >
-                {key}
-              </button>
-            ))}
-          </div>
+                前往設定
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="flex shrink-0 items-center gap-2 rounded-lg bg-bg px-3 py-2 sm:px-4 sm:py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium text-muted">郵費</p>
+                  <p className="mt-0.5 truncate font-display text-3xl font-semibold tabular-nums tracking-tight text-ink">
+                    <span className="mr-1 text-subtle">$</span>
+                    {typeof amount === "string" && amount ? amount : "0"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="刪除一位"
+                  {...padHandlers("back")}
+                  className="inline-flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-md bg-surface-2 text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-border"
+                >
+                  <Delete className="size-6" />
+                </button>
+              </div>
+
+              <div className="mt-2 grid min-h-0 flex-1 grid-cols-3 grid-rows-4 gap-2 sm:mt-3">
+                {KEY_ROWS.flat().map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    {...padHandlers(key)}
+                    className={cn(
+                      "inline-flex min-h-0 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                      key === "C"
+                        ? "bg-primary-soft text-stamp-ink hover:bg-primary/15"
+                        : "bg-surface-2 text-ink hover:bg-border",
+                    )}
+                  >
+                    {key}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </section>
       </div>
 
@@ -280,6 +314,16 @@ function ComboStrip({
     return () => observer.disconnect();
   }, [lines]);
 
+  if (poolEmpty) {
+    return (
+      <div className="flex h-24 w-full flex-col items-center justify-center gap-0.5 overflow-hidden text-primary sm:h-28">
+        <X className="size-10" strokeWidth={2.5} aria-hidden="true" />
+        <p className="text-sm font-bold leading-tight">缺貨嚴重</p>
+        <p className="text-xs font-semibold leading-tight">郵政局已關閉</p>
+      </div>
+    );
+  }
+
   if (!amount || amount === "0" || amount === "0.") {
     return (
       <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
@@ -292,14 +336,6 @@ function ComboStrip({
     return (
       <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
         <p className="text-sm text-muted">繼續輸入金額…</p>
-      </div>
-    );
-  }
-
-  if (poolEmpty) {
-    return (
-      <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
-        <p className="text-sm text-muted">至少揀一種郵票面額。</p>
       </div>
     );
   }
@@ -361,7 +397,7 @@ function StockRow({
   }, [amounts]);
 
   return (
-    <div className={cn("flex min-w-0 items-baseline gap-0 text-sm font-medium", className)}>
+    <div className={cn("flex h-5 min-w-0 shrink-0 items-center overflow-hidden text-sm font-medium", className)}>
       <span className="shrink-0">{label}：</span>
       <div ref={wrapRef} className="stock-marquee min-w-0 flex-1">
         <div
@@ -369,8 +405,8 @@ function StockRow({
           className={cn("stock-marquee-inner", overflow && "marquee-track")}
           style={overflow ? { animationDuration: `${duration}s` } : undefined}
         >
-          <span data-probe>{amounts}</span>
-          {overflow ? <span aria-hidden="true">{amounts}</span> : null}
+          <span data-probe>{overflow ? `${amounts}、` : amounts}</span>
+          {overflow ? <span aria-hidden="true">{`${amounts}、`}</span> : null}
         </div>
       </div>
     </div>

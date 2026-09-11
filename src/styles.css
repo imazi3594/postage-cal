@@ -69,6 +69,69 @@ html.dark {
     0 2px 10px rgb(0 0 0 / 0.28);
 }
 
+html.crisis {
+  --color-bg: #f0e2df;
+  --color-surface: #f7ebe9;
+  --color-surface-2: #e8cfc9;
+  --color-ink: #4a1815;
+  --color-muted: #9a4a44;
+  --color-subtle: #b06a64;
+  --color-primary: #c62828;
+  --color-primary-fg: #fff6f5;
+  --color-primary-soft: #f3c8c3;
+  --color-border: #d9ada7;
+  --color-stamp: #f7ebe9;
+  --color-stamp-ink: #8e1f1c;
+  --color-ok: #c62828;
+  --shadow-border:
+    0 0 0 1px rgb(90 24 20 / 0.08),
+    0 1px 2px -1px rgb(90 24 20 / 0.1),
+    0 2px 8px rgb(90 24 20 / 0.08);
+}
+
+html.dark.crisis {
+  --color-bg: #1a1010;
+  --color-surface: #261616;
+  --color-surface-2: #351c1c;
+  --color-ink: #f3d6d3;
+  --color-muted: #c48b86;
+  --color-subtle: #a56f6a;
+  --color-primary: #ef6b68;
+  --color-primary-fg: #2a1010;
+  --color-primary-soft: #4a2220;
+  --color-border: #5c3030;
+  --color-stamp: #261616;
+  --color-stamp-ink: #f19a96;
+  --color-ok: #ef6b68;
+  --shadow-border:
+    0 0 0 1px rgb(243 214 211 / 0.08),
+    0 1px 2px -1px rgb(0 0 0 / 0.5),
+    0 2px 10px rgb(0 0 0 / 0.35);
+}
+
+html.crisis body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background:
+    repeating-linear-gradient(-18deg, transparent 0 13px, rgb(70 16 12 / 0.05) 13px 14px),
+    radial-gradient(ellipse at 50% 115%, rgb(90 20 16 / 0.22), transparent 58%),
+    radial-gradient(ellipse at 50% -15%, rgb(40 10 8 / 0.14), transparent 48%);
+  mix-blend-mode: multiply;
+}
+
+html.dark.crisis body::before {
+  mix-blend-mode: overlay;
+  opacity: 0.65;
+}
+
+html.crisis .stamp-face {
+  filter: grayscale(0.55) sepia(0.28) saturate(0.5);
+  opacity: 0.7;
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
@@ -268,7 +331,12 @@ html.dark {
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
-  line-height: 1.4;
+  line-height: 1.25rem;
+  height: 1.25rem;
+}
+
+.stock-marquee:has(.marquee-track) {
+  mask-image: linear-gradient(to right, #000 70%, transparent 100%);
 }
 
 .stock-marquee-inner {
@@ -282,10 +350,6 @@ html.dark {
 
 .marquee-track {
   animation: stock-marquee linear infinite;
-}
-
-.marquee-track span {
-  padding-right: 2.5rem;
 }
 
 @keyframes stock-marquee {

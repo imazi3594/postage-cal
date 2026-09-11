@@ -3,6 +3,8 @@ export type Theme = "light" | "dark";
 
 const DARK_THEME_COLOR = "#121a16";
 const LIGHT_THEME_COLOR = "#009247";
+const CRISIS_LIGHT_COLOR = "#8b1e1e";
+const CRISIS_DARK_COLOR = "#3a1212";
 
 export function readTheme(): Theme {
   try {
@@ -17,7 +19,18 @@ export function applyTheme(theme: Theme) {
   root.classList.toggle("dark", theme === "dark");
   root.style.colorScheme = theme;
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "dark" ? DARK_THEME_COLOR : LIGHT_THEME_COLOR);
+  if (!meta) return;
+  const crisis = root.classList.contains("crisis");
+  if (crisis) {
+    meta.setAttribute("content", theme === "dark" ? CRISIS_DARK_COLOR : CRISIS_LIGHT_COLOR);
+    return;
+  }
+  meta.setAttribute("content", theme === "dark" ? DARK_THEME_COLOR : LIGHT_THEME_COLOR);
+}
+
+export function applyCrisis(on: boolean) {
+  document.documentElement.classList.toggle("crisis", on);
+  applyTheme(readTheme());
 }
 
 export function setTheme(theme: Theme) {
