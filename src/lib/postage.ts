@@ -234,10 +234,10 @@ function bitCount(n: number): number {
 export type SolveMode = "stamps" | "types";
 
 function stampCap(minStamps: number): number {
-  return Math.min(minStamps * 2 + 2, minStamps + 8);
+  return minStamps * 2;
 }
 
-/** Fewest stamps, or fewest types with stamp count kept in a reasonable range. */
+/** Fewest stamps, or fewest types with at most twice as many stamps. */
 export function solve(
   targetCents: number,
   denomCents: number[],

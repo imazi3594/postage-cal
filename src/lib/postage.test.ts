@@ -272,9 +272,28 @@ test("$6 款式優先 → $2 × 3", () => {
   assert.equal(types.lines[0]?.count, 3);
 });
 
-test("款式優先 keeps stamp count reasonable vs $0.1 repeats", () => {
-  const types = solve(890, DEFAULT_CENTS, "types");
+test("$28 款式優先 stays within twice min stamps, not $4 × 7", () => {
+  const min = solve(2800, DEFAULT_CENTS);
+  assert.ok(min);
+  assert.equal(min.stampCount, 3);
+  assert.equal(describeCombo(min), "$20 + $4 + $4");
+  const types = solve(2800, DEFAULT_CENTS, "types");
   assert.ok(types);
-  assert.ok(types.stampCount <= 10);
-  assert.ok(types.lines.length <= 3);
+  assert.ok(types.stampCount <= min.stampCount * 2);
+  assert.equal(types.lines.length, 2);
+  assert.equal(describeCombo(types), "$20 + $4 + $4");
+});
+
+test("款式優先 never uses more than twice the min stamp count", () => {
+  for (let cents = 10; cents <= 4000; cents += 10) {
+    const min = solve(cents, DEFAULT_CENTS);
+    const types = solve(cents, DEFAULT_CENTS, "types");
+    if (!min) {
+      assert.equal(types, null, `$${cents / 100}`);
+      continue;
+    }
+    assert.ok(types, `$${cents / 100}`);
+    assert.ok(types.stampCount <= min.stampCount * 2, `$${cents / 100}`);
+    assert.ok(types.lines.length <= min.lines.length, `$${cents / 100} types`);
+  }
 });

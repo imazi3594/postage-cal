@@ -879,7 +879,7 @@
       }
       if (dp[targetCents] === INF) return null;
       const minStamps = dp[targetCents];
-      const cap = mode === "types" ? Math.min(minStamps * 2 + 2, minStamps + 8) : minStamps;
+      const cap = mode === "types" ? minStamps * 2 : minStamps;
       if (mode === "types") {
         const typed = solveTypes(targetCents, denoms, cap);
         if (typed) return typed;
