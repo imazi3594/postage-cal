@@ -244,7 +244,7 @@ html.crisis .stamp-face {
   --stamp-ink: oklch(0.36 0.13 var(--stamp-hue));
   --stamp-hole: var(--color-surface);
   --stamp-pitch: 8px;
-  --stamp-tooth: 2.5px;
+  --stamp-tooth: 2.35px;
   --sparkle: 0deg;
   position: relative;
   isolation: isolate;
@@ -256,6 +256,32 @@ html.crisis .stamp-face {
   padding-inline: 0.35rem;
   color: var(--stamp-ink);
   background-color: var(--stamp-paper);
+  -webkit-mask-image:
+    radial-gradient(circle at 50% 0, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px)),
+    radial-gradient(circle at 50% 100%, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px)),
+    radial-gradient(circle at 0 50%, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px)),
+    radial-gradient(circle at 100% 50%, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px));
+  -webkit-mask-size:
+    var(--stamp-pitch) 100%,
+    var(--stamp-pitch) 100%,
+    100% var(--stamp-pitch),
+    100% var(--stamp-pitch);
+  -webkit-mask-position: 50% 0, 50% 0, 0 50%, 0 50%;
+  -webkit-mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  -webkit-mask-composite: source-in, source-in, source-in;
+  mask-image:
+    radial-gradient(circle at 50% 0, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px)),
+    radial-gradient(circle at 50% 100%, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px)),
+    radial-gradient(circle at 0 50%, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px)),
+    radial-gradient(circle at 100% 50%, #0000 var(--stamp-tooth), #000 calc(var(--stamp-tooth) + 0.45px));
+  mask-size:
+    var(--stamp-pitch) 100%,
+    var(--stamp-pitch) 100%,
+    100% var(--stamp-pitch),
+    100% var(--stamp-pitch);
+  mask-position: 50% 0, 50% 0, 0 50%, 0 50%;
+  mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  mask-composite: intersect;
 }
 
 .stamp-face[data-tone="0"] { --stamp-hue: 18; }
@@ -282,11 +308,11 @@ html.crisis .stamp-face {
   background-image:
     linear-gradient(
       118deg,
-      rgb(255 255 255 / 0.28) 0%,
+      rgb(255 255 255 / 0.22) 0%,
       transparent 36%,
-      rgb(255 255 255 / 0.1) 52%,
+      rgb(255 255 255 / 0.08) 52%,
       transparent 78%,
-      rgb(255 255 255 / 0.18) 100%
+      rgb(255 255 255 / 0.14) 100%
     ),
     repeating-linear-gradient(
       118deg,
@@ -295,12 +321,6 @@ html.crisis .stamp-face {
       oklch(0.89 0.1 calc(var(--stamp-hue) + 96)) 24px 36px,
       oklch(0.9 0.12 var(--stamp-hue)) 36px 48px
     );
-  background-size: 220% 100%, 180% 180%;
-  background-position: 0 0, 0 0;
-  animation:
-    stamp-holo-foil 6s linear infinite,
-    stamp-holo-glow 3.2s ease-in-out infinite alternate;
-  box-shadow: 0 0 8px oklch(0.76 0.1 var(--stamp-hue) / 0.4);
 }
 
 .stamp-face[data-custom="true"] span {
@@ -352,26 +372,7 @@ html.crisis .stamp-face {
 }
 
 .stamp-face::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 50% 0, var(--stamp-hole) var(--stamp-tooth), transparent calc(var(--stamp-tooth) + 0.3px)),
-    radial-gradient(circle at 50% 100%, var(--stamp-hole) var(--stamp-tooth), transparent calc(var(--stamp-tooth) + 0.3px)),
-    radial-gradient(circle at 0 50%, var(--stamp-hole) var(--stamp-tooth), transparent calc(var(--stamp-tooth) + 0.3px)),
-    radial-gradient(circle at 100% 50%, var(--stamp-hole) var(--stamp-tooth), transparent calc(var(--stamp-tooth) + 0.3px));
-  background-size: var(--stamp-pitch) var(--stamp-pitch);
-  background-position:
-    0 0,
-    0 100%,
-    0 0,
-    100% 0;
-  background-repeat:
-    round no-repeat,
-    round no-repeat,
-    no-repeat round,
-    no-repeat round;
+  display: none;
 }
 
 .stamp-face::after {
@@ -389,32 +390,46 @@ html.crisis .stamp-face {
 }
 
 .stamp-face[data-custom="true"]::after {
-  inset: 0;
+  inset: 6px;
   border: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 44%,
-    rgb(255 255 255 / 0.42) 50%,
-    transparent 56%
+  padding: 1px;
+  background: conic-gradient(
+    from var(--sparkle),
+    #ff2d2d,
+    #ff8a00,
+    #ffd400,
+    #3dff6e,
+    #00d4ff,
+    #4d6bff,
+    #b44dff,
+    #ff2d8a,
+    #ff2d2d
   );
-  background-size: 240% 100%;
-  animation: stamp-holo-beam 3.6s ease-in-out infinite;
-  mix-blend-mode: overlay;
   box-shadow: none;
+  mix-blend-mode: normal;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: stamp-rim-spin 1.15s linear infinite;
 }
 
-@keyframes stamp-holo-foil {
+@keyframes stamp-rim-spin {
   to {
-    background-position: 220% 0, 90% 90%;
+    --sparkle: 360deg;
   }
 }
 
 @keyframes stamp-holo-beam {
   from {
-    background-position: 130% 0;
+    background-position: 130% 0, 0 0;
   }
   to {
-    background-position: -50% 0;
+    background-position: -50% 0, 0 0;
   }
 }
 
@@ -498,6 +513,22 @@ html.crisis .stamp-face {
   }
 }
 
+.stock-oos {
+  color: #dc2626;
+}
+
+.stock-custom {
+  color: #2563eb;
+}
+
+html.dark .stock-oos {
+  color: #f87171;
+}
+
+html.dark .stock-custom {
+  color: #93c5fd;
+}
+
 .key-clear {
   background: #fce7f3;
   color: #e11d48;
@@ -509,12 +540,44 @@ html.crisis .stamp-face {
 }
 
 html.dark .key-clear {
-  background: #f9c6d6;
-  color: #be123c;
+  background: #4a2c36;
+  color: #f9a8d4;
 }
 
 html.dark .key-clear:hover {
-  background: #f4b0c6;
+  background: #5c3844;
+}
+
+html.dark .stamp-face {
+  --stamp-paper: oklch(0.42 0.09 var(--stamp-hue));
+  --stamp-ink: oklch(0.9 0.08 var(--stamp-hue));
+}
+
+html.dark .stamp-face[data-custom="true"] {
+  --stamp-paper: oklch(0.38 0.11 var(--stamp-hue));
+  color: #93c5fd;
+  background-image:
+    linear-gradient(
+      118deg,
+      rgb(255 255 255 / 0.1) 0%,
+      transparent 36%,
+      rgb(255 255 255 / 0.05) 52%,
+      transparent 78%,
+      rgb(255 255 255 / 0.08) 100%
+    ),
+    repeating-linear-gradient(
+      118deg,
+      oklch(0.4 0.1 var(--stamp-hue)) 0 12px,
+      oklch(0.42 0.07 calc(var(--stamp-hue) + 48)) 12px 24px,
+      oklch(0.38 0.09 calc(var(--stamp-hue) + 96)) 24px 36px,
+      oklch(0.4 0.1 var(--stamp-hue)) 36px 48px
+    );
+}
+
+html.dark .stamp-face[data-custom="true"] span {
+  text-shadow:
+    0 0 5px rgb(15 23 42 / 0.7),
+    0 0 1px rgb(15 23 42 / 0.5);
 }
 
 .tap-press {

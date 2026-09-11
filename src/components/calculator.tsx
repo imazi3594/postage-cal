@@ -500,10 +500,10 @@ function StockStrip({ missing, extras }: { missing: number[]; extras: number[] }
   return (
     <div className="flex w-full min-w-0 flex-col gap-0.5 py-0.5">
       {missing.length > 0 ? (
-        <StockRow className="text-red-600" label="缺貨" amounts={missing.map(formatMoney).join("、")} />
+        <StockRow className="stock-oos" label="缺貨" amounts={missing.map(formatMoney).join("、")} />
       ) : null}
       {extras.length > 0 ? (
-        <StockRow className="text-blue-600" label="自訂" amounts={extras.map(formatMoney).join("、")} />
+        <StockRow className="stock-custom" label="自訂" amounts={extras.map(formatMoney).join("、")} />
       ) : null}
     </div>
   );
