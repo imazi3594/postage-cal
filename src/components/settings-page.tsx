@@ -147,11 +147,7 @@ export function SettingsPage() {
           <ArrowLeft className="size-5" />
         </Link>
         <div className="min-w-0">
-          <p className="font-display text-2xs font-medium tracking-wide text-primary">
-            Postage combination calculator
-          </p>
-          <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-ink">設定</h1>
-          <p className="mt-1 text-sm text-muted">選擇計數機使用的郵票面值。</p>
+          <h1 className="text-lg font-semibold tracking-tight text-ink">設定</h1>
         </div>
       </header>
 

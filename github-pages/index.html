@@ -493,9 +493,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </button>
       <div style="flex:1">
-        <p class="mark">Postage combination calculator</p>
         <h1>設定</h1>
-        <p class="hint">選擇計數機使用的郵票面值。</p>
       </div>
     </header>
     <section class="card" style="padding:1.25rem">
@@ -1333,7 +1331,7 @@
         }
         btn.disabled = true;
         btn.lastChild.textContent = " 安裝中…";
-        const event = window.__pwaDeferred || await waitPrompt(1800);
+        const event = window.__pwaDeferred || await waitPrompt(document.readyState === "complete" ? 400 : 1800);
         if (event && event.prompt) {
           await event.prompt();
           const choice = await event.userChoice;
@@ -1345,8 +1343,8 @@
         }
         btn.disabled = false;
         btn.lastChild.textContent = " 加入主畫面";
-        title.textContent = "請以 Chrome 開啟後再試一次";
-        steps.innerHTML = "<li>請以 Chrome 開啟此網址</li><li>再點選「加入主畫面」，即可安裝</li>";
+        title.textContent = "加入主畫面";
+        steps.innerHTML = "<li>點選瀏覽器右上角選單</li><li>選擇「安裝應用程式」或「加入主畫面」</li>";
         sheet.classList.add("show");
       });
       document.getElementById("install-close").addEventListener("click", () => {

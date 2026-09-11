@@ -50,7 +50,7 @@ export function waitForInstallPrompt(ms = 2500): Promise<BeforeInstallPromptEven
 }
 
 export async function promptInstall(): Promise<"accepted" | "dismissed" | "unavailable"> {
-  const event = window.__pwaDeferred ?? (await waitForInstallPrompt(1800));
+  const event = window.__pwaDeferred ?? (await waitForInstallPrompt(document.readyState === "complete" ? 400 : 1800));
   if (!event) return "unavailable";
   await event.prompt();
   const choice = await event.userChoice;

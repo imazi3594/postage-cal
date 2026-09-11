@@ -75,8 +75,11 @@ export function InstallAppButton() {
               </>
             ) : (
               <>
-                <p className="pr-6 font-sans text-base font-semibold">請以 Chrome 開啟後再試一次</p>
-                <p className="mt-2 text-sm text-muted">請以 Chrome 開啟此網址，再點選「加入主畫面」，即可安裝。</p>
+                <p className="pr-6 font-sans text-base font-semibold">加入主畫面</p>
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted">
+                  <li>點選瀏覽器右上角選單</li>
+                  <li>選擇「安裝應用程式」或「加入主畫面」</li>
+                </ol>
               </>
             )}
           </div>
