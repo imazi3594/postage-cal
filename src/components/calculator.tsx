@@ -256,7 +256,7 @@ export function StampCalculator() {
               </button>
             </div>
             <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
-            <p className="mt-1 min-h-4 text-center text-xs text-muted">
+            <p className="mt-1 min-h-4 px-1 text-left text-xs text-muted">
               {combo && amount && amount !== "0" && amount !== "0."
                 ? `郵票${combo.stampCount}枚\u3000面值${combo.lines.length}種`
                 : "\u00a0"}
@@ -453,11 +453,11 @@ function ComboStrip({
   }
 
   return (
-    <div ref={frameRef} className="flex h-24 w-full isolate items-center justify-center overflow-hidden sm:h-28">
+    <div ref={frameRef} className="flex h-24 w-full isolate items-center justify-start overflow-hidden sm:h-28">
       <div
         ref={clusterRef}
-        className="flex w-max shrink-0 items-center justify-center gap-1 px-1 pt-1"
-        style={{ transform: `scale(${scale})`, transformOrigin: "center center" }}
+        className="flex w-max shrink-0 items-center justify-start gap-1 px-1 pt-1"
+        style={{ transform: `scale(${scale})`, transformOrigin: "left center" }}
       >
         {lines.map((line) => (
           <StampFace key={line.cents} cents={line.cents} count={line.count} className="pt-3.5 pr-3.5" />

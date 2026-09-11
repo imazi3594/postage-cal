@@ -143,14 +143,14 @@
     html.dark .icon-sun { display: block; }
     html.dark .icon-moon { display: none; }
     .card { background: var(--surface); border-radius: 1.25rem; padding: 0.75rem; box-shadow: var(--shadow); }
-    .combo { height: 6rem; display: flex; align-items: center; justify-content: center; overflow: hidden; isolation: isolate; }
-    .combo p { margin: 0; padding: 0 1rem; text-align: center; font-size: 0.875rem; color: var(--muted); }
-    .miss-combo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; padding: 0.1rem 0.5rem; }
+    .combo { height: 6rem; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; isolation: isolate; }
+    .combo p { margin: 0; padding: 0 1rem; width: 100%; text-align: center; font-size: 0.875rem; color: var(--muted); }
+    .miss-combo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; padding: 0.1rem 0.5rem; width: 100%; }
     .miss-combo p { padding: 0; }
     .miss-combo .hint { font-size: 0.75rem; color: var(--subtle); }
     .miss-combo .go { margin-top: 0.3rem; height: 1.75rem; padding: 0 0.85rem; border: 0; border-radius: 999px; background: var(--primary); color: var(--primary-fg); font: inherit; font-size: 0.75rem; font-weight: 600; }
     .miss-combo .go:hover { opacity: 0.9; }
-    .closed-combo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; color: var(--primary); }
+    .closed-combo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; color: var(--primary); width: 100%; }
     .closed-combo svg { width: 2.5rem; height: 2.5rem; }
     .closed-combo p { padding: 0; color: var(--primary); font-weight: 700; }
     .closed-combo .sub { font-size: 0.75rem; font-weight: 600; }
@@ -162,11 +162,11 @@
     .closed-go:hover { opacity: 0.9; }
     .pad.locked .amount-row, .pad.locked .keys { display: none; }
     .pad.locked .closed-panel { display: flex; }
-    .combo-stats { margin: 0.15rem 0 0; min-height: 1rem; text-align: center; font-size: 0.75rem; color: var(--muted); }
+    .combo-stats { margin: 0.15rem 0 0; min-height: 1rem; padding: 0 0.25rem; text-align: left; font-size: 0.75rem; color: var(--muted); }
     .mode-switch { display: flex; margin: 0 0 0.5rem; padding: 0.15rem; border-radius: 0.55rem; background: var(--bg); isolation: isolate; forced-color-adjust: none; }
     .mode-switch button { flex: 1; height: 1.75rem; border: 0; border-radius: 0.4rem; background: transparent; color: var(--subtle); font: inherit; font-size: 0.75rem; font-weight: 500; opacity: 0.4; white-space: nowrap; -webkit-appearance: none; appearance: none; }
     .mode-switch button.mode-on { background: var(--primary-soft); color: var(--primary); font-weight: 700; opacity: 1; box-shadow: none; }
-    .cluster { display: flex; align-items: center; justify-content: center; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: center; }
+    .cluster { display: flex; align-items: center; justify-content: flex-start; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: left center; }
     .combo-block { flex-shrink: 0; }
     .pad { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
     .amount-row { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); border-radius: 0.75rem; padding: 0.5rem 0.75rem; flex-shrink: 0; }
