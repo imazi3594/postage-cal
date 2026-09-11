@@ -15,7 +15,7 @@ import {
   type SolveMode,
 } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
-import { applyCrisis } from "@/lib/theme";
+import { applyCrisis, applySolveMode } from "@/lib/theme";
 import { createTapTracker } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
@@ -105,7 +105,8 @@ export function StampCalculator() {
 
   useEffect(() => {
     applyCrisis(closed);
-  }, [closed]);
+    applySolveMode(mode);
+  }, [closed, mode]);
 
   function showToast(message: string) {
     setToast(message);
@@ -206,8 +207,10 @@ export function StampCalculator() {
                 type="button"
                 {...modeHandlers("stamps")}
                 className={cn(
-                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs font-semibold transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
-                  mode === "stamps" ? "bg-primary-soft text-stamp-ink" : "bg-transparent text-muted",
+                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs transition-[background-color,color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  mode === "stamps"
+                    ? "bg-primary-soft font-bold text-stamp-ink opacity-100"
+                    : "bg-transparent font-medium text-subtle opacity-40",
                 )}
               >
                 枚數優先
@@ -216,8 +219,10 @@ export function StampCalculator() {
                 type="button"
                 {...modeHandlers("types")}
                 className={cn(
-                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs font-semibold transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
-                  mode === "types" ? "bg-primary-soft text-stamp-ink" : "bg-transparent text-muted",
+                  "h-7 flex-1 appearance-none touch-manipulation rounded-md text-xs transition-[background-color,color,opacity] duration-(--motion-quick) ease-(--ease-smooth-out)",
+                  mode === "types"
+                    ? "bg-primary-soft font-bold text-stamp-ink opacity-100"
+                    : "bg-transparent font-medium text-subtle opacity-40",
                 )}
               >
                 款式優先

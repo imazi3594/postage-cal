@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, X } from "lucide-react";
 import { StampFace } from "@/components/stamp-face";
 import { loadSaved } from "@/lib/stamp-settings";
-import { applyCrisis } from "@/lib/theme";
+import { applyCrisis, applySolveMode } from "@/lib/theme";
 
 const FAN = [
   { cents: 10, rotate: "-10deg", left: "8%", top: "1.35rem" },
@@ -66,6 +66,7 @@ export function AboutPage() {
   useEffect(() => {
     const saved = loadSaved();
     applyCrisis(saved.enabled.length === 0 && saved.extras.length === 0);
+    applySolveMode(saved.mode);
   }, []);
 
   return (

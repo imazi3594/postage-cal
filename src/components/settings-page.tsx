@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { StampFace } from "@/components/stamp-face";
 import { DEFAULT_CENTS, formatMoney, parseCustomDenomToCents, sanitizeCustomDenom, MAX_CUSTOM_LABEL } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
-import { applyCrisis } from "@/lib/theme";
+import { applyCrisis, applySolveMode } from "@/lib/theme";
 import { createTapTracker } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,7 @@ export function SettingsPage() {
     const saved = loadSaved();
     setEnabled(saved.enabled);
     setExtras(saved.extras);
+    applySolveMode(saved.mode);
     setHydrated(true);
   }, []);
 
