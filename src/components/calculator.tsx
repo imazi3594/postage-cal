@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { CircleAlert, CircleHelp, Delete, Hand, Settings, X } from "lucide-react";
+import { CircleAlert, CircleHelp, Delete, Hand, Settings, Share, X } from "lucide-react";
 import { StampFace } from "@/components/stamp-face";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallAppButton } from "@/components/install-app-button";
@@ -125,6 +125,19 @@ export function StampCalculator() {
     setAmount(result.value);
   }
 
+  async function shareApp() {
+    const url = `${window.location.origin}${window.location.pathname}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "郵票組合計數機", text: "香港郵票組合計數機", url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+    } catch {
+      /* user cancelled */
+    }
+  }
+
   function press(key: string) {
     if (closedRef.current) return;
     if (key === "C") {
@@ -184,6 +197,14 @@ export function StampCalculator() {
         </div>
         <div className="flex shrink-0 items-center">
           <ThemeToggle />
+          <button
+            type="button"
+            aria-label="分享程式"
+            onClick={() => void shareApp()}
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
+          >
+            <Share className="size-5" />
+          </button>
           <Link
             to="/about"
             aria-label="關於"
