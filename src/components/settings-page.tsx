@@ -157,7 +157,7 @@ export function SettingsPage() {
         </div>
 
         {extras.length > 0 ? (
-          <div className="mt-4 grid grid-cols-4 gap-2">
+          <div className="mt-4 grid grid-cols-4 gap-3 overflow-visible">
             {extras.map((cents) => (
               <button
                 key={cents}
@@ -167,12 +167,12 @@ export function SettingsPage() {
                   onStampPointerDown(event, () => setExtras((prev) => prev.filter((c) => c !== cents)))
                 }
                 onClick={() => onStampClick(() => setExtras((prev) => prev.filter((c) => c !== cents)))}
-                className="relative touch-manipulation rounded-sm"
+                className="relative overflow-visible touch-manipulation rounded-sm"
                 title="移除自訂面額"
               >
                 <StampFace cents={cents} size="sm" />
-                <span className="absolute -top-2 -right-2 z-10 flex size-7 items-center justify-center rounded-full bg-primary text-primary-fg">
-                  <Minus className="size-3.5" />
+                <span className="absolute -top-2 -right-2 z-10 flex size-5 items-center justify-center rounded-full bg-red-600 text-white shadow-sm ring-2 ring-surface">
+                  <Minus className="size-3" strokeWidth={3} />
                 </span>
               </button>
             ))}

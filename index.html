@@ -47,6 +47,7 @@
     .amount-row .value { margin: 0.125rem 0 0; font-family: var(--display); font-size: 1.875rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .amount-row .value span { margin-right: 0.25rem; color: var(--subtle); }
     .back-btn { width: 3rem; height: 3rem; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 0.5rem; background: var(--surface-2); color: var(--ink); flex: 0 0 auto; touch-action: manipulation; }
+    .back-btn svg { width: 1.75rem; height: 1.75rem; display: block; }
     .back-btn:hover { background: var(--border); }
     .keys { margin-top: 0.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
     .keys button { height: 3rem; border: 0; border-radius: 0.5rem; background: var(--surface-2); color: var(--ink); font-family: var(--display); font-size: 1.5rem; font-variant-numeric: tabular-nums; touch-action: manipulation; }
@@ -65,6 +66,7 @@
     .btn.secondary { height: 2.75rem; padding: 0 1rem; background: var(--surface-2); box-shadow: none; }
     .grid { margin-top: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
     .grid button { border: 0; background: transparent; padding: 0; touch-action: manipulation; border-radius: 0.25rem; overflow: visible; position: relative; }
+    #extra-grid { gap: 0.75rem; overflow: visible; }
     .custom-form { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
     @media (min-width: 640px) { .custom-form { flex-direction: row; } }
     .custom-form input { height: 2.75rem; width: 100%; max-width: 14rem; border: 0; border-radius: 0.5rem; padding: 0 0.75rem; background: var(--bg); color: var(--ink); font: inherit; box-shadow: var(--shadow); }
@@ -139,7 +141,12 @@
       display: flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--primary); color: var(--primary-fg);
       font-family: var(--display); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums;
     }
-    .stamp.pad { padding-top: 0.5rem; padding-right: 0.5rem; }
+    .badge.remove {
+      top: -0.5rem; right: -0.5rem; left: auto;
+      width: 1.15rem; min-width: 1.15rem; height: 1.15rem; padding: 0;
+      background: #dc2626; color: #fff; font-size: 0.85rem; line-height: 1; font-weight: 700;
+      box-shadow: 0 0 0 2px var(--surface);
+    }
     .toast-host { pointer-events: none; position: fixed; inset: 1rem 1rem auto; z-index: 20; display: flex; justify-content: center; opacity: 0; transform: translateY(-0.5rem); transition: opacity 250ms var(--ease), transform 250ms var(--ease); }
     .toast-host.show { opacity: 1; transform: none; }
     .toast { display: flex; align-items: center; gap: 0.75rem; width: min(24rem, 100%); border-radius: 1rem; background: #fca5a5; color: #7f1d1d; padding: 0.9rem 1.25rem; box-shadow: var(--shadow); }
@@ -177,7 +184,11 @@
           <p class="value"><span>$</span><b id="amount">0</b></p>
         </div>
         <button type="button" class="back-btn" data-key="back" aria-label="刪除一位">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H3l3 7-3 7h7a8 8 0 0 0 8-8 8 8 0 0 0-8-6Z"/><path d="m14 10-4 4"/><path d="m10 10 4 4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
+            <path d="m12 9 6 6"/>
+            <path d="m18 9-6 6"/>
+          </svg>
         </button>
       </div>
       <div class="keys">
@@ -456,7 +467,7 @@
       const badge = count > 1
         ? `<span class="badge">×${count}</span>`
         : opts && opts.remove
-          ? `<span class="badge" aria-hidden="true">−</span>`
+          ? `<span class="badge remove" aria-hidden="true">−</span>`
           : "";
       const oos = off ? `<span class="oos-tag" aria-hidden="true">缺貨</span>` : "";
       return `<div class="stamp${size === "xs" ? " xs" : ""}${count > 1 || size === "md" ? " pad" : ""}"><div class="stamp-face ${size === "sm" ? "sm" : ""} ${size === "xs" ? "xs" : ""} ${off ? "off" : ""} ${custom ? "custom" : ""}" data-tone="${tone}" style="${custom ? `--hue:${hue}` : ""}"><span>${formatMoney(cents)}</span></div>${oos}${badge}</div>`;
