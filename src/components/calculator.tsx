@@ -228,7 +228,7 @@ export function StampCalculator() {
             <div
               className="mb-2 flex isolate rounded-lg bg-bg p-0.5 [forced-color-adjust:none]"
               role="group"
-              aria-label={mode === "stamps" ? "組合邏輯，現正最少枚郵票" : "組合邏輯，現正最少款面值"}
+              aria-label={mode === "stamps" ? "組合邏輯，現正最少郵票" : "組合邏輯，現正減少種類"}
             >
               <button
                 type="button"
@@ -240,7 +240,7 @@ export function StampCalculator() {
                     : "bg-transparent font-medium text-subtle opacity-40",
                 )}
               >
-                最少枚郵票
+                最少郵票
               </button>
               <button
                 type="button"
@@ -252,7 +252,7 @@ export function StampCalculator() {
                     : "bg-transparent font-medium text-subtle opacity-40",
                 )}
               >
-                最少款面值
+                減少種類
               </button>
             </div>
             <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />

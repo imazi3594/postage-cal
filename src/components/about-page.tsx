@@ -73,7 +73,7 @@ export function AboutPage() {
               🔢
             </span>
             <div className="min-w-0">
-              <p className="font-semibold leading-7 text-[#009247]">最少枚郵票</p>
+              <p className="font-semibold leading-7 text-[#009247]">最少郵票</p>
               <p className="mt-1 text-sm leading-[1.75] text-muted">優先尋找「最少郵票總數」的方案，節省信封空間。</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ export function AboutPage() {
               💲
             </span>
             <div className="min-w-0">
-              <p className="font-semibold leading-7 text-[#7c3aed]">最少款面值</p>
+              <p className="font-semibold leading-7 text-[#7c3aed]">減少種類</p>
               <p className="mt-1 text-sm leading-[1.75] text-muted">
                 在枚數合理的前提下，盡量減少使用的面值種類，以便一次撕下同款郵票。
               </p>

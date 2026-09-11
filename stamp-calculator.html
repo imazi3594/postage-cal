@@ -424,9 +424,9 @@
     </header>
     <section class="combo-block" aria-label="郵票組合">
       <section class="card" aria-live="polite">
-        <div class="mode-switch" role="group" aria-label="組合邏輯，現正最少枚郵票">
-          <button type="button" class="mode-on" data-mode="stamps">最少枚郵票</button>
-          <button type="button" data-mode="types">最少款面值</button>
+        <div class="mode-switch" role="group" aria-label="組合邏輯，現正最少郵票">
+          <button type="button" class="mode-on" data-mode="stamps">最少郵票</button>
+          <button type="button" data-mode="types">減少種類</button>
         </div>
         <div id="combo" class="combo"></div>
         <p id="combo-stats" class="combo-stats">&nbsp;</p>
@@ -645,14 +645,14 @@
         <div class="logic-row">
           <span class="emo">🔢</span>
           <div>
-            <p class="ttl stamps">最少枚郵票</p>
+            <p class="ttl stamps">最少郵票</p>
             <p>優先尋找「最少郵票總數」的方案，節省信封空間。</p>
           </div>
         </div>
         <div class="logic-row">
           <span class="emo">💲</span>
           <div>
-            <p class="ttl types">最少款面值</p>
+            <p class="ttl types">減少種類</p>
             <p>在枚數合理的前提下，盡量減少使用的面值種類，以便一次撕下同款郵票。</p>
           </div>
         </div>
@@ -1074,7 +1074,7 @@
         btn.classList.toggle("mode-on", on);
       });
       const switchEl = document.querySelector(".mode-switch");
-      if (switchEl) switchEl.setAttribute("aria-label", mode === "types" ? "組合邏輯，現正最少款面值" : "組合邏輯，現正最少枚郵票");
+      if (switchEl) switchEl.setAttribute("aria-label", mode === "types" ? "組合邏輯，現正減少種類" : "組合邏輯，現正最少郵票");
       renderCombo();
       renderStock();
     }
