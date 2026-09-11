@@ -151,7 +151,7 @@ export function SettingsPage() {
             className="shrink-0 border border-border"
             onClick={() => setEnabled([...DEFAULT_CENTS])}
           >
-            <RotateCcw />
+            <RotateCcw className="size-4" />
             重設
           </Button>
         </div>
@@ -188,7 +188,7 @@ export function SettingsPage() {
             className="shrink-0 border border-border"
             onClick={() => setExtras([])}
           >
-            <RotateCcw />
+            <RotateCcw className="size-4" />
             重設
           </Button>
         </div>
@@ -215,7 +215,7 @@ export function SettingsPage() {
             className="min-w-0 flex-1"
           />
           <Button type="submit" variant="secondary" className="shrink-0 px-3">
-            <Plus />
+            <Plus className="size-4" />
             加入
           </Button>
         </form>
