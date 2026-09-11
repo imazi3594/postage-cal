@@ -159,60 +159,81 @@ function betterTypesCombo(a: Combination, b: Combination): boolean {
   return false;
 }
 
-/** Fewest types within stampCap, then fewest stamps, then more whole-dollar stamps. */
-function solveTypes(target: number, denoms: number[], cap: number): Combination | null {
+/** Fewest types; stamp count may grow by one multiple per type saved vs the min-stamp combo. */
+function typesStampCap(minStamps: number, defaultTypes: number, comboTypes: number): number {
+  const saved = defaultTypes - comboTypes;
+  if (saved < 0) return 0;
+  return minStamps * (1 + saved);
+}
+
+function solveTypes(
+  target: number,
+  denoms: number[],
+  minStamps: number,
+  defaultTypes: number,
+): Combination | null {
   let best: Combination | null = null;
   const take = (parts: StampLine[]) => {
     const combo = comboFromLines(target, parts);
+    const cap = typesStampCap(minStamps, defaultTypes, combo.lines.length);
     if (combo.stampCount < 1 || combo.stampCount > cap) return;
     if (!best || betterTypesCombo(combo, best)) best = combo;
   };
 
-  for (const denom of denoms) {
-    if (target % denom !== 0) continue;
-    take([{ cents: denom, count: target / denom }]);
+  const cap1 = typesStampCap(minStamps, defaultTypes, 1);
+  if (cap1 >= 1) {
+    for (const denom of denoms) {
+      if (target % denom !== 0) continue;
+      take([{ cents: denom, count: target / denom }]);
+    }
+    if (best) return best;
   }
-  if (best) return best;
 
-  for (let i = 0; i < denoms.length; i++) {
-    const a = denoms[i]!;
-    for (let j = i + 1; j < denoms.length; j++) {
-      const b = denoms[j]!;
-      const maxX = Math.min(cap - 1, Math.floor(target / a));
-      for (let x = 1; x <= maxX; x++) {
-        const rest = target - x * a;
-        if (rest % b !== 0) continue;
-        const y = rest / b;
-        if (y < 1 || x + y > cap) continue;
-        take([
-          { cents: a, count: x },
-          { cents: b, count: y },
-        ]);
+  const cap2 = typesStampCap(minStamps, defaultTypes, 2);
+  if (cap2 >= 2) {
+    for (let i = 0; i < denoms.length; i++) {
+      const a = denoms[i]!;
+      for (let j = i + 1; j < denoms.length; j++) {
+        const b = denoms[j]!;
+        const maxX = Math.min(cap2 - 1, Math.floor(target / a));
+        for (let x = 1; x <= maxX; x++) {
+          const rest = target - x * a;
+          if (rest % b !== 0) continue;
+          const y = rest / b;
+          if (y < 1 || x + y > cap2) continue;
+          take([
+            { cents: a, count: x },
+            { cents: b, count: y },
+          ]);
+        }
       }
     }
+    if (best) return best;
   }
-  if (best) return best;
 
-  for (let i = 0; i < denoms.length; i++) {
-    const a = denoms[i]!;
-    for (let j = i + 1; j < denoms.length; j++) {
-      const b = denoms[j]!;
-      for (let k = j + 1; k < denoms.length; k++) {
-        const c = denoms[k]!;
-        const maxX = Math.min(cap - 2, Math.floor(target / a));
-        for (let x = 1; x <= maxX; x++) {
-          const rem = target - x * a;
-          const maxY = Math.min(cap - 1 - x, Math.floor(rem / b));
-          for (let y = 1; y <= maxY; y++) {
-            const rest = rem - y * b;
-            if (rest <= 0 || rest % c !== 0) continue;
-            const z = rest / c;
-            if (z < 1 || x + y + z > cap) continue;
-            take([
-              { cents: a, count: x },
-              { cents: b, count: y },
-              { cents: c, count: z },
-            ]);
+  const cap3 = typesStampCap(minStamps, defaultTypes, 3);
+  if (cap3 >= 3) {
+    for (let i = 0; i < denoms.length; i++) {
+      const a = denoms[i]!;
+      for (let j = i + 1; j < denoms.length; j++) {
+        const b = denoms[j]!;
+        for (let k = j + 1; k < denoms.length; k++) {
+          const c = denoms[k]!;
+          const maxX = Math.min(cap3 - 2, Math.floor(target / a));
+          for (let x = 1; x <= maxX; x++) {
+            const rem = target - x * a;
+            const maxY = Math.min(cap3 - 1 - x, Math.floor(rem / b));
+            for (let y = 1; y <= maxY; y++) {
+              const rest = rem - y * b;
+              if (rest <= 0 || rest % c !== 0) continue;
+              const z = rest / c;
+              if (z < 1 || x + y + z > cap3) continue;
+              take([
+                { cents: a, count: x },
+                { cents: b, count: y },
+                { cents: c, count: z },
+              ]);
+            }
           }
         }
       }
@@ -233,11 +254,7 @@ function bitCount(n: number): number {
 
 export type SolveMode = "stamps" | "types";
 
-function stampCap(minStamps: number): number {
-  return minStamps * 2;
-}
-
-/** Fewest stamps, or fewest types with at most twice as many stamps. */
+/** Fewest stamps, or fewer types with stamp count growing one multiple per type saved. */
 export function solve(
   targetCents: number,
   denomCents: number[],
@@ -267,11 +284,20 @@ export function solve(
   if (dp[targetCents] === INF) return null;
 
   const minStamps = dp[targetCents]!;
-  const cap = mode === "types" ? stampCap(minStamps) : minStamps;
-  if (mode === "types") {
-    const typed = solveTypes(targetCents, denoms, cap);
-    if (typed) return typed;
-  }
+  const minCombo = reconstructMin(targetCents, denoms, bits, dp, minStamps);
+  if (mode === "stamps") return minCombo;
+  const typed = solveTypes(targetCents, denoms, minCombo.stampCount, minCombo.lines.length);
+  if (typed && typed.lines.length < minCombo.lines.length) return typed;
+  return minCombo;
+}
+
+function reconstructMin(
+  targetCents: number,
+  denoms: number[],
+  bits: number[],
+  dp: Int32Array,
+  minStamps: number,
+): Combination {
   const stamps = new Int32Array(targetCents + 1);
   const kinds = new Int32Array(targetCents + 1);
   const wholes = new Int32Array(targetCents + 1);
@@ -286,7 +312,7 @@ export function solve(
   for (let amount = 0; amount <= targetCents; amount++) {
     if (kinds[amount] === INF) continue;
     const currentStamps = stamps[amount]!;
-    if (currentStamps >= cap) continue;
+    if (currentStamps >= minStamps) continue;
     const currentMask = mask[amount]!;
     const currentWholes = wholes[amount]!;
     for (let i = 0; i < denoms.length; i++) {
@@ -294,8 +320,8 @@ export function solve(
       const next = amount + denom;
       if (next > targetCents) continue;
       const nextStamps = currentStamps + 1;
-      if (nextStamps > cap) continue;
-      if (mode === "stamps" && dp[next] !== nextStamps) continue;
+      if (nextStamps > minStamps) continue;
+      if (dp[next] !== nextStamps) continue;
       const nextMask = currentMask | bits[i]!;
       const nextKinds = bitCount(nextMask);
       const nextWholes = currentWholes + (denom % 100 === 0 ? 1 : 0);

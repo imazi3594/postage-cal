@@ -272,19 +272,31 @@ test("$6 款式優先 → $2 × 3", () => {
   assert.equal(types.lines[0]?.count, 3);
 });
 
-test("$28 款式優先 stays within twice min stamps, not $4 × 7", () => {
+test("$28 減少種類 stays within 2× when saving one type, not $4 × 7", () => {
   const min = solve(2800, DEFAULT_CENTS);
   assert.ok(min);
   assert.equal(min.stampCount, 3);
+  assert.equal(min.lines.length, 2);
   assert.equal(describeCombo(min), "$20 + $4 + $4");
   const types = solve(2800, DEFAULT_CENTS, "types");
   assert.ok(types);
-  assert.ok(types.stampCount <= min.stampCount * 2);
   assert.equal(types.lines.length, 2);
   assert.equal(describeCombo(types), "$20 + $4 + $4");
 });
 
-test("款式優先 never uses more than twice the min stamp count", () => {
+test("$19.6 減少種類 may use 3× stamps when saving two types → $2.8 × 7", () => {
+  const min = solve(1960, DEFAULT_CENTS);
+  assert.ok(min);
+  assert.equal(min.stampCount, 3);
+  assert.equal(min.lines.length, 3);
+  const types = solve(1960, DEFAULT_CENTS, "types");
+  assert.ok(types);
+  assert.equal(types.lines.length, 1);
+  assert.equal(types.stampCount, 7);
+  assert.equal(types.lines[0]?.cents, 280);
+});
+
+test("減少種類 stamp cap grows one multiple per type saved", () => {
   for (let cents = 10; cents <= 4000; cents += 10) {
     const min = solve(cents, DEFAULT_CENTS);
     const types = solve(cents, DEFAULT_CENTS, "types");
@@ -293,7 +305,8 @@ test("款式優先 never uses more than twice the min stamp count", () => {
       continue;
     }
     assert.ok(types, `$${cents / 100}`);
-    assert.ok(types.stampCount <= min.stampCount * 2, `$${cents / 100}`);
-    assert.ok(types.lines.length <= min.lines.length, `$${cents / 100} types`);
+    const saved = min.lines.length - types.lines.length;
+    assert.ok(saved >= 0, `$${cents / 100} types`);
+    assert.ok(types.stampCount <= min.stampCount * (1 + saved), `$${cents / 100}`);
   }
 });

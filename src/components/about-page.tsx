@@ -85,7 +85,7 @@ export function AboutPage() {
             <div className="min-w-0">
               <p className="font-semibold leading-7 text-[#7c3aed]">減少種類</p>
               <p className="mt-1 text-sm leading-[1.75] text-muted">
-                在枚數合理的前提下，盡量減少使用的面值種類，以便一次撕下同款郵票。
+                每少一種面值，容許枚數最多多一倍，以便一次撕下同款郵票。
               </p>
             </div>
           </div>
