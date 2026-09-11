@@ -120,14 +120,16 @@
     a { color: inherit; text-decoration: none; }
     .wrap { width: min(32rem, 100%); height: 100svh; max-height: 100svh; margin: 0 auto; padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 0.5rem; overflow: hidden; isolation: isolate; }
     .wrap.settings, .wrap.about { height: 100svh; max-height: 100svh; overflow: auto; padding-bottom: calc(2rem + var(--kb, 0px)); }
-    .wrap.about { gap: 0.75rem; }
+    .wrap.about { gap: 2rem; padding: 1rem 1.25rem 2.5rem; background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--bg)) 0%, var(--bg) 42%); }
+    .wrap.about .top { gap: 0.5rem; }
+    .wrap.about .top h1 { margin: 0; font-size: 1rem; }
     .custom-form { margin-top: 1rem; display: flex; flex-direction: row; align-items: stretch; gap: 0.5rem; scroll-margin-bottom: 1rem; }
     .custom-form input { height: 2.75rem; flex: 1 1 auto; min-width: 0; width: auto; max-width: none; border: 0; border-radius: 0.5rem; padding: 0 0.75rem; background: var(--bg); color: var(--ink); font: inherit; box-shadow: var(--shadow); }
     .custom-form .btn.secondary { flex: 0 0 auto; height: 2.75rem; white-space: nowrap; }
     .top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; }
     .mark { margin: 0; font-family: var(--display); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.04em; color: var(--primary); }
     h1 { margin: 0.125rem 0 0; display: flex; align-items: center; gap: 0.375rem; font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
-    h1 svg { color: var(--primary); flex: 0 0 auto; }
+    h1 .title-pack { font-size: 1.15rem; line-height: 1; flex: 0 0 auto; }
     .icon-btn { flex: 0 0 auto; width: 2.5rem; height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 0.5rem; background: transparent; color: var(--ink); }
     .icon-btn:hover { background: var(--surface-2); }
     .icon-row { display: flex; align-items: center; flex: 0 0 auto; }
@@ -137,6 +139,11 @@
     .card { background: var(--surface); border-radius: 1.25rem; padding: 0.75rem; box-shadow: var(--shadow); }
     .combo { height: 6rem; display: flex; align-items: center; justify-content: center; overflow: hidden; isolation: isolate; }
     .combo p { margin: 0; padding: 0 1rem; text-align: center; font-size: 0.875rem; color: var(--muted); }
+    .miss-combo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; padding: 0.1rem 0.5rem; }
+    .miss-combo p { padding: 0; }
+    .miss-combo .hint { font-size: 0.75rem; color: var(--subtle); }
+    .miss-combo .go { margin-top: 0.3rem; height: 1.75rem; padding: 0 0.85rem; border: 0; border-radius: 999px; background: var(--primary); color: var(--primary-fg); font: inherit; font-size: 0.75rem; font-weight: 600; }
+    .miss-combo .go:hover { opacity: 0.9; }
     .closed-combo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; color: var(--primary); }
     .closed-combo svg { width: 2.5rem; height: 2.5rem; }
     .closed-combo p { padding: 0; color: var(--primary); font-weight: 700; }
@@ -166,33 +173,53 @@
     .keys { margin-top: 0.5rem; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 0.5rem; flex: 1 1 auto; min-height: 0; }
     .keys button { height: 100%; min-height: 0; border: 0; border-radius: 0.5rem; background: var(--surface-2); color: var(--ink); font-family: var(--display); font-size: 1.5rem; font-variant-numeric: tabular-nums; touch-action: manipulation; }
     .keys button:hover { background: var(--border); }
-    .keys .clear { background: var(--primary-soft); color: var(--ink); }
-    .keys .clear:hover { background: color-mix(in oklab, var(--primary) 15%, var(--primary-soft)); }
+    .keys .clear { background: #fce7f3; color: #e11d48; font-weight: 600; }
+    .keys .clear:hover { background: #fbcfe8; }
+    html.dark .keys .clear { color: #be123c; background: #f9c6d6; }
+    html.dark .keys .clear:hover { background: #f4b0c6; }
+    .keys button, .back-btn, .grid button { transform-origin: center; transition: transform 80ms cubic-bezier(0.22, 1, 0.36, 1), filter 80ms cubic-bezier(0.22, 1, 0.36, 1), background-color 150ms; }
+    .keys button:active, .keys button.is-down, .back-btn:active, .back-btn.is-down, .grid button:active, .grid button.is-down { transform: scale(0.93); filter: brightness(0.96); }
+    .keys button.is-press, .back-btn.is-press, .grid button.is-press { animation: tap-press-pop 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes tap-press-pop { from { transform: scale(0.93); } to { transform: scale(1); } }
     .head-row { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
     .head-row > div { min-width: 0; flex: 1; }
     .head-row .btn { flex-shrink: 0; }
     h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
-    .about-hero { display: block; text-align: center; overflow: hidden; }
-    .about-fan { position: relative; height: 6rem; margin: 0 auto 0.5rem; width: 88%; max-width: 18rem; overflow: hidden; }
-    .about-fan .stamp { position: absolute; width: 3rem; }
-    .about-fan .stamp.xs { width: 3rem; }
-    .about-row { display: block; overflow: hidden; }
-    .about-illo { width: 100%; height: 4.25rem; min-height: 4.25rem; display: flex; align-items: center; justify-content: center; overflow: hidden; margin: 0 0 0.75rem; }
-    .about-illo .stamp { width: 2.5rem; }
-    .about-illo .stamp.xs { width: 2.5rem; }
-    .about-cluster { display: flex; align-items: flex-end; justify-content: center; gap: 0.25rem; }
-    .about-cluster .stamp { width: 2.5rem; }
-    .about-phone { position: relative; width: 2.5rem; height: 4rem; overflow: hidden; border: 2px solid color-mix(in oklab, var(--primary) 40%, var(--border)); border-radius: 0.65rem; background: var(--bg); }
-    .about-phone .notch { width: 0.9rem; height: 0.2rem; margin: 0.3rem auto 0.15rem; border-radius: 999px; background: var(--border); }
-    .about-phone .stamp { width: 1.7rem; margin: 0 auto; }
-    .about-closed { position: relative; width: 2.5rem; }
-    .about-closed svg { position: absolute; inset: 0; margin: auto; width: 1.75rem; height: 1.75rem; color: var(--primary); }
-    .about-office { width: 2.5rem; height: 2.5rem; color: var(--primary); }
-    .about-copy { margin: 0.5rem 0 0; font-size: 0.875rem; line-height: 1.65; color: var(--muted); }
-    .about-body { min-width: 0; }
-    .about-foot-stamps { display: flex; align-items: flex-end; justify-content: center; gap: 0.5rem; opacity: 0.55; overflow: hidden; padding: 0.25rem 1.5rem; }
-    .about-foot-stamps .stamp { width: 2rem; }
-    .about-foot { margin: 0; padding: 0 0.25rem 1.5rem; text-align: center; font-size: 0.75rem; color: var(--subtle); }
+    .about-hero { display: block; text-align: center; overflow: visible; background: none; padding: 0; border-radius: 0; }
+    .hero-stage { width: min(17.5rem, 100%); margin: 0 auto; }
+    .hero-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .about-hero h2 { margin-top: 0.75rem; font-size: 1.65rem; font-weight: 700; letter-spacing: -0.02em; }
+    .about-kicker { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.625rem 0 0; font-family: var(--display); font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em; color: var(--primary); }
+    .about-kicker i { display: block; width: 1.75rem; height: 1px; background: color-mix(in oklab, var(--primary) 45%, transparent); }
+    .about-section { padding: 0; }
+    .about-h { display: flex; align-items: center; gap: 0.625rem; margin: 0; font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.01em; }
+    .about-h::before { content: ""; width: 3px; height: 1rem; border-radius: 999px; background: var(--primary); flex-shrink: 0; }
+    .about-copy { margin: 0.75rem 0 0; font-size: 0.9375rem; line-height: 1.85; color: var(--muted); }
+    .about-logic { margin-top: 1rem; border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+    .logic-row { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1.05rem 1rem; }
+    .logic-row .emo { width: 2rem; flex-shrink: 0; text-align: center; font-size: 1.15rem; line-height: 1.75rem; }
+    .logic-row .ttl { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.75rem; }
+    .logic-row .ttl.stamps { color: #009247; }
+    .logic-row .ttl.types { color: #7c3aed; }
+    .logic-row p { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.75; color: var(--muted); }
+    .logic-row + .logic-row { border-top: 1px solid color-mix(in oklab, var(--border) 80%, transparent); }
+    .feat-list { margin: 1rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .feat-list li { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1rem; border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); border: 1px solid color-mix(in oklab, var(--border) 80%, transparent); }
+    .feat-list .emo { width: 2rem; flex-shrink: 0; text-align: center; font-size: 1.25rem; line-height: 1.75rem; }
+    .feat-list b { display: block; font-size: 0.95rem; line-height: 1.35; }
+    .feat-list span { display: block; margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.75; color: var(--muted); }
+    .about-end { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; padding: 0.5rem 0 1.5rem; text-align: center; }
+    .about-powered a { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.35rem 0.6rem 0.35rem 0.35rem; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; }
+    .about-powered .mark { width: 1.75rem; height: 1.75rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: color-mix(in oklab, var(--primary) 12%, var(--surface)); color: var(--primary); }
+    .about-powered svg { width: 0.9rem; height: 0.9rem; }
+    .about-powered .built { font-size: 0.625rem; font-weight: 600; letter-spacing: 0.16em; color: var(--subtle); }
+    .about-powered .name { font-family: var(--display); font-size: 0.95rem; font-weight: 600; letter-spacing: -0.02em; }
+    .about-powered .ai { display: inline-block; margin-left: 0.15rem; padding: 0.1rem 0.4rem; border-radius: 0.35rem; background: color-mix(in oklab, var(--primary) 12%, var(--surface)); color: var(--primary); font-family: var(--display); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.06em; }
+    .about-quote { margin: 0; max-width: 22rem; padding: 0 0.25rem; font-size: 0.875rem; line-height: 1.85; color: var(--subtle); font-style: normal; }
+    .about-cta { display: flex; width: 100%; gap: 0.75rem; margin-top: 0.25rem; }
+    .about-cta button, .about-cta a { flex: 1; height: 3rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; border: 0; border-radius: 999px; font: inherit; font-size: 0.875rem; font-weight: 600; }
+    .about-cta .share { background: var(--surface-2); color: var(--ink); }
+    .about-cta .home { background: var(--primary); color: var(--primary-fg); }
     .hint { margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--muted); }
     .actions { display: flex; gap: 0.5rem; }
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
@@ -311,9 +338,16 @@
     .toast .bang { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
     .toast .msg { margin: 0; font-size: 1.125rem; font-weight: 600; }
     .hidden { display: none !important; }
-    .install-btn { display: none; height: 2.5rem; border: 0; border-radius: 0.75rem; background: var(--primary); color: var(--primary-fg); font: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: var(--shadow); align-items: center; justify-content: center; gap: 0.4rem; flex: 0 0 auto; }
+    .install-btn { display: none; height: 2rem; border: 1px dashed var(--border); border-radius: 0.5rem; background: var(--surface); color: var(--muted); font: inherit; font-size: 0.75rem; font-weight: 500; box-shadow: none; align-items: center; justify-content: center; gap: 0.35rem; flex: 0 0 auto; }
     .install-btn.show { display: flex; }
+    .install-btn:hover { background: var(--bg); color: var(--ink); }
     .install-btn:disabled { opacity: 0.7; }
+    .credit { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; padding-bottom: 0.15rem; }
+    .credit a { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--subtle); text-decoration: none; font-size: 0.625rem; letter-spacing: 0.04em; }
+    .credit a:hover { color: var(--muted); }
+    .credit svg { width: 0.75rem; height: 0.75rem; color: var(--muted); flex-shrink: 0; }
+    .credit .grok { font-family: var(--display); font-weight: 600; letter-spacing: 0; color: var(--muted); }
+    .credit .ai { font-family: var(--display); font-weight: 600; letter-spacing: 0.04em; color: var(--primary); }
     .install-sheet { pointer-events: none; position: fixed; inset: 1rem 1rem auto; z-index: 21; display: none; justify-content: center; }
     .install-sheet.show { display: flex; pointer-events: auto; }
     .install-card { position: relative; width: min(24rem, 100%); border-radius: 1rem; background: var(--surface); color: var(--ink); padding: 1rem 1.25rem; box-shadow: var(--shadow); }
@@ -325,6 +359,7 @@
       .stamp-face.custom::after { animation: none; }
       .toast-host { transition: none; }
       .marquee-track { animation: none; }
+      .keys button, .back-btn, .grid button, .keys button:active, .keys button.is-down, .keys button.is-press, .back-btn:active, .back-btn.is-down, .back-btn.is-press, .grid button:active, .grid button.is-down, .grid button.is-press { transform: none !important; filter: none !important; animation: none !important; transition: none !important; }
     }
   </style>
 </head>
@@ -334,12 +369,12 @@
       <div>
         <p class="mark">Postage combination calculator</p>
         <h1>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><rect x="6.5" y="7.5" width="11" height="9" rx="1"/></svg>
+          <span class="title-pack" aria-hidden="true">📦</span>
           郵票組合計數機
         </h1>
       </div>
       <div class="icon-row">
-        <button type="button" class="icon-btn" id="theme-btn" aria-label="轉深色">
+        <button type="button" class="icon-btn" id="theme-btn" aria-label="切換至深色">
           <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
           <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
         </button>
@@ -405,20 +440,31 @@
       </div>
     </section>
     <button type="button" id="install-btn" class="install-btn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
-      一鍵加到桌面
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+      加入主畫面
     </button>
+    <footer class="credit">
+      <a href="https://grok.com" target="_blank" rel="noreferrer">
+        <span>Built with</span>
+        <svg viewBox="0 0 12 11.5714" aria-hidden="true">
+          <path fill="currentColor" d="M4.63453 7.42767L8.62395 4.46607C8.81953 4.32088 9.09907 4.37752 9.19225 4.60303C9.68274 5.79241 9.46361 7.22172 8.48776 8.20308C7.5119 9.18444 6.15411 9.39966 4.91305 8.9095L3.5573 9.54074C5.50184 10.8774 7.86313 10.5468 9.33868 9.0619C10.5091 7.88488 10.8716 6.28051 10.5326 4.8337L10.5357 4.83679C10.0442 2.71136 10.6565 1.86181 11.9109 0.124601C11.9406 0.0834107 11.9703 0.0422202 12 0L10.3493 1.65998V1.65483L4.6335 7.4287"/>
+          <path fill="currentColor" d="M3.81125 8.14747C2.41556 6.80672 2.6562 4.73175 3.84709 3.53517C4.72771 2.64958 6.17049 2.28813 7.42999 2.81949L8.78266 2.19133C8.53895 2.01421 8.22664 1.82371 7.86825 1.68984C6.24832 1.01946 4.3089 1.35311 2.99206 2.67635C1.7254 3.95016 1.32708 5.90877 2.01109 7.58007C2.52206 8.82917 1.68444 9.71271 0.840686 10.6045C0.541684 10.9206 0.241659 11.2368 0 11.5714L3.81022 8.1485"/>
+        </svg>
+        <span class="grok">Grok</span>
+        <span class="ai">AI</span>
+      </a>
+    </footer>
   </div>
 
   <div id="settings" class="wrap settings hidden">
     <header class="top">
       <button type="button" class="icon-btn" data-go="home" aria-label="返回計數機">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </button>
       <div style="flex:1">
         <p class="mark">Postage combination calculator</p>
         <h1>設定</h1>
-        <p class="hint">揀計數機用邊啲郵票面值。</p>
+        <p class="hint">選擇計數機使用的郵票面值。</p>
       </div>
     </header>
     <section class="card" style="padding:1.25rem">
@@ -459,106 +505,168 @@
   <div id="about" class="wrap about hidden">
     <header class="top">
       <button type="button" class="icon-btn" data-go="home" aria-label="返回計數機">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </button>
       <div style="flex:1">
-        <p class="mark">Postage combination calculator</p>
         <h1>關於</h1>
-        <p class="hint">為口袋裡頭嗰堆碎郵票而整。</p>
       </div>
     </header>
-    <section class="card" style="padding:1.25rem;overflow:hidden">
-      <div class="about-hero">
-        <div class="about-fan" aria-hidden="true">
-          <div class="stamp xs" style="left:8%;top:1.35rem;transform:rotate(-10deg)"><div class="stamp-face xs" data-tone="0"><span>$0.1</span></div></div>
-          <div class="stamp xs" style="left:25%;top:.55rem;transform:rotate(-5deg)"><div class="stamp-face xs" data-tone="6"><span>$2.8</span></div></div>
-          <div class="stamp xs" style="left:42%;top:.3rem"><div class="stamp-face xs" data-tone="11"><span>$5.5</span></div></div>
-          <div class="stamp xs" style="left:56%;top:.55rem;transform:rotate(5deg)"><div class="stamp-face xs" data-tone="12"><span>$10</span></div></div>
-          <div class="stamp xs" style="left:70%;top:1.35rem;transform:rotate(10deg)"><div class="stamp-face xs" data-tone="15"><span>$50</span></div></div>
+    <section class="about-hero">
+      <div class="hero-stage" aria-hidden="true">
+        <svg viewBox="0 0 260 200">
+          <defs>
+            <linearGradient id="hero-coin" x1="0.2" y1="0" x2="0.85" y2="1">
+              <stop offset="0%" stop-color="#fff4c2"/><stop offset="38%" stop-color="#f0c64a"/><stop offset="100%" stop-color="#c48416"/>
+            </linearGradient>
+            <radialGradient id="hero-coin-inner" cx="0.42" cy="0.38" r="0.7">
+              <stop offset="0%" stop-color="#fff1a8"/><stop offset="70%" stop-color="#e8b031"/><stop offset="100%" stop-color="#c07a12"/>
+            </radialGradient>
+            <linearGradient id="hero-env" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#e7f3fb"/>
+            </linearGradient>
+            <linearGradient id="hero-flap" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f4faff"/><stop offset="100%" stop-color="#d5eaf7"/>
+            </linearGradient>
+            <filter id="hero-soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2.2" stdDeviation="2.2" flood-color="#1a3344" flood-opacity="0.2"/>
+            </filter>
+            <filter id="hero-coin-soft" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="3" stdDeviation="2.6" flood-color="#8a5a00" flood-opacity="0.35"/>
+            </filter>
+            <mask id="hero-perf">
+              <rect width="52" height="70" fill="#fff"/>
+              <circle cx="3.4" cy="0" r="2.35" fill="#000"/><circle cx="3.4" cy="70" r="2.35" fill="#000"/><circle cx="10.0" cy="0" r="2.35" fill="#000"/><circle cx="10.0" cy="70" r="2.35" fill="#000"/><circle cx="16.6" cy="0" r="2.35" fill="#000"/><circle cx="16.6" cy="70" r="2.35" fill="#000"/><circle cx="23.2" cy="0" r="2.35" fill="#000"/><circle cx="23.2" cy="70" r="2.35" fill="#000"/><circle cx="29.8" cy="0" r="2.35" fill="#000"/><circle cx="29.8" cy="70" r="2.35" fill="#000"/><circle cx="36.4" cy="0" r="2.35" fill="#000"/><circle cx="36.4" cy="70" r="2.35" fill="#000"/><circle cx="43.0" cy="0" r="2.35" fill="#000"/><circle cx="43.0" cy="70" r="2.35" fill="#000"/><circle cx="49.6" cy="0" r="2.35" fill="#000"/><circle cx="49.6" cy="70" r="2.35" fill="#000"/><circle cx="0" cy="10.0" r="2.35" fill="#000"/><circle cx="52" cy="10.0" r="2.35" fill="#000"/><circle cx="0" cy="16.5" r="2.35" fill="#000"/><circle cx="52" cy="16.5" r="2.35" fill="#000"/><circle cx="0" cy="23.0" r="2.35" fill="#000"/><circle cx="52" cy="23.0" r="2.35" fill="#000"/><circle cx="0" cy="29.5" r="2.35" fill="#000"/><circle cx="52" cy="29.5" r="2.35" fill="#000"/><circle cx="0" cy="36.0" r="2.35" fill="#000"/><circle cx="52" cy="36.0" r="2.35" fill="#000"/><circle cx="0" cy="42.5" r="2.35" fill="#000"/><circle cx="52" cy="42.5" r="2.35" fill="#000"/><circle cx="0" cy="49.0" r="2.35" fill="#000"/><circle cx="52" cy="49.0" r="2.35" fill="#000"/><circle cx="0" cy="55.5" r="2.35" fill="#000"/><circle cx="52" cy="55.5" r="2.35" fill="#000"/><circle cx="0" cy="62.0" r="2.35" fill="#000"/><circle cx="52" cy="62.0" r="2.35" fill="#000"/>
+            </mask>
+          </defs>
+          <path d="M28 22 L32 32 L22 28 Z" fill="#f5c542"/>
+          <path d="M228 44 L234 50 L224 52 Z" fill="#f6d36a"/>
+          <path d="M24 168 L30 172 L22 176 Z" fill="#e8b84a"/>
+          <g transform="translate(6 92) rotate(-16 26 35)" filter="url(#hero-soft)">
+            <svg width="52" height="70" overflow="visible">
+              <g mask="url(#hero-perf)">
+                <rect width="52" height="70" fill="#d7f0c6"/>
+                <rect x="7" y="8" width="38" height="54" rx="1.4" fill="none" stroke="#2f6b28" stroke-width="1.15" opacity="0.55"/>
+                <g transform="translate(26 26)" fill="#2f6b28" opacity="0.78">
+                  <ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(72)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(144)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(216)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(288)"/><circle r="2.1"/>
+                </g>
+                <text x="26" y="58" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2f6b28" font-family="Outfit, 'Noto Sans HK', sans-serif">$2</text>
+              </g>
+            </svg>
+          </g>
+          <g transform="translate(168 22) rotate(10 26 35)" filter="url(#hero-soft)">
+            <svg width="52" height="70" overflow="visible">
+              <g mask="url(#hero-perf)">
+                <rect width="52" height="70" fill="#f3d4ea"/>
+                <rect x="7" y="8" width="38" height="54" rx="1.4" fill="none" stroke="#8a3060" stroke-width="1.15" opacity="0.55"/>
+                <g transform="translate(26 26)" fill="#8a3060" opacity="0.78">
+                  <ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(72)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(144)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(216)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(288)"/><circle r="2.1"/>
+                </g>
+                <text x="26" y="58" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8a3060" font-family="Outfit, 'Noto Sans HK', sans-serif">$10</text>
+              </g>
+            </svg>
+          </g>
+          <g transform="translate(198 78) rotate(18 26 35)" filter="url(#hero-soft)">
+            <svg width="52" height="70" overflow="visible">
+              <g mask="url(#hero-perf)">
+                <rect width="52" height="70" fill="#ddd0f8"/>
+                <rect x="7" y="8" width="38" height="54" rx="1.4" fill="none" stroke="#5a348f" stroke-width="1.15" opacity="0.55"/>
+                <g transform="translate(26 26)" fill="#5a348f" opacity="0.78">
+                  <ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(72)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(144)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(216)"/><ellipse cx="0" cy="-5.4" rx="3.1" ry="5.6" transform="rotate(288)"/><circle r="2.1"/>
+                </g>
+                <text x="26" y="58" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5a348f" font-family="Outfit, 'Noto Sans HK', sans-serif">$5.5</text>
+              </g>
+            </svg>
+          </g>
+          <g filter="url(#hero-soft)">
+            <path d="M62 86 L130 48 L198 86" fill="url(#hero-flap)" stroke="#5a9fd4" stroke-width="2.6" stroke-linejoin="round"/>
+            <rect x="62" y="84" width="136" height="72" rx="5" fill="url(#hero-env)" stroke="#5a9fd4" stroke-width="2.6"/>
+            <path d="M64 86 L130 128 L196 86" fill="none" stroke="#9cc5e0" stroke-width="1.7"/>
+            <path d="M62 86 L62 156" stroke="#e85d4c" stroke-width="3.2"/>
+            <path d="M198 86 L198 156" stroke="#3b82c4" stroke-width="3.2"/>
+            <path d="M66 86 H92" stroke="#e85d4c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M96 86 H118" stroke="#3b82c4" stroke-width="3" stroke-linecap="round"/>
+            <path d="M142 86 H164" stroke="#3b82c4" stroke-width="3" stroke-linecap="round"/>
+            <path d="M168 86 H192" stroke="#e85d4c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M66 156 H92" stroke="#e85d4c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M96 156 H118" stroke="#3b82c4" stroke-width="3" stroke-linecap="round"/>
+            <path d="M142 156 H164" stroke="#3b82c4" stroke-width="3" stroke-linecap="round"/>
+            <path d="M168 156 H192" stroke="#e85d4c" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(130 132)" filter="url(#hero-coin-soft)">
+            <rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(0)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(12.86)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(25.71)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(38.57)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(51.43)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(64.29)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(77.14)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(90)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(102.86)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(115.71)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(128.57)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(141.43)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(154.29)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(167.14)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(180)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(192.86)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(205.71)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(218.57)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(231.43)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(244.29)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(257.14)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(270)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(282.86)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(295.71)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(308.57)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(321.43)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(334.29)"/><rect x="-1.15" y="-36.5" width="2.3" height="4.2" rx="0.6" fill="#d9a01c" transform="rotate(347.14)"/>
+            <circle r="33" fill="url(#hero-coin)" stroke="#f8e7a0" stroke-width="1.4"/>
+            <circle r="26.5" fill="none" stroke="#a56b12" stroke-width="1.15" opacity="0.55"/>
+            <circle r="24.5" fill="url(#hero-coin-inner)"/>
+            <text text-anchor="middle" y="10" font-size="28" font-weight="700" fill="#7a4a08" font-family="Outfit, 'Noto Sans HK', sans-serif">$</text>
+            <ellipse cx="-9" cy="-10" rx="8" ry="5" fill="#fff" opacity="0.28"/>
+          </g>
+        </svg>
+      </div>
+      <h2>郵票組合計數機</h2>
+      <p class="about-kicker"><i></i>POSTAGE COMBINATION CALCULATOR<i></i></p>
+    </section>
+    <section class="about-section">
+      <h2 class="about-h">關於本程式</h2>
+      <p class="about-copy">這是一個郵票組合的智能計算工具。當您手邊有多種不同面值的郵票，卻不知道如何組合成目標郵費時，本程式能即時為您運算最理想的貼法：金額必須剛好相符，不多不少。</p>
+    </section>
+    <section class="about-section">
+      <h2 class="about-h">計算邏輯與演算法</h2>
+      <div class="about-logic">
+        <div class="logic-row">
+          <span class="emo">🔢</span>
+          <div>
+            <p class="ttl stamps">最少枚郵票</p>
+            <p>優先尋找「最少郵票總數」的方案，節省信封空間。</p>
+          </div>
         </div>
-        <h2>郵票組合計數機</h2>
-        <p class="hint">香港郵費 · 剛好湊齊 · 即開即用</p>
-      </div>
-    </section>
-    <section class="card about-row" style="padding:1.25rem;overflow:hidden">
-      <div class="about-illo" aria-hidden="true">
-        <div class="about-cluster">
-          <div class="stamp xs"><div class="stamp-face xs" data-tone="11"><span>$5.5</span></div></div>
-          <div class="stamp xs"><div class="stamp-face xs" data-tone="10"><span>$5.4</span></div></div>
-          <div class="stamp xs"><div class="stamp-face xs" data-tone="8"><span>$4</span></div></div>
+        <div class="logic-row">
+          <span class="emo">💲</span>
+          <div>
+            <p class="ttl types">最少款面值</p>
+            <p>在枚數合理的前提下，盡量減少使用的面值種類，以便一次撕下同款郵票。</p>
+          </div>
         </div>
       </div>
-      <div class="about-body">
-        <h2>呢部計數機做咩</h2>
-        <p class="about-copy">寄信最煩唔係寫信封，係企喺櫃台前面數郵票。入個郵費，佢會砌出剛好嘅組合：一毫都唔多，一毫都唔少。</p>
-      </div>
+      <p class="about-copy">組合必須剛好等於目標郵費。同枚數時會優先整數面值，例如 $3 用 $2+$1，而不是 $2.8+$0.2。</p>
     </section>
-    <section class="card about-row" style="padding:1.25rem;overflow:hidden">
-      <div class="about-illo" aria-hidden="true">
-        <div class="stamp xs pad"><div class="stamp-face xs" data-tone="6"><span>$2.8</span></div><span class="badge">×2</span></div>
-      </div>
-      <div class="about-body">
-        <h2>點樣揀郵票</h2>
-        <p class="about-copy">先求最少枚，唔好貼到成幅牆。同枚數就揀最少款式，同款一次過撕。再嚟先用整數面值，$3 會用 $2+$1，唔會用 $2.8+$0.2 咁麻。</p>
-      </div>
+    <section class="about-section">
+      <h2 class="about-h">核心功能</h2>
+      <ul class="feat-list">
+        <li><span class="emo">✨</span><div><b>自訂面值</b><span>支援紀念郵票、特別版郵票，上限 $50。</span></div></li>
+        <li><span class="emo">📦</span><div><b>庫存管理</b><span>可隨時將缺貨的通用郵票標示為缺貨，組合僅計算有貨面值。</span></div></li>
+        <li><span class="emo">🌐</span><div><b>離線使用</b><span>採用 PWA 技術，沒有網絡也能照常運算。</span></div></li>
+        <li><span class="emo">🌙</span><div><b>深色模式</b><span>支援淺色／深色主題，呵護雙眼。</span></div></li>
+      </ul>
     </section>
-    <section class="card about-row" style="padding:1.25rem;overflow:hidden">
-      <div class="about-illo" aria-hidden="true">
-        <div class="about-cluster" style="gap:0.75rem;padding-top:0.5rem">
-          <div class="stamp xs"><div class="stamp-face xs off" data-tone="0"><span>$0.1</span></div><span class="oos-tag">缺貨</span></div>
-          <div class="stamp xs"><div class="stamp-face xs custom" data-tone="0" style="--stamp-hue:120"><span>$2.4</span></div></div>
-        </div>
+    <footer class="about-end">
+      <div class="about-powered">
+        <a href="https://grok.com" target="_blank" rel="noreferrer">
+          <span class="mark">
+            <svg viewBox="0 0 12 11.5714" aria-hidden="true">
+              <path fill="currentColor" d="M4.63453 7.42767L8.62395 4.46607C8.81953 4.32088 9.09907 4.37752 9.19225 4.60303C9.68274 5.79241 9.46361 7.22172 8.48776 8.20308C7.5119 9.18444 6.15411 9.39966 4.91305 8.9095L3.5573 9.54074C5.50184 10.8774 7.86313 10.5468 9.33868 9.0619C10.5091 7.88488 10.8716 6.28051 10.5326 4.8337L10.5357 4.83679C10.0442 2.71136 10.6565 1.86181 11.9109 0.124601C11.9406 0.0834107 11.9703 0.0422202 12 0L10.3493 1.65998V1.65483L4.6335 7.4287"/>
+              <path fill="currentColor" d="M3.81125 8.14747C2.41556 6.80672 2.6562 4.73175 3.84709 3.53517C4.72771 2.64958 6.17049 2.28813 7.42999 2.81949L8.78266 2.19133C8.53895 2.01421 8.22664 1.82371 7.86825 1.68984C6.24832 1.01946 4.3089 1.35311 2.99206 2.67635C1.7254 3.95016 1.32708 5.90877 2.01109 7.58007C2.52206 8.82917 1.68444 9.71271 0.840686 10.6045C0.541684 10.9206 0.241659 11.2368 0 11.5714L3.81022 8.1485"/>
+            </svg>
+          </span>
+          <span class="built">BUILT WITH</span>
+          <span class="name">Grok</span>
+          <span class="ai">AI</span>
+        </a>
       </div>
-      <div class="about-body">
-        <h2>庫存同特別郵票</h2>
-        <p class="about-copy">十六款通用面值可以喺設定標缺貨。紀念郵票、舊票、口袋底嗰隻 $2.4，都可以加做自訂面值，上限 $50。</p>
+      <p class="about-quote">本應用程式之介面及運算由Grok協助開發而成。</p>
+      <div class="about-cta">
+        <button type="button" class="share" id="share-app">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>
+          分享程式
+        </button>
+        <a class="home" href="#home" data-go="home">返回首頁</a>
       </div>
-    </section>
-    <section class="card about-row" style="padding:1.25rem;overflow:hidden">
-      <div class="about-illo" aria-hidden="true">
-        <div class="about-phone">
-          <div class="notch"></div>
-          <div class="stamp xs"><div class="stamp-face xs" data-tone="4"><span>$2</span></div></div>
-        </div>
-      </div>
-      <div class="about-body">
-        <h2>當 app 用</h2>
-        <p class="about-copy">撳「一鍵加到桌面」，之後開出嚟就似普通 app，唔使每次翻瀏覽器。資料存在你部機，唔會上傳。</p>
-      </div>
-    </section>
-    <section class="card about-row" style="padding:1.25rem;overflow:hidden">
-      <div class="about-illo" aria-hidden="true">
-        <div class="about-closed">
-          <div class="stamp xs"><div class="stamp-face xs off" data-tone="2"><span>$0.5</span></div></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </div>
-      </div>
-      <div class="about-body">
-        <h2>如果一隻郵票都冇</h2>
-        <p class="about-copy">郵政局會關閉。真係。鍵盤罷工，成個畫面變紅同有啲頹。開返任何一款庫存就恢復正常。建議試一次。</p>
-      </div>
-    </section>
-    <section class="card about-row" style="padding:1.25rem;overflow:hidden">
-      <div class="about-illo" aria-hidden="true">
-        <svg class="about-office" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4z"/><path d="M4 10V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M12 6V3"/><path d="M8 3h8"/><path d="M8 15h5"/><path d="M17 15h.01"/></svg>
-      </div>
-      <div class="about-body">
-        <h2>聲明</h2>
-        <p class="about-copy">呢個唔係香港郵政官方產品，亦唔代表郵局當日一定有票。實際郵費同庫存，以櫃台為準。</p>
-      </div>
-    </section>
-    <div class="about-foot-stamps" aria-hidden="true">
-      <div class="stamp xs"><div class="stamp-face xs" data-tone="1"><span>$0.2</span></div></div>
-      <div class="stamp xs"><div class="stamp-face xs" data-tone="7"><span>$3.7</span></div></div>
-      <div class="stamp xs"><div class="stamp-face xs" data-tone="14"><span>$20</span></div></div>
-    </div>
-    <p class="about-foot">為咗櫃台前面嗰十秒。</p>
+    </footer>
   </div>
 
   <div id="install-sheet" class="install-sheet">
-    <div class="install-card" role="dialog" aria-label="加到主畫面">
+    <div class="install-card" role="dialog" aria-label="加入主畫面">
       <button type="button" class="install-close" id="install-close" aria-label="關閉">×</button>
-      <h3>加到主畫面，當 app 用</h3>
+      <h3>加入主畫面，即可如應用程式般使用</h3>
       <ol id="install-steps"></ol>
     </div>
   </div>
@@ -907,12 +1015,12 @@
       }
       const combo = target === 0 ? null : solve(target, pool(), mode);
       if (!combo) {
-        comboEl.innerHTML = `<p>湊唔到剛好呢個金額</p>`;
+        comboEl.innerHTML = `<div class="miss-combo"><p>無法組成此金額</p><p class="hint">請檢查庫存狀況</p><button type="button" class="go" data-go="settings">進入設定</button></div>`;
         clearStats();
         return;
       }
       comboEl.innerHTML = `<div class="cluster">${combo.lines.map((line) => stampHTML(line.cents, { count: line.count })).join("")}</div>`;
-      statsEl.textContent = `郵票${combo.stampCount}個\u3000款式${combo.lines.length}種`;
+      statsEl.textContent = `郵票${combo.stampCount}枚\u3000面值${combo.lines.length}種`;
       fitCombo();
     }
     function fitCombo() {
@@ -1034,14 +1142,25 @@
       }
     }
     const TAP_SEL = "[data-go], [data-key], [data-toggle], [data-remove], [data-mode]";
+    function isPressable(el) {
+      return el && (el.hasAttribute("data-key") || el.hasAttribute("data-toggle") || el.hasAttribute("data-remove"));
+    }
+    function pulsePress(el) {
+      if (!el) return;
+      el.classList.remove("is-press");
+      void el.offsetWidth;
+      el.classList.add("is-press");
+    }
     document.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
       const el = event.target.closest(TAP_SEL);
       tapOrigin = el ? { x: event.clientX, y: event.clientY, id: event.pointerId, el } : null;
+      if (isPressable(el)) el.classList.add("is-down");
     });
     document.addEventListener("pointerup", (event) => {
       const start = tapOrigin;
       tapOrigin = null;
+      if (start && start.el) start.el.classList.remove("is-down");
       if (!start || start.id !== event.pointerId) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
       const dx = event.clientX - start.x;
@@ -1050,14 +1169,19 @@
       const end = event.target.closest(TAP_SEL);
       if (!end || end !== start.el) return;
       lastPress = Date.now();
+      if (isPressable(start.el)) pulsePress(start.el);
       activateTap(start.el);
     });
-    document.addEventListener("pointercancel", () => { tapOrigin = null; });
+    document.addEventListener("pointercancel", () => {
+      if (tapOrigin && tapOrigin.el) tapOrigin.el.classList.remove("is-down");
+      tapOrigin = null;
+    });
     document.addEventListener("click", (event) => {
       if (Date.now() - lastPress < 400) return;
       const el = event.target.closest(TAP_SEL);
       if (!el) return;
       lastPress = Date.now();
+      if (isPressable(el)) pulsePress(el);
       activateTap(el);
     });
     document.getElementById("reset").addEventListener("click", () => {
@@ -1080,7 +1204,7 @@
         return;
       }
       if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
-        showToast("呢個面值已經有");
+        showToast("此面值已存在");
         if (!enabled.includes(cents) && DEFAULT_CENTS.includes(cents)) {
           enabled = [...enabled, cents].sort((a, b) => a - b);
           save();
@@ -1128,11 +1252,11 @@
       document.documentElement.style.colorScheme = dark ? "dark" : "light";
       try { localStorage.setItem("stamp-calc-theme", dark ? "dark" : "light"); } catch (e) {}
       syncThemeColor();
-      document.getElementById("theme-btn").setAttribute("aria-label", dark ? "轉淺色" : "轉深色");
+      document.getElementById("theme-btn").setAttribute("aria-label", dark ? "切換至淺色" : "切換至深色");
     });
     (function syncThemeLabel() {
       const dark = document.documentElement.classList.contains("dark");
-      document.getElementById("theme-btn").setAttribute("aria-label", dark ? "轉淺色" : "轉深色");
+      document.getElementById("theme-btn").setAttribute("aria-label", dark ? "切換至淺色" : "切換至深色");
       syncThemeColor();
     })();
     window.addEventListener("keydown", (event) => {
@@ -1171,8 +1295,8 @@
       btn.addEventListener("click", async function () {
         if (btn.disabled) return;
         if (ios) {
-          title.textContent = "加到 iPhone 主畫面";
-          steps.innerHTML = "<li>撳 Safari 底部分享掣</li><li>揀「加到主畫面」</li>";
+          title.textContent = "加入 iPhone 主畫面";
+          steps.innerHTML = "<li>點選 Safari 底部的分享按鈕</li><li>選擇「加入主畫面」</li>";
           sheet.classList.add("show");
           return;
         }
@@ -1185,19 +1309,37 @@
           window.__pwaDeferred = null;
           if (choice && choice.outcome === "accepted") btn.classList.remove("show");
           btn.disabled = false;
-          btn.lastChild.textContent = " 一鍵加到桌面";
+          btn.lastChild.textContent = " 加入主畫面";
           return;
         }
         btn.disabled = false;
-        btn.lastChild.textContent = " 一鍵加到桌面";
-        title.textContent = "請用 Chrome 開啟再撳一次";
-        steps.innerHTML = "<li>用 Chrome 打開呢個網址</li><li>再撳「一鍵加到桌面」，就會彈出安裝</li>";
+        btn.lastChild.textContent = " 加入主畫面";
+        title.textContent = "請以 Chrome 開啟後再試一次";
+        steps.innerHTML = "<li>請以 Chrome 開啟此網址</li><li>再點選「加入主畫面」，即可安裝</li>";
         sheet.classList.add("show");
       });
       document.getElementById("install-close").addEventListener("click", () => {
         sheet.classList.remove("show");
       });
       window.addEventListener("appinstalled", () => btn.classList.remove("show"));
+    })();
+    (function setupShare() {
+      const btn = document.getElementById("share-app");
+      if (!btn) return;
+      btn.addEventListener("click", async function () {
+        const url = location.origin + location.pathname;
+        try {
+          if (navigator.share) {
+            await navigator.share({ title: "郵票組合計數機", text: "香港郵票組合計數機", url });
+            return;
+          }
+          await navigator.clipboard.writeText(url);
+          const prev = btn.childNodes[btn.childNodes.length - 1];
+          const old = prev && prev.textContent;
+          if (prev) prev.textContent = " 已複製連結";
+          setTimeout(function () { if (prev) prev.textContent = old || " 分享程式"; }, 1600);
+        } catch (err) { /* cancelled */ }
+      });
     })();
     showPage(pageFromHash());
   </script>

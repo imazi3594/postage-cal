@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft, CircleAlert, Minus, Plus, RotateCcw } from "lucide-react";
+import { ArrowLeft, CircleAlert, Minus, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StampFace } from "@/components/stamp-face";
 import { DEFAULT_CENTS, formatMoney, parseCustomDenomToCents, sanitizeCustomDenom, MAX_CUSTOM_LABEL } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
 import { applyCrisis, applySolveMode } from "@/lib/theme";
-import { createTapTracker } from "@/lib/tap";
+import { createTapTracker, pulsePress, setPressDown } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
 export function SettingsPage() {
@@ -81,10 +81,26 @@ export function SettingsPage() {
 
   function stampHandlers(action: () => void) {
     return {
-      onPointerDown: tap.onPointerDown,
-      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => tap.onPointerUp(event, action),
-      onPointerCancel: tap.onPointerCancel,
-      onClick: () => tap.onClick(action),
+      onPointerDown: (event: PointerEvent<HTMLButtonElement>) => {
+        tap.onPointerDown(event);
+        setPressDown(event.currentTarget, true);
+      },
+      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => {
+        setPressDown(event.currentTarget, false);
+        tap.onPointerUp(event, () => {
+          pulsePress(event.currentTarget);
+          action();
+        });
+      },
+      onPointerCancel: (event: PointerEvent<HTMLButtonElement>) => {
+        setPressDown(event.currentTarget, false);
+        tap.onPointerCancel();
+      },
+      onClick: (event: { currentTarget: EventTarget }) =>
+        tap.onClick(() => {
+          pulsePress(event.currentTarget);
+          action();
+        }),
     };
   }
 
@@ -106,7 +122,7 @@ export function SettingsPage() {
       return;
     }
     if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
-      showToast("呢個面值已經有");
+      showToast("此面值已存在");
       if (!enabled.includes(cents) && DEFAULT_CENTS.includes(cents)) {
         setEnabled((prev) => [...prev, cents].sort((a, b) => a - b));
       }
@@ -128,14 +144,14 @@ export function SettingsPage() {
           aria-label="返回計數機"
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
         >
-          <ChevronLeft className="size-5" />
+          <ArrowLeft className="size-5" />
         </Link>
         <div className="min-w-0">
           <p className="font-display text-2xs font-medium tracking-wide text-primary">
             Postage combination calculator
           </p>
           <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-ink">設定</h1>
-          <p className="mt-1 text-sm text-muted">揀計數機用邊啲郵票面值。</p>
+          <p className="mt-1 text-sm text-muted">選擇計數機使用的郵票面值。</p>
         </div>
       </header>
 
@@ -167,7 +183,7 @@ export function SettingsPage() {
                 aria-pressed={on}
                 aria-label={on ? formatMoney(cents) : `${formatMoney(cents)} 缺貨`}
                 {...stampHandlers(() => toggleDenom(cents))}
-                className="relative overflow-visible touch-manipulation rounded-sm transition-[opacity,filter] duration-(--motion-quick) ease-(--ease-smooth-out) hover:opacity-90"
+                className="tap-press relative overflow-visible touch-manipulation rounded-sm hover:opacity-90"
               >
                 <StampFace cents={cents} size="sm" muted={!on} />
               </button>
@@ -229,7 +245,7 @@ export function SettingsPage() {
                 type="button"
                 aria-label={`移除 ${formatMoney(cents)}`}
                 {...stampHandlers(() => setExtras((prev) => prev.filter((c) => c !== cents)))}
-                className="relative overflow-visible touch-manipulation rounded-sm"
+                className="tap-press relative overflow-visible touch-manipulation rounded-sm"
                 title="移除自訂面值"
               >
                 <StampFace cents={cents} size="sm" />

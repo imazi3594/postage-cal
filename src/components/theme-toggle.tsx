@@ -14,7 +14,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      aria-label={theme === "dark" ? "轉淺色" : "轉深色"}
+      aria-label={theme === "dark" ? "切換至淺色" : "切換至深色"}
       onClick={() => setTheme(toggleTheme())}
       className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
     >

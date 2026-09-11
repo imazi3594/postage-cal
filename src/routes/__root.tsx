@@ -13,7 +13,7 @@ export const Route = createRootRoute({
       { title: APP_NAME },
       {
         name: "description",
-        content: "用香港郵票面值組合出最簡單嘅郵費貼法，即開即用，唔使安裝。",
+        content: "以香港郵票面值組合出最簡便的郵費貼法，開啟即可使用，無需安裝。",
       },
       { name: "theme-color", content: "#009247" },
       { name: "mobile-web-app-capable", content: "yes" },

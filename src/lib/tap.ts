@@ -12,6 +12,22 @@ type PointerLike = {
   currentTarget: EventTarget;
 };
 
+function mark(el: EventTarget | null, cls: string, on: boolean) {
+  if (!(el instanceof HTMLElement)) return;
+  el.classList.toggle(cls, on);
+}
+
+export function setPressDown(el: EventTarget | null, on: boolean) {
+  mark(el, "is-down", on);
+}
+
+export function pulsePress(el: EventTarget | null) {
+  if (!(el instanceof HTMLElement)) return;
+  el.classList.remove("is-press");
+  void el.offsetWidth;
+  el.classList.add("is-press");
+}
+
 export function createTapTracker() {
   let origin: Origin | null = null;
   let last = 0;

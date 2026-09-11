@@ -474,8 +474,14 @@ html.crisis .stamp-face {
     animation: none;
   }
 
-  .marquee-track {
-    animation: none;
+  .tap-press,
+  .tap-press.is-down,
+  .tap-press:active,
+  .tap-press.is-press {
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
   }
 }
 
@@ -492,6 +498,48 @@ html.crisis .stamp-face {
   }
 }
 
-.stagger-in {
-  animation: stamp-in var(--motion-slow) var(--ease-smooth-out) both;
+.key-clear {
+  background: #fce7f3;
+  color: #e11d48;
+  font-weight: 600;
+}
+
+.key-clear:hover {
+  background: #fbcfe8;
+}
+
+html.dark .key-clear {
+  background: #f9c6d6;
+  color: #be123c;
+}
+
+html.dark .key-clear:hover {
+  background: #f4b0c6;
+}
+
+.tap-press {
+  transform-origin: center;
+  transition:
+    transform 80ms var(--ease-smooth-out),
+    filter 80ms var(--ease-smooth-out),
+    background-color var(--motion-quick) var(--ease-smooth-out);
+}
+
+.tap-press.is-down,
+.tap-press:active {
+  transform: scale(0.93);
+  filter: brightness(0.96);
+}
+
+.tap-press.is-press {
+  animation: tap-press-pop 180ms var(--ease-smooth-out);
+}
+
+@keyframes tap-press-pop {
+  from {
+    transform: scale(0.93);
+  }
+  to {
+    transform: scale(1);
+  }
 }

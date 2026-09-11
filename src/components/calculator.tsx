@@ -16,7 +16,7 @@ import {
 } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
 import { applyCrisis, applySolveMode } from "@/lib/theme";
-import { createTapTracker } from "@/lib/tap";
+import { createTapTracker, pulsePress, setPressDown } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
 const KEY_ROWS = [
@@ -145,10 +145,26 @@ export function StampCalculator() {
 
   function padHandlers(key: string) {
     return {
-      onPointerDown: tap.onPointerDown,
-      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => tap.onPointerUp(event, () => press(key)),
-      onPointerCancel: tap.onPointerCancel,
-      onClick: () => tap.onClick(() => press(key)),
+      onPointerDown: (event: PointerEvent<HTMLButtonElement>) => {
+        tap.onPointerDown(event);
+        setPressDown(event.currentTarget, true);
+      },
+      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => {
+        setPressDown(event.currentTarget, false);
+        tap.onPointerUp(event, () => {
+          pulsePress(event.currentTarget);
+          press(key);
+        });
+      },
+      onPointerCancel: (event: PointerEvent<HTMLButtonElement>) => {
+        setPressDown(event.currentTarget, false);
+        tap.onPointerCancel();
+      },
+      onClick: (event: { currentTarget: EventTarget }) =>
+        tap.onClick(() => {
+          pulsePress(event.currentTarget);
+          press(key);
+        }),
     };
   }
 
@@ -160,19 +176,9 @@ export function StampCalculator() {
             Postage combination calculator
           </p>
           <h1 className="mt-0.5 flex items-center gap-1.5 text-lg font-semibold tracking-tight text-ink">
-            <svg
-              viewBox="0 0 24 24"
-              className="size-5 shrink-0 text-primary"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <rect x="6.5" y="7.5" width="11" height="9" rx="1" />
-            </svg>
+            <span className="text-[1.15rem] leading-none" aria-hidden>
+              📦
+            </span>
             郵票組合計數機
           </h1>
         </div>
@@ -231,7 +237,7 @@ export function StampCalculator() {
             <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
             <p className="mt-1 min-h-4 text-center text-xs text-muted">
               {combo && amount && amount !== "0" && amount !== "0."
-                ? `郵票${combo.stampCount}個\u3000款式${combo.lines.length}種`
+                ? `郵票${combo.stampCount}枚\u3000面值${combo.lines.length}種`
                 : "\u00a0"}
             </p>
           </section>
@@ -274,7 +280,7 @@ export function StampCalculator() {
                   type="button"
                   aria-label="刪除一位"
                   {...padHandlers("back")}
-                  className="inline-flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-md bg-surface-2 text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-border"
+                  className="tap-press inline-flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-md bg-surface-2 text-ink hover:bg-border"
                 >
                   <Delete className="size-6" />
                 </button>
@@ -287,10 +293,8 @@ export function StampCalculator() {
                     type="button"
                     {...padHandlers(key)}
                     className={cn(
-                      "inline-flex min-h-0 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out)",
-                      key === "C"
-                        ? "bg-primary-soft text-stamp-ink hover:bg-primary/15"
-                        : "bg-surface-2 text-ink hover:bg-border",
+                      "tap-press inline-flex min-h-0 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums",
+                      key === "C" ? "key-clear" : "bg-surface-2 text-ink hover:bg-border",
                     )}
                   >
                     {key}
@@ -303,6 +307,20 @@ export function StampCalculator() {
       </div>
 
       <InstallAppButton />
+
+      <footer className="flex shrink-0 items-center justify-center gap-1.5 pb-0.5">
+        <a
+          href="https://grok.com"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-2xs tracking-wide text-subtle no-underline transition-[color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:text-muted"
+        >
+          <span className="tracking-[0.08em]">Built with</span>
+          <GrokMark />
+          <span className="font-display font-semibold tracking-normal text-muted">Grok</span>
+          <span className="font-display font-semibold tracking-wide text-primary">AI</span>
+        </a>
+      </footer>
 
       <div
         className={cn(
@@ -317,6 +335,21 @@ export function StampCalculator() {
         </div>
       </div>
     </div>
+  );
+}
+
+function GrokMark() {
+  return (
+    <svg viewBox="0 0 12 11.5714" className="size-3 text-muted" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M4.63453 7.42767L8.62395 4.46607C8.81953 4.32088 9.09907 4.37752 9.19225 4.60303C9.68274 5.79241 9.46361 7.22172 8.48776 8.20308C7.5119 9.18444 6.15411 9.39966 4.91305 8.9095L3.5573 9.54074C5.50184 10.8774 7.86313 10.5468 9.33868 9.0619C10.5091 7.88488 10.8716 6.28051 10.5326 4.8337L10.5357 4.83679C10.0442 2.71136 10.6565 1.86181 11.9109 0.124601C11.9406 0.0834107 11.9703 0.0422202 12 0L10.3493 1.65998V1.65483L4.6335 7.4287"
+      />
+      <path
+        fill="currentColor"
+        d="M3.81125 8.14747C2.41556 6.80672 2.6562 4.73175 3.84709 3.53517C4.72771 2.64958 6.17049 2.28813 7.42999 2.81949L8.78266 2.19133C8.53895 2.01421 8.22664 1.82371 7.86825 1.68984C6.24832 1.01946 4.3089 1.35311 2.99206 2.67635C1.7254 3.95016 1.32708 5.90877 2.01109 7.58007C2.52206 8.82917 1.68444 9.71271 0.840686 10.6045C0.541684 10.9206 0.241659 11.2368 0 11.5714L3.81022 8.1485"
+      />
+    </svg>
   );
 }
 
@@ -385,8 +418,15 @@ function ComboStrip({
 
   if (!combo) {
     return (
-      <div className="flex h-24 w-full items-center justify-center overflow-hidden sm:h-28">
-        <p className="px-4 text-center text-sm text-muted">湊唔到剛好呢個金額</p>
+      <div className="flex h-24 w-full flex-col items-center justify-center gap-0.5 overflow-hidden sm:h-28">
+        <p className="text-sm text-muted">無法組成此金額</p>
+        <p className="text-xs text-subtle">請檢查庫存狀況</p>
+        <Link
+          to="/settings"
+          className="mt-1 inline-flex h-7 items-center justify-center rounded-full bg-primary px-3.5 text-xs font-semibold text-primary-fg transition-[opacity] duration-(--motion-quick) ease-(--ease-smooth-out) hover:opacity-90"
+        >
+          進入設定
+        </Link>
       </div>
     );
   }

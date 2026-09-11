@@ -1,7 +1,7 @@
 {
   "name": "郵票組合計數機",
   "short_name": "郵票計數機",
-  "description": "用香港郵票面值組合出最簡單嘅郵費貼法",
+  "description": "以香港郵票面值組合出最簡便的郵費貼法",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

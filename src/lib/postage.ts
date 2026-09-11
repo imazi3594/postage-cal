@@ -335,6 +335,6 @@ export function copyText(targetCents: number, combo: Combination): string {
   return [
     `郵費 ${formatMoney(targetCents)}`,
     describeCombo(combo),
-    `共 ${combo.stampCount} 張`,
+    `共 ${combo.stampCount} 枚`,
   ].join("\n");
 }
