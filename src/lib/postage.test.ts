@@ -236,6 +236,42 @@ test("$8.8 款式優先 → $2.2 × 4", () => {
   assert.equal(types.lines[0]?.count, 4);
 });
 
+test("$3 款式優先 → $1 × 3", () => {
+  const min = solve(300, DEFAULT_CENTS);
+  assert.ok(min);
+  assert.equal(describeCombo(min), "$2 + $1");
+  const types = solve(300, DEFAULT_CENTS, "types");
+  assert.ok(types);
+  assert.equal(types.stampCount, 3);
+  assert.equal(types.lines.length, 1);
+  assert.equal(types.lines[0]?.cents, 100);
+  assert.equal(types.lines[0]?.count, 3);
+});
+
+test("$30 款式優先 → $10 × 3", () => {
+  const min = solve(3000, DEFAULT_CENTS);
+  assert.ok(min);
+  assert.equal(describeCombo(min), "$20 + $10");
+  const types = solve(3000, DEFAULT_CENTS, "types");
+  assert.ok(types);
+  assert.equal(types.stampCount, 3);
+  assert.equal(types.lines.length, 1);
+  assert.equal(types.lines[0]?.cents, 1000);
+  assert.equal(types.lines[0]?.count, 3);
+});
+
+test("$6 款式優先 → $2 × 3", () => {
+  const min = solve(600, DEFAULT_CENTS);
+  assert.ok(min);
+  assert.equal(describeCombo(min), "$5 + $1");
+  const types = solve(600, DEFAULT_CENTS, "types");
+  assert.ok(types);
+  assert.equal(types.stampCount, 3);
+  assert.equal(types.lines.length, 1);
+  assert.equal(types.lines[0]?.cents, 200);
+  assert.equal(types.lines[0]?.count, 3);
+});
+
 test("款式優先 keeps stamp count reasonable vs $0.1 repeats", () => {
   const types = solve(890, DEFAULT_CENTS, "types");
   assert.ok(types);

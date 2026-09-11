@@ -131,6 +131,96 @@ function toCombo(amount: number, parent: Int32Array, used: Int32Array): Combinat
   return { lines, stampCount, totalCents: amount };
 }
 
+function comboFromLines(amount: number, parts: StampLine[]): Combination {
+  const lines = parts.filter((line) => line.count > 0).sort((a, b) => b.cents - a.cents);
+  return {
+    lines,
+    stampCount: lines.reduce((n, line) => n + line.count, 0),
+    totalCents: amount,
+  };
+}
+
+function wholeCount(combo: Combination): number {
+  return combo.lines.reduce((n, line) => n + (line.cents % 100 === 0 ? line.count : 0), 0);
+}
+
+function betterTypesCombo(a: Combination, b: Combination): boolean {
+  if (a.lines.length !== b.lines.length) return a.lines.length < b.lines.length;
+  if (a.stampCount !== b.stampCount) return a.stampCount < b.stampCount;
+  const wa = wholeCount(a);
+  const wb = wholeCount(b);
+  if (wa !== wb) return wa > wb;
+  for (let i = 0; i < a.lines.length; i++) {
+    const left = a.lines[i]!;
+    const right = b.lines[i]!;
+    if (left.cents !== right.cents) return left.cents > right.cents;
+    if (left.count !== right.count) return left.count > right.count;
+  }
+  return false;
+}
+
+/** Fewest types within stampCap, then fewest stamps, then more whole-dollar stamps. */
+function solveTypes(target: number, denoms: number[], cap: number): Combination | null {
+  let best: Combination | null = null;
+  const take = (parts: StampLine[]) => {
+    const combo = comboFromLines(target, parts);
+    if (combo.stampCount < 1 || combo.stampCount > cap) return;
+    if (!best || betterTypesCombo(combo, best)) best = combo;
+  };
+
+  for (const denom of denoms) {
+    if (target % denom !== 0) continue;
+    take([{ cents: denom, count: target / denom }]);
+  }
+  if (best) return best;
+
+  for (let i = 0; i < denoms.length; i++) {
+    const a = denoms[i]!;
+    for (let j = i + 1; j < denoms.length; j++) {
+      const b = denoms[j]!;
+      const maxX = Math.min(cap - 1, Math.floor(target / a));
+      for (let x = 1; x <= maxX; x++) {
+        const rest = target - x * a;
+        if (rest % b !== 0) continue;
+        const y = rest / b;
+        if (y < 1 || x + y > cap) continue;
+        take([
+          { cents: a, count: x },
+          { cents: b, count: y },
+        ]);
+      }
+    }
+  }
+  if (best) return best;
+
+  for (let i = 0; i < denoms.length; i++) {
+    const a = denoms[i]!;
+    for (let j = i + 1; j < denoms.length; j++) {
+      const b = denoms[j]!;
+      for (let k = j + 1; k < denoms.length; k++) {
+        const c = denoms[k]!;
+        const maxX = Math.min(cap - 2, Math.floor(target / a));
+        for (let x = 1; x <= maxX; x++) {
+          const rem = target - x * a;
+          const maxY = Math.min(cap - 1 - x, Math.floor(rem / b));
+          for (let y = 1; y <= maxY; y++) {
+            const rest = rem - y * b;
+            if (rest <= 0 || rest % c !== 0) continue;
+            const z = rest / c;
+            if (z < 1 || x + y + z > cap) continue;
+            take([
+              { cents: a, count: x },
+              { cents: b, count: y },
+              { cents: c, count: z },
+            ]);
+          }
+        }
+      }
+    }
+  }
+  return best;
+}
+
 function bitCount(n: number): number {
   let bits = n >>> 0;
   let count = 0;
@@ -178,6 +268,10 @@ export function solve(
 
   const minStamps = dp[targetCents]!;
   const cap = mode === "types" ? stampCap(minStamps) : minStamps;
+  if (mode === "types") {
+    const typed = solveTypes(targetCents, denoms, cap);
+    if (typed) return typed;
+  }
   const stamps = new Int32Array(targetCents + 1);
   const kinds = new Int32Array(targetCents + 1);
   const wholes = new Int32Array(targetCents + 1);

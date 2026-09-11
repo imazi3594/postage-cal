@@ -654,6 +654,74 @@
       while (bits) { bits &= bits - 1; count += 1; }
       return count;
     }
+    function comboFromLines(amount, parts) {
+      const lines = parts.filter((line) => line.count > 0).sort((a, b) => b.cents - a.cents);
+      return { lines, stampCount: lines.reduce((n, line) => n + line.count, 0), totalCents: amount };
+    }
+    function wholeCount(combo) {
+      return combo.lines.reduce((n, line) => n + (line.cents % 100 === 0 ? line.count : 0), 0);
+    }
+    function betterTypesCombo(a, b) {
+      if (a.lines.length !== b.lines.length) return a.lines.length < b.lines.length;
+      if (a.stampCount !== b.stampCount) return a.stampCount < b.stampCount;
+      const wa = wholeCount(a), wb = wholeCount(b);
+      if (wa !== wb) return wa > wb;
+      for (let i = 0; i < a.lines.length; i++) {
+        if (a.lines[i].cents !== b.lines[i].cents) return a.lines[i].cents > b.lines[i].cents;
+        if (a.lines[i].count !== b.lines[i].count) return a.lines[i].count > b.lines[i].count;
+      }
+      return false;
+    }
+    function solveTypes(target, denoms, cap) {
+      let best = null;
+      const take = (parts) => {
+        const combo = comboFromLines(target, parts);
+        if (combo.stampCount < 1 || combo.stampCount > cap) return;
+        if (!best || betterTypesCombo(combo, best)) best = combo;
+      };
+      for (const denom of denoms) {
+        if (target % denom !== 0) continue;
+        take([{ cents: denom, count: target / denom }]);
+      }
+      if (best) return best;
+      for (let i = 0; i < denoms.length; i++) {
+        const a = denoms[i];
+        for (let j = i + 1; j < denoms.length; j++) {
+          const b = denoms[j];
+          const maxX = Math.min(cap - 1, Math.floor(target / a));
+          for (let x = 1; x <= maxX; x++) {
+            const rest = target - x * a;
+            if (rest % b !== 0) continue;
+            const y = rest / b;
+            if (y < 1 || x + y > cap) continue;
+            take([{ cents: a, count: x }, { cents: b, count: y }]);
+          }
+        }
+      }
+      if (best) return best;
+      for (let i = 0; i < denoms.length; i++) {
+        const a = denoms[i];
+        for (let j = i + 1; j < denoms.length; j++) {
+          const b = denoms[j];
+          for (let k = j + 1; k < denoms.length; k++) {
+            const c = denoms[k];
+            const maxX = Math.min(cap - 2, Math.floor(target / a));
+            for (let x = 1; x <= maxX; x++) {
+              const rem = target - x * a;
+              const maxY = Math.min(cap - 1 - x, Math.floor(rem / b));
+              for (let y = 1; y <= maxY; y++) {
+                const rest = rem - y * b;
+                if (rest <= 0 || rest % c !== 0) continue;
+                const z = rest / c;
+                if (z < 1 || x + y + z > cap) continue;
+                take([{ cents: a, count: x }, { cents: b, count: y }, { cents: c, count: z }]);
+              }
+            }
+          }
+        }
+      }
+      return best;
+    }
     function solve(targetCents, denomCents, mode) {
       const denoms = [...new Set(denomCents.filter((d) => Number.isInteger(d) && d > 0))].sort((a, b) => b - a);
       if (targetCents <= 0 || denoms.length === 0) return null;
@@ -674,6 +742,10 @@
       if (dp[targetCents] === INF) return null;
       const minStamps = dp[targetCents];
       const cap = mode === "types" ? Math.min(minStamps * 2 + 2, minStamps + 8) : minStamps;
+      if (mode === "types") {
+        const typed = solveTypes(targetCents, denoms, cap);
+        if (typed) return typed;
+      }
       const stamps = new Int32Array(targetCents + 1);
       const kinds = new Int32Array(targetCents + 1);
       const wholes = new Int32Array(targetCents + 1);
