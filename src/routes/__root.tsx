@@ -15,7 +15,11 @@ export const Route = createRootRoute({
         name: "description",
         content: "用香港郵票面額組合出最簡單嘅郵費貼法，即開即用，唔使安裝。",
       },
-      { name: "theme-color", content: "#1a6b4a" },
+      { name: "theme-color", content: "#009247" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "郵票計數機" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
@@ -26,16 +30,23 @@ export const Route = createRootRoute({
         href: "https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap",
       },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   component: () => (
-    <html lang="zh-Hant-HK" className="antialiased" suppressHydrationWarning>
+    <html lang="zh-Hant-HK" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("stamp-calc-theme")==="dark"){document.documentElement.classList.add("dark");document.documentElement.style.colorScheme="dark"}}catch(e){}
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__pwaDeferred=e;});
+if("serviceWorker"in navigator){navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href).catch(function(){});}`,
+          }}
+        />
       </head>
-      <body>
+      <body className="antialiased">
         <PreviewHostBridge />
         <AuthProvider>
           <Outlet />

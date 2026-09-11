@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEven
 import { Link } from "@tanstack/react-router";
 import { CircleAlert, Delete, Settings } from "lucide-react";
 import { StampFace } from "@/components/stamp-face";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { InstallAppButton } from "@/components/install-app-button";
 import {
   DEFAULT_CENTS,
   MAX_AMOUNT_LABEL,
@@ -12,6 +14,7 @@ import {
   type Combination,
 } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
+import { createTapTracker } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
 const KEY_ROWS = [
@@ -29,7 +32,7 @@ export function StampCalculator() {
   const [toast, setToast] = useState("");
   const amountRef = useRef(amount);
   const toastTimer = useRef<number>(0);
-  const lastPress = useRef(0);
+  const tap = useRef(createTapTracker()).current;
   amountRef.current = typeof amount === "string" ? amount : "";
 
   useEffect(() => {
@@ -108,24 +111,21 @@ export function StampCalculator() {
     setAmount(result.value);
   }
 
-  function onPadPointerDown(event: PointerEvent<HTMLButtonElement>, key: string) {
-    if (event.pointerType === "mouse" && event.button !== 0) return;
-    event.preventDefault();
-    lastPress.current = Date.now();
-    press(key);
-  }
-
-  function onPadClick(key: string) {
-    if (Date.now() - lastPress.current < 400) return;
-    press(key);
-  }
-
   function press(key: string) {
     if (key === "C") {
       applyInput("clear");
       return;
     }
     applyInput(key);
+  }
+
+  function padHandlers(key: string) {
+    return {
+      onPointerDown: tap.onPointerDown,
+      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => tap.onPointerUp(event, () => press(key)),
+      onPointerCancel: tap.onPointerCancel,
+      onClick: () => tap.onClick(() => press(key)),
+    };
   }
 
   return (
@@ -152,25 +152,35 @@ export function StampCalculator() {
             郵票組合計數機
           </h1>
         </div>
-        <Link
-          to="/settings"
-          aria-label="設定"
-          className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
-        >
-          <Settings className="size-5" />
-        </Link>
+        <div className="flex shrink-0 items-center">
+          <ThemeToggle />
+          <Link
+            to="/settings"
+            aria-label="設定"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-surface-2"
+          >
+            <Settings className="size-5" />
+          </Link>
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3">
-        <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4" aria-live="polite">
-          <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
-        </section>
+        <div className="shrink-0">
+          <section className="rounded-xl bg-surface p-3 shadow-(--shadow-border) sm:p-4" aria-live="polite">
+            <ComboStrip amount={amount} targetCents={targetCents} poolEmpty={pool.length === 0} combo={combo} />
+          </section>
+          <p className="mt-1 min-h-4 px-1 text-center text-xs text-muted" aria-live="polite">
+            {combo && amount && amount !== "0" && amount !== "0."
+              ? `郵票${combo.stampCount}個\u3000款式${combo.lines.length}種`
+              : "\u00a0"}
+          </p>
+        </div>
 
         {missing.length > 0 || extras.length > 0 ? (
           <Link
             to="/settings"
             aria-label="設定郵票面額"
-            className="rounded-xl bg-surface px-3 py-2 shadow-(--shadow-border) sm:px-4"
+            className="min-w-0 overflow-hidden rounded-xl bg-surface px-3 py-2 shadow-(--shadow-border) sm:px-4"
           >
             <StockStrip missing={missing} extras={extras} />
           </Link>
@@ -188,8 +198,7 @@ export function StampCalculator() {
             <button
               type="button"
               aria-label="刪除一位"
-              onPointerDown={(event) => onPadPointerDown(event, "back")}
-              onClick={() => onPadClick("back")}
+              {...padHandlers("back")}
               className="inline-flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-md bg-surface-2 text-ink transition-[background-color] duration-(--motion-quick) ease-(--ease-smooth-out) hover:bg-border"
             >
               <Delete className="size-6" />
@@ -201,8 +210,7 @@ export function StampCalculator() {
               <button
                 key={key}
                 type="button"
-                onPointerDown={(event) => onPadPointerDown(event, key)}
-                onClick={() => onPadClick(key)}
+                {...padHandlers(key)}
                 className={cn(
                   "inline-flex h-12 touch-manipulation items-center justify-center rounded-md font-display text-2xl tabular-nums transition-[background-color,color] duration-(--motion-quick) ease-(--ease-smooth-out) sm:h-14",
                   key === "C"
@@ -216,6 +224,8 @@ export function StampCalculator() {
           </div>
         </section>
       </div>
+
+      <InstallAppButton />
 
       <div
         className={cn(
@@ -317,14 +327,64 @@ function ComboStrip({
   );
 }
 
+function StockRow({
+  label,
+  amounts,
+  className,
+}: {
+  label: string;
+  amounts: string;
+  className: string;
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [overflow, setOverflow] = useState(false);
+  const [duration, setDuration] = useState(12);
+
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    const inner = innerRef.current;
+    if (!wrap || !inner) return;
+
+    const measure = () => {
+      const probe = inner.querySelector("[data-probe]") as HTMLElement | null;
+      const width = probe ? probe.scrollWidth : inner.scrollWidth;
+      const need = width > wrap.clientWidth + 1;
+      setOverflow(need);
+      setDuration(Math.max(8, width / 36));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(wrap);
+    return () => observer.disconnect();
+  }, [amounts]);
+
+  return (
+    <div className={cn("flex min-w-0 items-baseline gap-0 text-sm font-medium", className)}>
+      <span className="shrink-0">{label}：</span>
+      <div ref={wrapRef} className="stock-marquee min-w-0 flex-1">
+        <div
+          ref={innerRef}
+          className={cn("stock-marquee-inner", overflow && "marquee-track")}
+          style={overflow ? { animationDuration: `${duration}s` } : undefined}
+        >
+          <span data-probe>{amounts}</span>
+          {overflow ? <span aria-hidden="true">{amounts}</span> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StockStrip({ missing, extras }: { missing: number[]; extras: number[] }) {
   return (
-    <div className="flex w-full min-w-0 flex-col gap-0.5 py-0.5 text-sm font-medium leading-snug">
+    <div className="flex w-full min-w-0 flex-col gap-0.5 py-0.5">
       {missing.length > 0 ? (
-        <p className="break-words text-red-600">缺貨 {missing.map(formatMoney).join("、")}</p>
+        <StockRow className="text-red-600" label="缺貨" amounts={missing.map(formatMoney).join("、")} />
       ) : null}
       {extras.length > 0 ? (
-        <p className="break-words text-blue-600">自訂 {extras.map(formatMoney).join("、")}</p>
+        <StockRow className="text-blue-600" label="自訂" amounts={extras.map(formatMoney).join("、")} />
       ) : null}
     </div>
   );

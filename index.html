@@ -2,28 +2,52 @@
 <html lang="zh-Hant-HK">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#1a6b4a" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#009247" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="郵票計數機" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>郵票組合計數機</title>
+  <script>try{if(localStorage.getItem("stamp-calc-theme")==="dark"){document.documentElement.classList.add("dark");document.documentElement.style.colorScheme="dark"}}catch(e){}
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__pwaDeferred=e;});
+  if("serviceWorker"in navigator){navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href).catch(function(){});}</script>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #eef3ee;
-      --surface: #f7faf6;
-      --surface-2: #e3ece4;
-      --ink: #15241c;
-      --muted: #5d6e65;
-      --subtle: #7a8a81;
-      --primary: #1a6b4a;
-      --primary-fg: #f7faf6;
-      --primary-soft: #dceee4;
-      --border: #c9d6ce;
+      --bg: #e8f8ed;
+      --surface: #f4fdf7;
+      --surface-2: #d4f1de;
+      --ink: #123326;
+      --muted: #3d7a57;
+      --subtle: #5b9472;
+      --primary: #009247;
+      --primary-fg: #f4fdf7;
+      --primary-soft: #c2efd3;
+      --border: #addcbe;
       --shadow: 0 0 0 1px rgb(21 36 28 / 0.06), 0 1px 2px -1px rgb(21 36 28 / 0.06), 0 2px 8px rgb(21 36 28 / 0.04);
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
       --sans: "Noto Sans HK", "PingFang HK", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
       --display: "Outfit", "Noto Sans HK", "PingFang HK", ui-sans-serif, sans-serif;
+    }
+    html.dark {
+      color-scheme: dark;
+      --bg: #121a16;
+      --surface: #1b2620;
+      --surface-2: #25332c;
+      --ink: #e8f0ea;
+      --muted: #9aada2;
+      --subtle: #7d9086;
+      --primary: #5dca9a;
+      --primary-fg: #102018;
+      --primary-soft: #1e3a2e;
+      --border: #33463c;
+      --shadow: 0 0 0 1px rgb(232 240 234 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.45), 0 2px 10px rgb(0 0 0 / 0.28);
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100dvh; background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
@@ -38,9 +62,14 @@
     h1 svg { color: var(--primary); flex: 0 0 auto; }
     .icon-btn { flex: 0 0 auto; width: 2.5rem; height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 0.5rem; background: transparent; color: var(--ink); }
     .icon-btn:hover { background: var(--surface-2); }
+    .icon-row { display: flex; align-items: center; flex: 0 0 auto; }
+    .icon-sun { display: none; }
+    html.dark .icon-sun { display: block; }
+    html.dark .icon-moon { display: none; }
     .card { background: var(--surface); border-radius: 1.25rem; padding: 0.75rem; box-shadow: var(--shadow); }
     .combo { height: 6rem; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .combo p { margin: 0; padding: 0 1rem; text-align: center; font-size: 0.875rem; color: var(--muted); }
+    .combo-stats { margin: 0.25rem 0 0; min-height: 1rem; text-align: center; font-size: 0.75rem; color: var(--muted); }
     .cluster { display: flex; align-items: center; justify-content: center; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: center; }
     .amount-row { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); border-radius: 0.75rem; padding: 0.5rem 0.75rem; }
     .amount-row .label { margin: 0; font-size: 0.75rem; font-weight: 500; color: var(--muted); }
@@ -85,12 +114,19 @@
     .stamp-face.xs { height: 2.5rem; padding: 0 0.15rem; }
     .stamp-face.xs span { font-size: 0.875rem; }
     .stamp.xs { width: 3.5rem; }
-    .stock { display: none; width: 100%; padding: 0.5rem 0.75rem; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+    .stock { display: none; width: 100%; padding: 0.5rem 0.75rem; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; overflow: hidden; }
     .stock.show { display: block; }
-    .stock-line { margin: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; }
-    .stock-line + .stock-line { margin-top: 0.125rem; }
-    .stock-line.oos { color: #dc2626; }
-    .stock-line.custom { color: #2563eb; }
+    .stock-row { display: flex; align-items: baseline; min-width: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.4; white-space: nowrap; }
+    .stock-row + .stock-row { margin-top: 0.125rem; }
+    .stock-row.oos { color: #dc2626; }
+    .stock-row.custom { color: #2563eb; }
+    .stock-label { flex: 0 0 auto; }
+    .stock-marquee { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; line-height: 1.4; }
+    .stock-marquee-inner { display: inline-flex; width: max-content; }
+    .stock-marquee-inner span { flex-shrink: 0; }
+    .marquee-track { animation: stock-marquee linear infinite; }
+    .marquee-track span { padding-right: 2.5rem; }
+    @keyframes stock-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
     .stamp-face.off { opacity: 0.38; filter: grayscale(0.8); }
     .oos-tag {
       position: absolute; top: 0.2rem; right: -0.2rem; z-index: 12;
@@ -153,9 +189,20 @@
     .toast .bang { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
     .toast .msg { margin: 0; font-size: 1.125rem; font-weight: 600; }
     .hidden { display: none !important; }
+    .install-btn { display: none; height: 2.5rem; border: 0; border-radius: 0.75rem; background: var(--primary); color: var(--primary-fg); font: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: var(--shadow); align-items: center; justify-content: center; gap: 0.4rem; flex: 0 0 auto; }
+    .install-btn.show { display: flex; }
+    .install-btn:disabled { opacity: 0.7; }
+    .install-sheet { pointer-events: none; position: fixed; inset: 1rem 1rem auto; z-index: 21; display: none; justify-content: center; }
+    .install-sheet.show { display: flex; pointer-events: auto; }
+    .install-card { position: relative; width: min(24rem, 100%); border-radius: 1rem; background: var(--surface); color: var(--ink); padding: 1rem 1.25rem; box-shadow: var(--shadow); }
+    .install-card h3 { margin: 0 1.5rem 0 0; font-size: 1rem; font-weight: 600; }
+    .install-card ol { margin: 0.5rem 0 0; padding-left: 1.25rem; font-size: 0.875rem; color: var(--muted); }
+    .install-card li { margin: 0.25rem 0; }
+    .install-close { position: absolute; top: 0.4rem; right: 0.4rem; width: 2rem; height: 2rem; border: 0; border-radius: 0.5rem; background: transparent; color: var(--muted); }
     @media (prefers-reduced-motion: reduce) {
       .stamp-face.custom::after { animation: none; }
       .toast-host { transition: none; }
+      .marquee-track { animation: none; }
     }
   </style>
 </head>
@@ -169,11 +216,20 @@
           郵票組合計數機
         </h1>
       </div>
-      <button type="button" class="icon-btn" data-go="settings" aria-label="設定">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-      </button>
+      <div class="icon-row">
+        <button type="button" class="icon-btn" id="theme-btn" aria-label="轉深色">
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </button>
+        <button type="button" class="icon-btn" data-go="settings" aria-label="設定">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
     </header>
-    <section class="card" aria-live="polite"><div id="combo" class="combo"></div></section>
+    <div>
+      <section class="card" aria-live="polite"><div id="combo" class="combo"></div></section>
+      <p id="combo-stats" class="combo-stats">&nbsp;</p>
+    </div>
     <button type="button" id="stock" class="card stock" data-go="settings" aria-label="設定郵票面額">
       <div id="stock-cluster"></div>
     </button>
@@ -206,6 +262,10 @@
         <button type="button" data-key=".">.</button>
       </div>
     </section>
+    <button type="button" id="install-btn" class="install-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+      一鍵加到桌面
+    </button>
   </div>
 
   <div id="settings" class="wrap settings hidden">
@@ -243,6 +303,14 @@
         <button type="submit" class="btn secondary">加入面額</button>
       </form>
     </section>
+  </div>
+
+  <div id="install-sheet" class="install-sheet">
+    <div class="install-card" role="dialog" aria-label="加到主畫面">
+      <button type="button" class="install-close" id="install-close" aria-label="關閉">×</button>
+      <h3>加到主畫面，當 app 用</h3>
+      <ol id="install-steps"></ol>
+    </div>
   </div>
 
   <div id="toast" class="toast-host" aria-hidden="true">
@@ -430,6 +498,8 @@
     let lastPress = 0;
     let toastTimer = 0;
     let comboScale = 1;
+    const TAP_SLOP = 12;
+    let tapOrigin = null;
 
     const homeEl = document.getElementById("home");
     const settingsEl = document.getElementById("settings");
@@ -476,25 +546,32 @@
       return [...new Set([...enabled, ...extras])].sort((a, b) => a - b);
     }
     function renderCombo() {
+      const statsEl = document.getElementById("combo-stats");
+      const clearStats = () => { statsEl.textContent = "\u00a0"; };
       const target = parseAmountToCents(amount);
       if (!amount || amount === "0" || amount === "0.") {
         comboEl.innerHTML = `<p>請輸入郵費</p>`;
+        clearStats();
         return;
       }
       if (target === null) {
         comboEl.innerHTML = `<p>繼續輸入金額…</p>`;
+        clearStats();
         return;
       }
       if (pool().length === 0) {
         comboEl.innerHTML = `<p>至少揀一種郵票面額。</p>`;
+        clearStats();
         return;
       }
       const combo = target === 0 ? null : solve(target, pool());
       if (!combo) {
         comboEl.innerHTML = `<p>湊唔到剛好呢個金額</p>`;
+        clearStats();
         return;
       }
       comboEl.innerHTML = `<div class="cluster">${combo.lines.map((line) => stampHTML(line.cents, { count: line.count })).join("")}</div>`;
+      statsEl.textContent = `郵票${combo.stampCount}個\u3000款式${combo.lines.length}種`;
       fitCombo();
     }
     function fitCombo() {
@@ -521,12 +598,27 @@
       stockEl.classList.add("show");
       const bits = [];
       if (missing.length) {
-        bits.push(`<p class="stock-line oos">缺貨 ${missing.map(formatMoney).join("、")}</p>`);
+        const amounts = missing.map(formatMoney).join("、");
+        bits.push(`<div class="stock-row oos"><span class="stock-label">缺貨：</span><div class="stock-marquee"><div class="stock-marquee-inner"><span data-probe>${amounts}</span></div></div></div>`);
       }
       if (extras.length) {
-        bits.push(`<p class="stock-line custom">自訂 ${extras.map(formatMoney).join("、")}</p>`);
+        const amounts = extras.map(formatMoney).join("、");
+        bits.push(`<div class="stock-row custom"><span class="stock-label">自訂：</span><div class="stock-marquee"><div class="stock-marquee-inner"><span data-probe>${amounts}</span></div></div></div>`);
       }
       cluster.innerHTML = bits.join("");
+      requestAnimationFrame(() => {
+        cluster.querySelectorAll(".stock-marquee").forEach((wrap) => {
+          const inner = wrap.querySelector(".stock-marquee-inner");
+          const probe = inner && inner.querySelector("[data-probe]");
+          if (!inner || !probe) return;
+          const width = probe.scrollWidth;
+          if (width <= wrap.clientWidth + 1) return;
+          const text = probe.textContent || "";
+          inner.innerHTML = `<span data-probe>${text}</span><span aria-hidden="true">${text}</span>`;
+          inner.classList.add("marquee-track");
+          inner.style.animationDuration = Math.max(8, width / 36) + "s";
+        });
+      });
     }
     function renderSettings() {
       denomGrid.innerHTML = DEFAULT_CENTS.map((cents) => {
@@ -548,66 +640,54 @@
       save();
       renderHome();
     }
-
-    let lastStampTap = 0;
+    function activateTap(el) {
+      if (el.hasAttribute("data-go")) {
+        showPage(el.getAttribute("data-go"));
+        return;
+      }
+      if (el.hasAttribute("data-key")) {
+        press(el.getAttribute("data-key"));
+        return;
+      }
+      if (el.hasAttribute("data-toggle")) {
+        const cents = Number(el.getAttribute("data-toggle"));
+        enabled = enabled.includes(cents) ? enabled.filter((c) => c !== cents) : [...enabled, cents].sort((a, b) => a - b);
+        save();
+        renderSettings();
+        return;
+      }
+      if (el.hasAttribute("data-remove")) {
+        extras = extras.filter((c) => c !== Number(el.getAttribute("data-remove")));
+        save();
+        renderSettings();
+      }
+    }
+    const TAP_SEL = "[data-go], [data-key], [data-toggle], [data-remove]";
     document.addEventListener("pointerdown", (event) => {
-      const go = event.target.closest("[data-go]");
-      if (go) {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        lastPress = Date.now();
-        showPage(go.getAttribute("data-go"));
-        return;
-      }
-      const keyBtn = event.target.closest("[data-key]");
-      if (keyBtn) {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        lastPress = Date.now();
-        press(keyBtn.getAttribute("data-key"));
-        return;
-      }
-      const toggle = event.target.closest("[data-toggle]");
-      if (toggle) {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        lastStampTap = Date.now();
-        const cents = Number(toggle.getAttribute("data-toggle"));
-        enabled = enabled.includes(cents) ? enabled.filter((c) => c !== cents) : [...enabled, cents].sort((a, b) => a - b);
-        save();
-        renderSettings();
-        return;
-      }
-      const remove = event.target.closest("[data-remove]");
-      if (remove) {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        lastStampTap = Date.now();
-        extras = extras.filter((c) => c !== Number(remove.getAttribute("data-remove")));
-        save();
-        renderSettings();
-      }
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      const el = event.target.closest(TAP_SEL);
+      tapOrigin = el ? { x: event.clientX, y: event.clientY, id: event.pointerId, el } : null;
     });
+    document.addEventListener("pointerup", (event) => {
+      const start = tapOrigin;
+      tapOrigin = null;
+      if (!start || start.id !== event.pointerId) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      if (dx * dx + dy * dy > TAP_SLOP * TAP_SLOP) return;
+      const end = event.target.closest(TAP_SEL);
+      if (!end || end !== start.el) return;
+      lastPress = Date.now();
+      activateTap(start.el);
+    });
+    document.addEventListener("pointercancel", () => { tapOrigin = null; });
     document.addEventListener("click", (event) => {
-      if (Date.now() - lastPress < 400 || Date.now() - lastStampTap < 400) return;
-      const go = event.target.closest("[data-go]");
-      if (go) { showPage(go.getAttribute("data-go")); return; }
-      const keyBtn = event.target.closest("[data-key]");
-      if (keyBtn) { press(keyBtn.getAttribute("data-key")); return; }
-      const toggle = event.target.closest("[data-toggle]");
-      if (toggle) {
-        const cents = Number(toggle.getAttribute("data-toggle"));
-        enabled = enabled.includes(cents) ? enabled.filter((c) => c !== cents) : [...enabled, cents].sort((a, b) => a - b);
-        save();
-        renderSettings();
-        return;
-      }
-      const remove = event.target.closest("[data-remove]");
-      if (remove) {
-        extras = extras.filter((c) => c !== Number(remove.getAttribute("data-remove")));
-        save();
-        renderSettings();
-      }
+      if (Date.now() - lastPress < 400) return;
+      const el = event.target.closest(TAP_SEL);
+      if (!el) return;
+      lastPress = Date.now();
+      activateTap(el);
     });
     document.getElementById("reset").addEventListener("click", () => {
       enabled = [...DEFAULT_CENTS];
@@ -647,6 +727,21 @@
       if (result.overLimit) showToast("上限為 $50");
       event.target.value = result.value;
     });
+    document.getElementById("theme-btn").addEventListener("click", () => {
+      const dark = !document.documentElement.classList.contains("dark");
+      document.documentElement.classList.toggle("dark", dark);
+      document.documentElement.style.colorScheme = dark ? "dark" : "light";
+      try { localStorage.setItem("stamp-calc-theme", dark ? "dark" : "light"); } catch (e) {}
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", dark ? "#121a16" : "#009247");
+      document.getElementById("theme-btn").setAttribute("aria-label", dark ? "轉淺色" : "轉深色");
+    });
+    (function syncThemeLabel() {
+      const dark = document.documentElement.classList.contains("dark");
+      document.getElementById("theme-btn").setAttribute("aria-label", dark ? "轉淺色" : "轉深色");
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta && dark) meta.setAttribute("content", "#121a16");
+    })();
     window.addEventListener("keydown", (event) => {
       if (settingsEl.classList.contains("hidden") === false) return;
       const target = event.target;
@@ -660,6 +755,56 @@
       showPage(location.hash.replace("#", "") === "settings" ? "settings" : "home");
     });
     window.addEventListener("resize", () => { fitCombo(); renderStock(); });
+    (function setupInstall() {
+      const btn = document.getElementById("install-btn");
+      const sheet = document.getElementById("install-sheet");
+      const steps = document.getElementById("install-steps");
+      const title = sheet.querySelector("h3");
+      const standalone = window.matchMedia("(display-mode: standalone)").matches || Boolean(window.navigator.standalone);
+      if (standalone) return;
+      btn.classList.add("show");
+      const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      function waitPrompt(ms) {
+        if (window.__pwaDeferred) return Promise.resolve(window.__pwaDeferred);
+        return new Promise(function (resolve) {
+          var start = Date.now();
+          var tick = setInterval(function () {
+            if (window.__pwaDeferred) { clearInterval(tick); resolve(window.__pwaDeferred); }
+            else if (Date.now() - start >= ms) { clearInterval(tick); resolve(null); }
+          }, 80);
+        });
+      }
+      btn.addEventListener("click", async function () {
+        if (btn.disabled) return;
+        if (ios) {
+          title.textContent = "加到 iPhone 主畫面";
+          steps.innerHTML = "<li>撳 Safari 底部分享掣</li><li>揀「加到主畫面」</li>";
+          sheet.classList.add("show");
+          return;
+        }
+        btn.disabled = true;
+        btn.lastChild.textContent = " 安裝中…";
+        const event = window.__pwaDeferred || await waitPrompt(1800);
+        if (event && event.prompt) {
+          await event.prompt();
+          const choice = await event.userChoice;
+          window.__pwaDeferred = null;
+          if (choice && choice.outcome === "accepted") btn.classList.remove("show");
+          btn.disabled = false;
+          btn.lastChild.textContent = " 一鍵加到桌面";
+          return;
+        }
+        btn.disabled = false;
+        btn.lastChild.textContent = " 一鍵加到桌面";
+        title.textContent = "請用 Chrome 開啟再撳一次";
+        steps.innerHTML = "<li>用 Chrome 打開呢個網址</li><li>再撳「一鍵加到桌面」，就會彈出安裝</li>";
+        sheet.classList.add("show");
+      });
+      document.getElementById("install-close").addEventListener("click", () => {
+        sheet.classList.remove("show");
+      });
+      window.addEventListener("appinstalled", () => btn.classList.remove("show"));
+    })();
     showPage(location.hash.replace("#", "") === "settings" ? "settings" : "home");
   </script>
 </body>

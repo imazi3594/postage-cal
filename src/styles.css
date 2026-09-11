@@ -6,19 +6,19 @@
   --font-serif: "Outfit", "Noto Sans HK", "PingFang HK", ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --color-bg: #eef3ee;
-  --color-surface: #f7faf6;
-  --color-surface-2: #e3ece4;
-  --color-ink: #15241c;
-  --color-muted: #5d6e65;
-  --color-subtle: #7a8a81;
-  --color-primary: #1a6b4a;
-  --color-primary-fg: #f7faf6;
-  --color-primary-soft: #dceee4;
-  --color-border: #c9d6ce;
-  --color-stamp: #f4faf6;
-  --color-stamp-ink: #14553b;
-  --color-ok: #2d6b4a;
+  --color-bg: #e8f8ed;
+  --color-surface: #f4fdf7;
+  --color-surface-2: #d4f1de;
+  --color-ink: #123326;
+  --color-muted: #3d7a57;
+  --color-subtle: #5b9472;
+  --color-primary: #009247;
+  --color-primary-fg: #f4fdf7;
+  --color-primary-soft: #c2efd3;
+  --color-border: #addcbe;
+  --color-stamp: #f4fdf7;
+  --color-stamp-ink: #0a7038;
+  --color-ok: #009247;
   --color-warn: #6e6a32;
 
   --text-2xs: 0.625rem;
@@ -45,6 +45,28 @@
   --motion-fast: 250ms;
   --motion-slow: 400ms;
   --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.dark {
+  color-scheme: dark;
+  --color-bg: #121a16;
+  --color-surface: #1b2620;
+  --color-surface-2: #25332c;
+  --color-ink: #e8f0ea;
+  --color-muted: #9aada2;
+  --color-subtle: #7d9086;
+  --color-primary: #5dca9a;
+  --color-primary-fg: #102018;
+  --color-primary-soft: #1e3a2e;
+  --color-border: #33463c;
+  --color-stamp: #1b2620;
+  --color-stamp-ink: #8ee0b8;
+  --color-ok: #7dcca4;
+  --color-warn: #d6c56a;
+  --shadow-border:
+    0 0 0 1px rgb(232 240 234 / 0.08),
+    0 1px 2px -1px rgb(0 0 0 / 0.45),
+    0 2px 10px rgb(0 0 0 / 0.28);
 }
 
 @layer base {
@@ -242,6 +264,39 @@
   }
 }
 
+.stock-marquee {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.stock-marquee-inner {
+  display: inline-flex;
+  width: max-content;
+}
+
+.stock-marquee-inner span {
+  flex-shrink: 0;
+}
+
+.marquee-track {
+  animation: stock-marquee linear infinite;
+}
+
+.marquee-track span {
+  padding-right: 2.5rem;
+}
+
+@keyframes stock-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stagger-in {
     animation: none !important;
@@ -251,6 +306,10 @@
   }
 
   .stamp-face[data-custom="true"]::after {
+    animation: none;
+  }
+
+  .marquee-track {
     animation: none;
   }
 }

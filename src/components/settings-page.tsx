@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { StampFace } from "@/components/stamp-face";
 import { DEFAULT_CENTS, formatMoney, parseCustomDenomToCents, sanitizeCustomDenom, MAX_CUSTOM_LABEL } from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
+import { createTapTracker } from "@/lib/tap";
 import { cn } from "@/lib/utils";
 
 export function SettingsPage() {
@@ -15,7 +16,7 @@ export function SettingsPage() {
   const [custom, setCustom] = useState("");
   const [toast, setToast] = useState("");
   const toastTimer = useRef<number>(0);
-  const lastTap = useRef(0);
+  const tap = useRef(createTapTracker()).current;
 
   useEffect(() => {
     const saved = loadSaved();
@@ -37,20 +38,13 @@ export function SettingsPage() {
     toastTimer.current = window.setTimeout(() => setToast(""), 1800);
   }
 
-  function tap(action: () => void) {
-    lastTap.current = Date.now();
-    action();
-  }
-
-  function onStampPointerDown(event: PointerEvent<HTMLButtonElement>, action: () => void) {
-    if (event.pointerType === "mouse" && event.button !== 0) return;
-    event.preventDefault();
-    tap(action);
-  }
-
-  function onStampClick(action: () => void) {
-    if (Date.now() - lastTap.current < 400) return;
-    tap(action);
+  function stampHandlers(action: () => void) {
+    return {
+      onPointerDown: tap.onPointerDown,
+      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => tap.onPointerUp(event, action),
+      onPointerCancel: tap.onPointerCancel,
+      onClick: () => tap.onClick(action),
+    };
   }
 
   function toggleDenom(cents: number) {
@@ -127,8 +121,7 @@ export function SettingsPage() {
                 type="button"
                 aria-pressed={on}
                 aria-label={on ? formatMoney(cents) : `${formatMoney(cents)} 缺貨`}
-                onPointerDown={(event) => onStampPointerDown(event, () => toggleDenom(cents))}
-                onClick={() => onStampClick(() => toggleDenom(cents))}
+                {...stampHandlers(() => toggleDenom(cents))}
                 className="relative overflow-visible touch-manipulation rounded-sm transition-[opacity,filter] duration-(--motion-quick) ease-(--ease-smooth-out) hover:opacity-90"
               >
                 <StampFace cents={cents} size="sm" muted={!on} />
@@ -163,10 +156,7 @@ export function SettingsPage() {
                 key={cents}
                 type="button"
                 aria-label={`移除 ${formatMoney(cents)}`}
-                onPointerDown={(event) =>
-                  onStampPointerDown(event, () => setExtras((prev) => prev.filter((c) => c !== cents)))
-                }
-                onClick={() => onStampClick(() => setExtras((prev) => prev.filter((c) => c !== cents)))}
+                {...stampHandlers(() => setExtras((prev) => prev.filter((c) => c !== cents)))}
                 className="relative overflow-visible touch-manipulation rounded-sm"
                 title="移除自訂面額"
               >
