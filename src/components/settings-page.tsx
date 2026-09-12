@@ -1,14 +1,26 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, CircleAlert, Minus, Plus, RotateCcw } from "lucide-react";
+import { ArrowLeft, CircleAlert, Delete, Minus, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { StampFace } from "@/components/stamp-face";
-import { DEFAULT_CENTS, formatMoney, parseCustomDenomToCents, sanitizeCustomDenom, MAX_CUSTOM_LABEL } from "@/lib/postage";
+import {
+  DEFAULT_CENTS,
+  MAX_CUSTOM_LABEL,
+  applyCustomKey,
+  formatMoney,
+  parseCustomDenomToCents,
+} from "@/lib/postage";
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
 import { applyCrisis, applySolveMode } from "@/lib/theme";
 import { createTapTracker, pulsePress, setPressDown } from "@/lib/tap";
 import { cn } from "@/lib/utils";
+
+const CUSTOM_KEYS = [
+  ["7", "8", "9"],
+  ["4", "5", "6"],
+  ["1", "2", "3"],
+  ["C", "0", "."],
+] as const;
 
 export function SettingsPage() {
   const [hydrated, setHydrated] = useState(false);
@@ -17,7 +29,6 @@ export function SettingsPage() {
   const [custom, setCustom] = useState("");
   const [toast, setToast] = useState("");
   const toastTimer = useRef<number>(0);
-  const formRef = useRef<HTMLFormElement>(null);
   const tap = useRef(createTapTracker()).current;
 
   useEffect(() => {
@@ -38,40 +49,7 @@ export function SettingsPage() {
     applyCrisis(enabled.length === 0 && extras.length === 0);
   }, [enabled, extras, hydrated]);
 
-  useEffect(() => {
-    if (formRef.current?.contains(document.activeElement)) revealForm();
-  }, [extras]);
-
   useEffect(() => () => window.clearTimeout(toastTimer.current), []);
-
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const sync = () => {
-      const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      document.documentElement.style.setProperty("--kb", `${inset}px`);
-    };
-    sync();
-    vv.addEventListener("resize", sync);
-    vv.addEventListener("scroll", sync);
-    return () => {
-      vv.removeEventListener("resize", sync);
-      vv.removeEventListener("scroll", sync);
-      document.documentElement.style.removeProperty("--kb");
-    };
-  }, []);
-
-  function revealForm() {
-    window.setTimeout(() => {
-      const el = formRef.current;
-      const vv = window.visualViewport;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
-      const overlap = rect.bottom - (visibleBottom - 16);
-      if (overlap > 0) window.scrollBy(0, overlap);
-    }, 50);
-  }
 
   function showToast(message: string) {
     setToast(message);
@@ -110,14 +88,16 @@ export function SettingsPage() {
     );
   }
 
+  function pressCustom(key: string) {
+    const mapped = key === "C" ? "clear" : key;
+    const result = applyCustomKey(custom, mapped);
+    if (result.overLimit) showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
+    setCustom(result.value);
+  }
+
   function addCustom() {
     const cents = parseCustomDenomToCents(custom);
     if (cents === null) {
-      const attempt = sanitizeCustomDenom(custom);
-      if (attempt.overLimit || Number(custom) > 50) {
-        showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
-        return;
-      }
       showToast("請輸入有效面值，例如 2.4");
       return;
     }
@@ -130,14 +110,10 @@ export function SettingsPage() {
     }
     setExtras((prev) => [...prev, cents].sort((a, b) => a - b));
     setCustom("");
-    revealForm();
   }
 
   return (
-    <div
-      className="relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6"
-      style={{ paddingBottom: "calc(1.5rem + var(--kb, 0px))" }}
-    >
+    <div className="relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6">
       <header className="flex items-center gap-1">
         <Link
           to="/"
@@ -204,32 +180,42 @@ export function SettingsPage() {
           </Button>
         </div>
 
-        <form
-          ref={formRef}
-          className="mt-4 flex scroll-mb-4 flex-row items-stretch gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            addCustom();
-          }}
-        >
-          <Input
-            value={custom}
-            onChange={(event) => {
-              const result = sanitizeCustomDenom(event.target.value);
-              if (result.overLimit) showToast(`上限為 ${MAX_CUSTOM_LABEL}`);
-              setCustom(result.value);
-            }}
-            onFocus={revealForm}
-            placeholder="例如 2.4，上限 $50"
-            inputMode="decimal"
-            aria-label="自訂郵票面值"
-            className="min-w-0 flex-1"
-          />
-          <Button type="submit" variant="secondary" className="shrink-0 px-3">
+        <div className="mt-4 flex items-center gap-2">
+          <div className="flex min-h-11 min-w-0 flex-1 items-center rounded-md bg-bg px-3">
+            <span className="mr-1 text-subtle">$</span>
+            <span className="font-display text-2xl font-semibold tabular-nums tracking-tight text-ink">
+              {custom || "0"}
+            </span>
+          </div>
+          <button
+            type="button"
+            aria-label="刪除一位"
+            {...stampHandlers(() => pressCustom("back"))}
+            className="tap-press inline-flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-md bg-bg text-ink hover:bg-border"
+          >
+            <Delete className="size-5" />
+          </button>
+          <Button type="button" variant="secondary" className="h-11 shrink-0 px-3" {...stampHandlers(addCustom)}>
             <Plus className="size-4" />
             加入
           </Button>
-        </form>
+        </div>
+
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {CUSTOM_KEYS.flat().map((key) => (
+            <button
+              key={key}
+              type="button"
+              {...stampHandlers(() => pressCustom(key))}
+              className={cn(
+                "tap-press inline-flex h-11 touch-manipulation items-center justify-center rounded-md font-display text-xl tabular-nums",
+                key === "C" ? "key-clear" : "bg-bg text-ink hover:bg-border",
+              )}
+            >
+              {key}
+            </button>
+          ))}
+        </div>
 
         {extras.length > 0 ? (
           <div className="mt-4 grid grid-cols-4 gap-3 overflow-visible">

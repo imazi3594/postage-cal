@@ -76,6 +76,32 @@ export function applyAmountKey(
   return { value: value + key, overLimit: false };
 }
 
+export function applyCustomKey(
+  current: string,
+  key: string,
+): { value: string; overLimit: boolean } {
+  const value = typeof current === "string" ? current : "";
+  if (key === "clear") return { value: "", overLimit: false };
+  if (key === "back") return { value: value.slice(0, -1), overLimit: false };
+  if (key === ".") {
+    if (!value) return { value: "0.", overLimit: false };
+    if (value.includes(".")) return { value, overLimit: false };
+    return { value: `${value}.`, overLimit: false };
+  }
+  if (!/^\d$/.test(key)) return { value, overLimit: false };
+  if (!value || value === "0") return { value: key, overLimit: false };
+  if (value.includes(".")) {
+    const fraction = value.split(".")[1] ?? "";
+    if (fraction.length >= MAX_FRAC_DIGITS) return { value, overLimit: false };
+    const next = value + key;
+    if (Number(next) > MAX_CUSTOM_DOLLARS) return { value, overLimit: true };
+    return { value: next, overLimit: false };
+  }
+  const next = value + key;
+  if (Number(next) > MAX_CUSTOM_DOLLARS) return { value, overLimit: true };
+  return { value: next, overLimit: false };
+}
+
 /** Custom stamp face: at most $50, one decimal place. */
 export function sanitizeCustomDenom(raw: string): { value: string; overLimit: boolean } {
   const stripped = typeof raw === "string" ? raw.replace(/[$,\s]/g, "") : "";

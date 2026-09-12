@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   DEFAULT_CENTS,
   applyAmountKey,
+  applyCustomKey,
   describeCombo,
   dollarsToCents,
   formatMoney,
@@ -57,6 +58,19 @@ test("keypad rejects extra digits past $9999.9", () => {
   assert.deepEqual(applyAmountKey("9999.", "9"), { value: "9999.9", overLimit: false });
   assert.deepEqual(applyAmountKey("9999.9", "1"), { value: "9999.9", overLimit: false });
   assert.equal(applyAmountKey("999", "9").value, "9999");
+});
+
+test("custom keypad stays within $50 and one decimal", () => {
+  assert.deepEqual(applyCustomKey("", "2"), { value: "2", overLimit: false });
+  assert.deepEqual(applyCustomKey("2", "."), { value: "2.", overLimit: false });
+  assert.deepEqual(applyCustomKey("2.", "4"), { value: "2.4", overLimit: false });
+  assert.deepEqual(applyCustomKey("2.4", "5"), { value: "2.4", overLimit: false });
+  assert.deepEqual(applyCustomKey("5", "0"), { value: "50", overLimit: false });
+  assert.deepEqual(applyCustomKey("50", "1"), { value: "50", overLimit: true });
+  assert.deepEqual(applyCustomKey("50", "."), { value: "50.", overLimit: false });
+  assert.deepEqual(applyCustomKey("50.", "1"), { value: "50.", overLimit: true });
+  assert.equal(applyCustomKey("2.4", "back").value, "2.");
+  assert.equal(applyCustomKey("2.4", "clear").value, "");
 });
 
 test("custom denom max $50 and one decimal", () => {

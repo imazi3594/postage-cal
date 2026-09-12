@@ -121,13 +121,24 @@
     button:disabled { cursor: default; }
     a { color: inherit; text-decoration: none; }
     .wrap { width: min(32rem, 100%); height: 100svh; max-height: 100svh; margin: 0 auto; padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 0.5rem; overflow: hidden; isolation: isolate; }
-    .wrap.settings, .wrap.about { height: 100svh; max-height: 100svh; overflow: auto; padding-bottom: calc(2rem + var(--kb, 0px)); }
+    .wrap.settings, .wrap.about { height: 100svh; max-height: 100svh; overflow: auto; padding-bottom: 2rem; }
     .wrap.about { gap: 2rem; padding: 1rem 1.25rem 2.5rem; background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--bg)) 0%, var(--bg) 42%); }
     .wrap.about .top { gap: 0.5rem; }
     .wrap.about .top h1 { margin: 0; font-size: 1rem; }
-    .custom-form { margin-top: 1rem; display: flex; flex-direction: row; align-items: stretch; gap: 0.5rem; scroll-margin-bottom: 1rem; }
-    .custom-form input { height: 2.75rem; flex: 1 1 auto; min-width: 0; width: auto; max-width: none; border: 0; border-radius: 0.5rem; padding: 0 0.75rem; background: var(--bg); color: var(--ink); font: inherit; box-shadow: var(--shadow); }
-    .custom-form .btn.secondary { flex: 0 0 auto; height: 2.75rem; white-space: nowrap; }
+    .custom-pad { margin-top: 1rem; }
+    .custom-amount-row { display: flex; align-items: stretch; gap: 0.5rem; }
+    .custom-amount { flex: 1 1 auto; min-width: 0; height: 2.75rem; display: flex; align-items: center; padding: 0 0.75rem; border-radius: 0.5rem; background: var(--bg); font-family: var(--display); font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .custom-amount .sym { margin-right: 0.2rem; color: var(--subtle); font-weight: 500; }
+    .custom-back { flex: 0 0 auto; width: 2.75rem; height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 0.5rem; background: var(--bg); color: var(--ink); }
+    .custom-back:hover { background: var(--border); }
+    .custom-amount-row .btn.secondary { flex: 0 0 auto; height: 2.75rem; white-space: nowrap; }
+    .mini-keys { margin-top: 0.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .mini-keys button { height: 2.75rem; border: 0; border-radius: 0.5rem; background: var(--bg); color: var(--ink); font-family: var(--display); font-size: 1.25rem; font-variant-numeric: tabular-nums; touch-action: manipulation; }
+    .mini-keys button:hover { background: var(--border); }
+    .mini-keys .clear { background: #fce7f3; color: #e11d48; font-weight: 600; }
+    .mini-keys .clear:hover { background: #fbcfe8; }
+    html.dark .mini-keys .clear { color: #f9a8d4; background: #4a2c36; }
+    html.dark .mini-keys .clear:hover { background: #5c3844; }
     .top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; }
     .top > h1 { flex: 1; margin: 0; }
     .brand { min-width: 0; }
@@ -183,9 +194,9 @@
     .keys .clear:hover { background: #fbcfe8; }
     html.dark .keys .clear { color: #f9a8d4; background: #4a2c36; }
     html.dark .keys .clear:hover { background: #5c3844; }
-    .keys button, .back-btn, .grid button { transform-origin: center; transition: transform 80ms cubic-bezier(0.22, 1, 0.36, 1), filter 80ms cubic-bezier(0.22, 1, 0.36, 1), background-color 150ms; }
-    .keys button:active, .keys button.is-down, .back-btn:active, .back-btn.is-down, .grid button:active, .grid button.is-down { transform: scale(0.93); filter: brightness(0.96); }
-    .keys button.is-press, .back-btn.is-press, .grid button.is-press { animation: tap-press-pop 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .keys button, .back-btn, .grid button, .mini-keys button, .custom-back { transform-origin: center; transition: transform 80ms cubic-bezier(0.22, 1, 0.36, 1), filter 80ms cubic-bezier(0.22, 1, 0.36, 1), background-color 150ms; }
+    .keys button:active, .keys button.is-down, .back-btn:active, .back-btn.is-down, .grid button:active, .grid button.is-down, .mini-keys button:active, .mini-keys button.is-down, .custom-back:active, .custom-back.is-down { transform: scale(0.93); filter: brightness(0.96); }
+    .keys button.is-press, .back-btn.is-press, .grid button.is-press, .mini-keys button.is-press, .custom-back.is-press { animation: tap-press-pop 180ms cubic-bezier(0.22, 1, 0.36, 1); }
     @keyframes tap-press-pop { from { transform: scale(0.93); } to { transform: scale(1); } }
     .head-row { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
     .head-row > div { min-width: 0; flex: 1; }
@@ -392,7 +403,7 @@
       .stamp-face.custom, .stamp-face.custom::after { animation: none; }
       .toast-host { transition: none; }
       .marquee-track { animation: none; }
-      .keys button, .back-btn, .grid button, .keys button:active, .keys button.is-down, .keys button.is-press, .back-btn:active, .back-btn.is-down, .back-btn.is-press, .grid button:active, .grid button.is-down, .grid button.is-press { transform: none !important; filter: none !important; animation: none !important; transition: none !important; }
+      .keys button, .back-btn, .grid button, .mini-keys button, .custom-back, .keys button:active, .keys button.is-down, .keys button.is-press, .back-btn:active, .back-btn.is-down, .back-btn.is-press, .grid button:active, .grid button.is-down, .grid button.is-press, .mini-keys button:active, .mini-keys button.is-down, .mini-keys button.is-press, .custom-back:active, .custom-back.is-down, .custom-back.is-press { transform: none !important; filter: none !important; animation: none !important; transition: none !important; }
     }
   </style>
 </head>
@@ -523,13 +534,36 @@
           重設
         </button>
       </div>
-      <form id="custom-form" class="custom-form">
-        <input id="custom-input" inputmode="decimal" placeholder="例如 2.4，上限 $50" aria-label="自訂郵票面值" />
-        <button type="submit" class="btn secondary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-          加入
-        </button>
-      </form>
+      <div class="custom-pad">
+        <div class="custom-amount-row">
+          <div class="custom-amount" aria-live="polite"><span class="sym">$</span><span id="custom-amount">0</span></div>
+          <button type="button" class="custom-back" data-custom-key="back" aria-label="刪除一位">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
+              <path d="m12 9 6 6"/>
+              <path d="m18 9-6 6"/>
+            </svg>
+          </button>
+          <button type="button" class="btn secondary" data-add-custom>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            加入
+          </button>
+        </div>
+        <div class="mini-keys">
+          <button type="button" data-custom-key="7">7</button>
+          <button type="button" data-custom-key="8">8</button>
+          <button type="button" data-custom-key="9">9</button>
+          <button type="button" data-custom-key="4">4</button>
+          <button type="button" data-custom-key="5">5</button>
+          <button type="button" data-custom-key="6">6</button>
+          <button type="button" data-custom-key="1">1</button>
+          <button type="button" data-custom-key="2">2</button>
+          <button type="button" data-custom-key="3">3</button>
+          <button type="button" class="clear" data-custom-key="C">C</button>
+          <button type="button" data-custom-key="0">0</button>
+          <button type="button" data-custom-key=".">.</button>
+        </div>
+      </div>
       <div id="extra-grid" class="grid"></div>
     </section>
   </main>
@@ -753,6 +787,28 @@
       }
       if (value.length >= 4) return { value, overLimit: true };
       return { value: value + key, overLimit: false };
+    }
+    function applyCustomKey(current, key) {
+      let value = typeof current === "string" ? current : "";
+      if (key === "clear") return { value: "", overLimit: false };
+      if (key === "back") return { value: value.slice(0, -1), overLimit: false };
+      if (key === ".") {
+        if (!value) return { value: "0.", overLimit: false };
+        if (value.includes(".")) return { value, overLimit: false };
+        return { value: value + ".", overLimit: false };
+      }
+      if (!/^\d$/.test(key)) return { value, overLimit: false };
+      if (!value || value === "0") return { value: key, overLimit: false };
+      if (value.includes(".")) {
+        const fraction = value.split(".")[1] || "";
+        if (fraction.length >= 1) return { value, overLimit: false };
+        const next = value + key;
+        if (Number(next) > MAX_CUSTOM) return { value, overLimit: true };
+        return { value: next, overLimit: false };
+      }
+      const next = value + key;
+      if (Number(next) > MAX_CUSTOM) return { value, overLimit: true };
+      return { value: next, overLimit: false };
     }
     function sanitizeCustomDenom(raw) {
       const stripped = String(raw || "").replace(/[$,\s]/g, "");
@@ -983,6 +1039,7 @@
     let amount = saved.amount;
     let enabled = saved.enabled;
     let extras = saved.extras;
+    let customAmount = "";
     let mode = saved.mode;
     let lastPress = 0;
     let toastTimer = 0;
@@ -1162,6 +1219,37 @@
       save();
       renderHome();
     }
+    function renderCustomAmount() {
+      const el = document.getElementById("custom-amount");
+      if (el) el.textContent = customAmount || "0";
+    }
+    function pressCustom(key) {
+      const result = applyCustomKey(customAmount, key === "C" ? "clear" : key);
+      if (result.overLimit) showToast("上限為 $50");
+      customAmount = result.value;
+      renderCustomAmount();
+    }
+    function addCustom() {
+      const cents = parseCustomDenomToCents(customAmount);
+      if (cents === null) {
+        showToast("請輸入有效面值，例如 2.4");
+        return;
+      }
+      if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
+        showToast("此面值已存在");
+        if (!enabled.includes(cents) && DEFAULT_CENTS.includes(cents)) {
+          enabled = [...enabled, cents].sort((a, b) => a - b);
+          save();
+          renderSettings();
+        }
+        return;
+      }
+      extras = [...extras, cents].sort((a, b) => a - b);
+      customAmount = "";
+      save();
+      renderCustomAmount();
+      renderSettings();
+    }
     function activateTap(el) {
       if (el.hasAttribute("data-mode")) {
         mode = el.getAttribute("data-mode") === "types" ? "types" : "stamps";
@@ -1177,6 +1265,14 @@
         press(el.getAttribute("data-key"));
         return;
       }
+      if (el.hasAttribute("data-custom-key")) {
+        pressCustom(el.getAttribute("data-custom-key"));
+        return;
+      }
+      if (el.hasAttribute("data-add-custom")) {
+        addCustom();
+        return;
+      }
       if (el.hasAttribute("data-toggle")) {
         const cents = Number(el.getAttribute("data-toggle"));
         enabled = enabled.includes(cents) ? enabled.filter((c) => c !== cents) : [...enabled, cents].sort((a, b) => a - b);
@@ -1190,9 +1286,9 @@
         renderSettings();
       }
     }
-    const TAP_SEL = "[data-go], [data-key], [data-toggle], [data-remove], [data-mode]";
+    const TAP_SEL = "[data-go], [data-key], [data-custom-key], [data-add-custom], [data-toggle], [data-remove], [data-mode]";
     function isPressable(el) {
-      return el && (el.hasAttribute("data-key") || el.hasAttribute("data-toggle") || el.hasAttribute("data-remove"));
+      return el && (el.hasAttribute("data-key") || el.hasAttribute("data-custom-key") || el.hasAttribute("data-toggle") || el.hasAttribute("data-remove"));
     }
     function pulsePress(el) {
       if (!el) return;
@@ -1242,58 +1338,6 @@
       extras = [];
       save();
       renderSettings();
-    });
-    document.getElementById("custom-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const input = document.getElementById("custom-input");
-      const cents = parseCustomDenomToCents(input.value);
-      if (cents === null) {
-        const attempt = sanitizeCustomDenom(input.value);
-        showToast(attempt.overLimit || Number(input.value) > MAX_CUSTOM ? "上限為 $50" : "請輸入有效面值，例如 2.4");
-        return;
-      }
-      if (DEFAULT_CENTS.includes(cents) || extras.includes(cents)) {
-        showToast("此面值已存在");
-        if (!enabled.includes(cents) && DEFAULT_CENTS.includes(cents)) {
-          enabled = [...enabled, cents].sort((a, b) => a - b);
-          save();
-          renderSettings();
-        }
-        return;
-      }
-      extras = [...extras, cents].sort((a, b) => a - b);
-      input.value = "";
-      save();
-      renderSettings();
-      revealCustomForm();
-    });
-    function revealCustomForm() {
-      window.setTimeout(() => {
-        const form = document.getElementById("custom-form");
-        const scroller = document.getElementById("settings");
-        const vv = window.visualViewport;
-        if (!form || !scroller) return;
-        const rect = form.getBoundingClientRect();
-        const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
-        const overlap = rect.bottom - (visibleBottom - 16);
-        if (overlap > 0) scroller.scrollTop += overlap;
-      }, 80);
-    }
-    document.getElementById("custom-input").addEventListener("focus", revealCustomForm);
-    if (window.visualViewport) {
-      const syncKb = () => {
-        const vv = window.visualViewport;
-        const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-        document.documentElement.style.setProperty("--kb", inset + "px");
-        if (document.activeElement && document.activeElement.id === "custom-input") revealCustomForm();
-      };
-      window.visualViewport.addEventListener("resize", syncKb);
-      window.visualViewport.addEventListener("scroll", syncKb);
-    }
-    document.getElementById("custom-input").addEventListener("input", (event) => {
-      const result = sanitizeCustomDenom(event.target.value);
-      if (result.overLimit) showToast("上限為 $50");
-      event.target.value = result.value;
     });
     document.getElementById("theme-btn").addEventListener("click", () => {
       const dark = !document.documentElement.classList.contains("dark");
