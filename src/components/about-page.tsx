@@ -63,7 +63,7 @@ export function AboutPage() {
       <section className="stagger-in" style={{ animationDelay: "60ms" }}>
         <SectionTitle>關於本程式</SectionTitle>
         <p className="mt-5 text-[0.9375rem] leading-[1.9] text-muted">
-          這是一個郵票組合的智能計算工具。當您手邊有多種不同面值的郵票，卻不知道如何組合成目標郵費時，本程式能即時為您運算最理想的貼法：金額必須剛好相符，不多不少。
+          這是一個郵票組合的智能計算工具。當您手邊有多種不同面值的郵票，卻不知道如何組合成目標郵費時，本程式能即時為您運算最理想的貼法。
         </p>
       </section>
 
