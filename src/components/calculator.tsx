@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { CircleAlert, CircleHelp, Delete, Hand, Settings, Share, X } from "lucide-react";
 import { StampFace } from "@/components/stamp-face";
@@ -51,30 +51,28 @@ export function StampCalculator() {
   }, []);
 
   useLayoutEffect(() => {
-    const mark = markRef.current;
-    const title = titleRef.current;
-    if (!mark || !title) return;
-
-    function titleWidth() {
-      const pack = title.querySelector("span");
+    function titleWidth(el: HTMLHeadingElement) {
+      const pack = el.querySelector("span");
       const packW = pack instanceof HTMLElement ? pack.getBoundingClientRect().width : 0;
-      const gap = Number.parseFloat(getComputedStyle(title).gap) || 0;
-      const textNode = [...title.childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+      const gap = Number.parseFloat(getComputedStyle(el).gap) || 0;
+      const textNode = [...el.childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
       let hanW = 0;
       if (textNode) {
         const range = document.createRange();
         range.selectNodeContents(textNode);
         hanW = range.getBoundingClientRect().width;
       }
-      const packFallback = packW > 1 ? packW : parseFloat(getComputedStyle(pack ?? title).fontSize) * 1.2;
-      return Math.max(title.getBoundingClientRect().width, packFallback + gap + hanW);
+      const packFallback = packW > 1 ? packW : parseFloat(getComputedStyle(pack instanceof Element ? pack : el).fontSize) * 1.2;
+      return Math.max(el.getBoundingClientRect().width, packFallback + gap + hanW);
     }
 
     function fit() {
+      const mark = markRef.current;
+      const title = titleRef.current;
       if (!mark || !title) return;
       mark.style.letterSpacing = "0px";
       const gaps = Math.max((mark.textContent ?? "").length - 1, 1);
-      const extra = titleWidth() - mark.getBoundingClientRect().width;
+      const extra = titleWidth(title) - mark.getBoundingClientRect().width;
       mark.style.letterSpacing = `${Math.max(0, extra / gaps)}px`;
     }
 
@@ -83,8 +81,8 @@ export function StampCalculator() {
     void document.fonts?.ready.then(fit);
     const timer = window.setTimeout(fit, 300);
     const ro = new ResizeObserver(fit);
-    ro.observe(title);
-    const pack = title.querySelector("span");
+    if (titleRef.current) ro.observe(titleRef.current);
+    const pack = titleRef.current?.querySelector("span");
     if (pack) ro.observe(pack);
     window.addEventListener("load", fit);
     window.addEventListener("resize", fit);
@@ -508,8 +506,14 @@ function ComboStrip({
         className="flex w-max shrink-0 items-center justify-start gap-1 px-1 pt-1"
         style={{ transform: `scale(${scale})`, transformOrigin: "left center" }}
       >
-        {lines.map((line) => (
-          <StampFace key={line.cents} cents={line.cents} count={line.count} className="pt-3.5 pr-3.5" />
+        {lines.map((line, index) => (
+          <StampFace
+            key={`${targetCents}-${line.cents}`}
+            cents={line.cents}
+            count={line.count}
+            className="combo-stamp pt-3.5 pr-3.5"
+            style={{ "--i": index } as CSSProperties}
+          />
         ))}
       </div>
     </div>

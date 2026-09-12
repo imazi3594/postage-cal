@@ -477,10 +477,9 @@ html.crisis .stamp-face {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stagger-in {
+  .combo-stamp {
     animation: none !important;
     opacity: 1 !important;
-    filter: none !important;
     transform: none !important;
   }
 
@@ -500,16 +499,19 @@ html.crisis .stamp-face {
   }
 }
 
-@keyframes stamp-in {
+.combo-stamp {
+  animation: combo-stamp-in 300ms var(--ease-smooth-out) both;
+  animation-delay: calc(var(--i, 0) * 42ms);
+}
+
+@keyframes combo-stamp-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
-    filter: blur(2px);
+    transform: translateY(8px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -606,3 +608,54 @@ html.dark .stamp-face[data-custom="true"] span {
     transform: scale(1);
   }
 }
+
+.fly-amount {
+  position: fixed;
+  z-index: 50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--color-surface) 92%, white);
+  box-shadow: var(--shadow-border);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  will-change: transform, opacity;
+}
+
+.stamp-awaiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stamp-pop {
+  animation: stamp-pop 280ms var(--ease-smooth-out);
+}
+
+@keyframes stamp-pop {
+  from {
+    transform: scale(0.62);
+    opacity: 0;
+  }
+  68% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-pop {
+    animation: none;
+  }
+}
+

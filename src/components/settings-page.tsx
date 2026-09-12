@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, CircleAlert, Delete, Minus, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
 import { loadSaved, patchSaved } from "@/lib/stamp-settings";
 import { applyCrisis, applySolveMode } from "@/lib/theme";
 import { createTapTracker, pulsePress, setPressDown } from "@/lib/tap";
+import { flyAmountToStamp } from "@/lib/fly-stamp";
 import { cn } from "@/lib/utils";
 
 const CUSTOM_KEYS = [
@@ -30,6 +31,9 @@ export function SettingsPage() {
   const [toast, setToast] = useState("");
   const toastTimer = useRef<number>(0);
   const tap = useRef(createTapTracker()).current;
+  const amountBoxRef = useRef<HTMLDivElement>(null);
+  const extraGridRef = useRef<HTMLDivElement>(null);
+  const pendingFly = useRef<{ cents: number; from: DOMRect } | null>(null);
 
   useEffect(() => {
     const saved = loadSaved();
@@ -50,6 +54,17 @@ export function SettingsPage() {
   }, [enabled, extras, hydrated]);
 
   useEffect(() => () => window.clearTimeout(toastTimer.current), []);
+
+  useLayoutEffect(() => {
+    const pending = pendingFly.current;
+    if (!pending) return;
+    pendingFly.current = null;
+    const dest = extraGridRef.current?.querySelector(`[data-extra="${pending.cents}"]`);
+    if (!(dest instanceof HTMLElement)) return;
+    dest.classList.add("stamp-awaiting");
+    dest.scrollIntoView({ block: "nearest", inline: "nearest" });
+    requestAnimationFrame(() => flyAmountToStamp(pending.from, dest, formatMoney(pending.cents)));
+  }, [extras]);
 
   function showToast(message: string) {
     setToast(message);
@@ -108,6 +123,8 @@ export function SettingsPage() {
       }
       return;
     }
+    const from = amountBoxRef.current?.getBoundingClientRect();
+    if (from) pendingFly.current = { cents, from };
     setExtras((prev) => [...prev, cents].sort((a, b) => a - b));
     setCustom("");
   }
@@ -183,7 +200,7 @@ export function SettingsPage() {
         </div>
 
         <div className="mt-4 flex items-center gap-2">
-          <div className="flex min-h-11 min-w-0 flex-1 items-center rounded-md bg-bg px-3">
+          <div ref={amountBoxRef} className="flex min-h-11 min-w-0 flex-1 items-center rounded-md bg-bg px-3">
             <span className="mr-1 text-subtle">$</span>
             <span className="font-display text-2xl font-semibold tabular-nums tracking-tight text-ink">
               {custom || "0"}
@@ -220,11 +237,12 @@ export function SettingsPage() {
         </div>
 
         {extras.length > 0 ? (
-          <div className="mt-4 grid grid-cols-4 gap-3 overflow-visible">
+          <div ref={extraGridRef} className="mt-4 grid grid-cols-4 gap-3 overflow-visible">
             {extras.map((cents) => (
               <button
                 key={cents}
                 type="button"
+                data-extra={cents}
                 aria-label={`移除 ${formatMoney(cents)}`}
                 {...stampHandlers(() => setExtras((prev) => prev.filter((c) => c !== cents)))}
                 className="tap-press relative overflow-visible touch-manipulation rounded-sm"

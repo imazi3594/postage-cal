@@ -204,7 +204,8 @@
     .mode-switch { display: flex; margin: 0 0 0.5rem; padding: 0.15rem; border-radius: 0.55rem; background: var(--bg); isolation: isolate; forced-color-adjust: none; }
     .mode-switch button { flex: 1; height: 1.75rem; border: 0; border-radius: 0.4rem; background: transparent; color: var(--subtle); font: inherit; font-size: 0.75rem; font-weight: 500; opacity: 0.4; white-space: nowrap; -webkit-appearance: none; appearance: none; }
     .mode-switch button.mode-on { background: var(--primary-soft); color: var(--primary); font-weight: 700; opacity: 1; box-shadow: none; }
-    .cluster { display: flex; align-items: center; justify-content: flex-start; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: left center; }
+    .combo-stamp { animation: combo-stamp-in 300ms var(--ease) both; animation-delay: calc(var(--i, 0) * 42ms); }
+    @keyframes combo-stamp-in { from { opacity: 0; transform: translateY(8px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
     .combo-block { flex-shrink: 0; }
     .pad { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
     .amount-row { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); border-radius: 0.75rem; padding: 0.5rem 0.75rem; flex-shrink: 0; }
@@ -380,7 +381,10 @@
       background: #dc2626; color: #fff; font-size: 0.85rem; line-height: 1; font-weight: 700;
       box-shadow: 0 0 0 2px var(--surface);
     }
-    .toast-host { pointer-events: none; position: fixed; inset: 1rem 1rem auto; z-index: 20; display: flex; justify-content: center; opacity: 0; transform: translateY(-0.5rem); transition: opacity 250ms var(--ease), transform 250ms var(--ease); }
+    .fly-amount { position: fixed; z-index: 50; margin: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 0.5rem; background: color-mix(in oklab, var(--surface) 92%, white); box-shadow: var(--shadow); color: var(--ink); font-family: var(--display); font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; will-change: transform, opacity; }
+    .stamp-awaiting { opacity: 0; pointer-events: none; }
+    .stamp-pop { animation: stamp-pop 280ms cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes stamp-pop { from { transform: scale(0.62); opacity: 0; } 68% { transform: scale(1.08); opacity: 1; } to { transform: scale(1); opacity: 1; } }
     .toast-host.show { opacity: 1; transform: none; }
     .toast { display: flex; align-items: center; gap: 0.75rem; width: min(24rem, 100%); border-radius: 1rem; background: #fca5a5; color: #7f1d1d; padding: 0.9rem 1.25rem; box-shadow: var(--shadow); }
     .toast .bang { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
@@ -407,6 +411,8 @@
       .stamp-face.custom, .stamp-face.custom::after { animation: none; }
       .toast-host { transition: none; }
       .marquee-track { animation: none; }
+      .stamp-pop { animation: none !important; }
+      .combo-stamp { animation: none !important; opacity: 1 !important; transform: none !important; }
       .keys button, .back-btn, .grid button, .mini-keys button, .custom-back, .keys button:active, .keys button.is-down, .keys button.is-press, .back-btn:active, .back-btn.is-down, .back-btn.is-press, .grid button:active, .grid button.is-down, .grid button.is-press, .mini-keys button:active, .mini-keys button.is-down, .mini-keys button.is-press, .custom-back:active, .custom-back.is-down, .custom-back.is-press { transform: none !important; filter: none !important; animation: none !important; transition: none !important; }
     }
   </style>
@@ -1132,7 +1138,7 @@
         clearStats();
         return;
       }
-      comboEl.innerHTML = `<div class="cluster">${combo.lines.map((line) => stampHTML(line.cents, { count: line.count })).join("")}</div>`;
+      comboEl.innerHTML = `<div class="cluster">${combo.lines.map((line, i) => stampHTML(line.cents, { count: line.count }).replace('class="stamp', `class="stamp combo-stamp" style="--i:${i}"`)).join("")}</div>`;
       statsEl.textContent = `郵票${combo.stampCount}枚\u3000面值${combo.lines.length}種`;
       fitCombo();
     }
@@ -1236,6 +1242,45 @@
       customAmount = result.value;
       renderCustomAmount();
     }
+    function flyAmountToStamp(from, toEl, label) {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const to = toEl.getBoundingClientRect();
+      if (to.width < 2 || to.height < 2) return;
+      toEl.classList.add("stamp-awaiting");
+      const ghost = document.createElement("div");
+      ghost.className = "fly-amount";
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.textContent = label;
+      const x0 = from.left + from.width / 2;
+      const y0 = from.top + from.height / 2;
+      const x1 = to.left + to.width / 2;
+      const y1 = to.top + to.height / 2;
+      ghost.style.left = x0 + "px";
+      ghost.style.top = y0 + "px";
+      ghost.style.width = from.width + "px";
+      ghost.style.height = from.height + "px";
+      document.body.appendChild(ghost);
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+      const sx = to.width / Math.max(from.width, 1);
+      const sy = to.height / Math.max(from.height, 1);
+      const lift = Math.min(24, Math.abs(dy) * 0.1);
+      ghost.animate([
+        { transform: "translate(-50%, -50%) scale(1)", opacity: 1, offset: 0 },
+        { transform: "translate(-50%, -50%) translate(" + (dx * 0.42) + "px, " + (dy * 0.32 - lift) + "px) scale(1.06)", opacity: 1, offset: 0.42 },
+        { transform: "translate(-50%, -50%) translate(" + dx + "px, " + dy + "px) scale(" + sx + ", " + sy + ")", opacity: 0.35, offset: 1 }
+      ], { duration: 540, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" }).finished.then(function () {
+        ghost.remove();
+        toEl.classList.remove("stamp-awaiting");
+        toEl.classList.remove("stamp-pop");
+        void toEl.offsetWidth;
+        toEl.classList.add("stamp-pop");
+        toEl.addEventListener("animationend", function () { toEl.classList.remove("stamp-pop"); }, { once: true });
+      }).catch(function () {
+        ghost.remove();
+        toEl.classList.remove("stamp-awaiting");
+      });
+    }
     function addCustom() {
       const cents = parseCustomDenomToCents(customAmount);
       if (cents === null) {
@@ -1251,11 +1296,20 @@
         }
         return;
       }
+      const fromEl = document.querySelector(".custom-amount");
+      const from = fromEl ? fromEl.getBoundingClientRect() : null;
       extras = [...extras, cents].sort((a, b) => a - b);
       customAmount = "";
       save();
       renderCustomAmount();
       renderSettings();
+      if (!from) return;
+      const dest = extraGrid.querySelector('[data-remove="' + cents + '"]');
+      if (!(dest instanceof HTMLElement)) return;
+      dest.scrollIntoView({ block: "nearest", inline: "nearest" });
+      requestAnimationFrame(function () {
+        flyAmountToStamp(from, dest, formatMoney(cents));
+      });
     }
     function activateTap(el) {
       if (el.hasAttribute("data-mode")) {
