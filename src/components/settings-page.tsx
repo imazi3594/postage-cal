@@ -113,8 +113,8 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6">
-      <header className="flex items-center gap-1">
+    <div className="relative mx-auto flex w-full max-w-lg flex-col">
+      <header className="sticky top-0 z-10 flex items-center gap-1 bg-bg/90 px-4 py-3 backdrop-blur-md sm:px-6">
         <Link
           to="/"
           aria-label="返回計數機"
@@ -124,6 +124,8 @@ export function SettingsPage() {
         </Link>
         <h1 className="text-lg font-semibold tracking-tight text-ink">設定</h1>
       </header>
+
+      <div className="flex flex-col gap-4 px-4 pt-1 pb-4 sm:px-6 sm:pb-6">
 
       <section className="stagger-in rounded-xl bg-surface p-5 shadow-(--shadow-border)" style={{ animationDelay: "80ms" }}>
         <div className="flex items-start justify-between gap-3">
@@ -237,6 +239,7 @@ export function SettingsPage() {
           </div>
         ) : null}
       </section>
+      </div>
 
       <div
         className={cn(

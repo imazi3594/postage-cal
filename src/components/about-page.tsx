@@ -36,8 +36,8 @@ export function AboutPage() {
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-lg flex-col px-5 py-4 sm:px-8 sm:py-6">
-      <header className="flex items-center gap-2">
+    <div className="relative mx-auto flex w-full max-w-lg flex-col">
+      <header className="sticky top-0 z-10 flex items-center gap-2 bg-bg/80 px-5 py-3 backdrop-blur-md sm:px-8">
         <Link
           to="/"
           aria-label="返回計數機"
@@ -45,8 +45,10 @@ export function AboutPage() {
         >
           <ArrowLeft className="size-5" />
         </Link>
-        <h1 className="text-base font-semibold tracking-tight text-ink">關於</h1>
+        <h1 className="text-lg font-semibold tracking-tight text-ink">關於</h1>
       </header>
+
+      <div className="flex flex-col px-5 pt-1 pb-4 sm:px-8 sm:pb-6">
 
       <section className="stagger-in mt-1 overflow-visible text-center">
         <HeroArt />
@@ -153,6 +155,7 @@ export function AboutPage() {
           </Link>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
