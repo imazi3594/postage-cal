@@ -37,6 +37,8 @@ export function StampCalculator() {
   const toastTimer = useRef<number>(0);
   const tap = useRef(createTapTracker()).current;
   const closedRef = useRef(false);
+  const markRef = useRef<HTMLParagraphElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   amountRef.current = typeof amount === "string" ? amount : "";
 
   useEffect(() => {
@@ -46,6 +48,53 @@ export function StampCalculator() {
     setExtras(saved.extras);
     setMode(saved.mode);
     setHydrated(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    const mark = markRef.current;
+    const title = titleRef.current;
+    if (!mark || !title) return;
+
+    function titleWidth() {
+      const pack = title.querySelector("span");
+      const packW = pack instanceof HTMLElement ? pack.getBoundingClientRect().width : 0;
+      const gap = Number.parseFloat(getComputedStyle(title).gap) || 0;
+      const textNode = [...title.childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+      let hanW = 0;
+      if (textNode) {
+        const range = document.createRange();
+        range.selectNodeContents(textNode);
+        hanW = range.getBoundingClientRect().width;
+      }
+      const packFallback = packW > 1 ? packW : parseFloat(getComputedStyle(pack ?? title).fontSize) * 1.2;
+      return Math.max(title.getBoundingClientRect().width, packFallback + gap + hanW);
+    }
+
+    function fit() {
+      if (!mark || !title) return;
+      mark.style.letterSpacing = "0px";
+      const gaps = Math.max((mark.textContent ?? "").length - 1, 1);
+      const extra = titleWidth() - mark.getBoundingClientRect().width;
+      mark.style.letterSpacing = `${Math.max(0, extra / gaps)}px`;
+    }
+
+    fit();
+    const raf = requestAnimationFrame(() => requestAnimationFrame(fit));
+    void document.fonts?.ready.then(fit);
+    const timer = window.setTimeout(fit, 300);
+    const ro = new ResizeObserver(fit);
+    ro.observe(title);
+    const pack = title.querySelector("span");
+    if (pack) ro.observe(pack);
+    window.addEventListener("load", fit);
+    window.addEventListener("resize", fit);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+      ro.disconnect();
+      window.removeEventListener("load", fit);
+      window.removeEventListener("resize", fit);
+    };
   }, []);
 
   useEffect(() => {
@@ -184,11 +233,11 @@ export function StampCalculator() {
   return (
     <div className="relative mx-auto flex h-dvh max-h-svh w-full max-w-lg flex-col gap-2 overflow-hidden px-4 py-3 sm:gap-4 sm:px-6 sm:py-5">
       <header className="flex shrink-0 items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-display text-2xs font-medium tracking-wide text-primary">
-            Postage combination calculator
+        <div className="w-fit min-w-0 max-w-full">
+          <p ref={markRef} className="w-max whitespace-nowrap font-display text-2xs font-medium text-primary">
+            Stamp combination calculator
           </p>
-          <h1 className="mt-0.5 flex items-center gap-1.5 text-lg font-semibold tracking-tight text-ink">
+          <h1 ref={titleRef} className="mt-0.5 flex w-max items-center gap-1.5 text-lg font-semibold tracking-tight text-ink">
             <span className="text-[1.15rem] leading-none" aria-hidden>
               📦
             </span>

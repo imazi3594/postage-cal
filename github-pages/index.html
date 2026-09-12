@@ -124,10 +124,34 @@
     .wrap.settings, .wrap.about { overflow: hidden; padding-bottom: 0; }
     .page-body { flex: 1 1 0; min-height: 0; overflow: auto; padding-bottom: 2rem; -webkit-overflow-scrolling: touch; }
     .wrap.settings .top, .wrap.about .top { z-index: 10; background: var(--bg); }
-    .wrap.about { gap: 0.5rem; padding: 1rem 1.25rem 0; }
-    .wrap.about .page-body { padding-bottom: 2.5rem; }
-    .wrap.about .top { gap: 0.5rem; }
+    .wrap.about { gap: 0.5rem; padding: 0.75rem 1rem 0; }
+    .wrap.about .page-body { display: flex; flex-direction: column; gap: 3rem; padding-top: 0.75rem; padding-bottom: 2.5rem; }
+    .wrap.about .top { gap: 0.25rem; }
     .wrap.about .top h1 { margin: 0; }
+    .about-hero { display: block; text-align: center; overflow: visible; background: none; padding: 0; border-radius: 0; }
+    .hero-stage { width: min(17.5rem, 100%); margin: 0 auto; }
+    .hero-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .about-hero h2 { margin-top: 1rem; font-size: 1.65rem; font-weight: 700; letter-spacing: -0.02em; }
+    .about-kicker { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.75rem 0 0; font-family: var(--display); font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em; color: var(--primary); }
+    .about-kicker i { display: block; width: 1.75rem; height: 1px; background: color-mix(in oklab, var(--primary) 45%, transparent); }
+    .about-section { padding: 0; }
+    .about-h { display: flex; align-items: center; gap: 0.75rem; margin: 0 0 1.25rem; font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .about-h::before { content: ""; width: 3px; height: 1.05em; border-radius: 999px; background: var(--primary); flex-shrink: 0; }
+    .about-copy { margin: 0; font-size: 0.9375rem; line-height: 1.9; color: var(--muted); }
+    .about-logic { margin: 0; border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+    .about-logic + .about-copy { margin-top: 1.25rem; }
+    .logic-row { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1.25rem 1rem; }
+    .logic-row .emo { width: 2rem; flex-shrink: 0; text-align: center; font-size: 1.15rem; line-height: 1.75rem; }
+    .logic-row .ttl { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.75rem; }
+    .logic-row .ttl.stamps { color: #009247; }
+    .logic-row .ttl.types { color: #7c3aed; }
+    .logic-row p { margin: 0.4rem 0 0; font-size: 0.875rem; line-height: 1.8; color: var(--muted); }
+    .logic-row + .logic-row { border-top: 1px solid color-mix(in oklab, var(--border) 80%, transparent); }
+    .feat-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.875rem; }
+    .feat-list li { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1.15rem 1rem; border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); border: 1px solid color-mix(in oklab, var(--border) 80%, transparent); }
+    .feat-list .emo { width: 2rem; flex-shrink: 0; text-align: center; font-size: 1.25rem; line-height: 1.75rem; }
+    .feat-list b { display: block; font-size: 0.95rem; line-height: 1.35; }
+    .feat-list span { display: block; margin-top: 0.4rem; font-size: 0.875rem; line-height: 1.8; color: var(--muted); }
     .custom-pad { margin-top: 1rem; }
     .custom-amount-row { display: flex; align-items: stretch; gap: 0.5rem; }
     .custom-amount { flex: 1 1 auto; min-width: 0; height: 2.75rem; display: flex; align-items: center; padding: 0 0.75rem; border-radius: 0.5rem; background: var(--bg); font-family: var(--display); font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -144,10 +168,10 @@
     html.dark .mini-keys .clear:hover { background: #5c3844; }
     .top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; }
     .top > h1 { flex: 1; margin: 0; height: 2.5rem; display: flex; align-items: center; line-height: 1; }
-    .brand { min-width: 0; }
+    .brand { width: fit-content; max-width: 100%; min-width: 0; }
+    .mark { margin: 0; display: block; width: max-content; max-width: 100%; white-space: nowrap; font-family: var(--display); font-size: 0.625rem; font-weight: 500; letter-spacing: 0; color: var(--primary); }
     .card.roomy { padding: 1.25rem; }
     .amount-copy { flex: 1; min-width: 0; }
-    .mark { margin: 0; font-family: var(--display); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.04em; color: var(--primary); }
     h1 { margin: 0.125rem 0 0; display: flex; align-items: center; gap: 0.375rem; font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
     h1 .title-pack { font-size: 1.15rem; line-height: 1; flex: 0 0 auto; }
     .icon-btn { flex: 0 0 auto; width: 2.5rem; height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 0.5rem; background: transparent; color: var(--ink); }
@@ -205,29 +229,6 @@
     .head-row > div { min-width: 0; flex: 1; }
     .head-row .btn { flex-shrink: 0; }
     h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
-    .about-hero { display: block; text-align: center; overflow: visible; background: none; padding: 0; border-radius: 0; }
-    .hero-stage { width: min(17.5rem, 100%); margin: 0 auto; }
-    .hero-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
-    .about-hero h2 { margin-top: 0.75rem; font-size: 1.65rem; font-weight: 700; letter-spacing: -0.02em; }
-    .about-kicker { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.625rem 0 0; font-family: var(--display); font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em; color: var(--primary); }
-    .about-kicker i { display: block; width: 1.75rem; height: 1px; background: color-mix(in oklab, var(--primary) 45%, transparent); }
-    .about-section { padding: 0; }
-    .about-h { display: flex; align-items: center; gap: 0.625rem; margin: 0; font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.01em; }
-    .about-h::before { content: ""; width: 3px; height: 1rem; border-radius: 999px; background: var(--primary); flex-shrink: 0; }
-    .about-copy { margin: 0.75rem 0 0; font-size: 0.9375rem; line-height: 1.85; color: var(--muted); }
-    .about-logic { margin-top: 1rem; border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
-    .logic-row { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1.05rem 1rem; }
-    .logic-row .emo { width: 2rem; flex-shrink: 0; text-align: center; font-size: 1.15rem; line-height: 1.75rem; }
-    .logic-row .ttl { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.75rem; }
-    .logic-row .ttl.stamps { color: #009247; }
-    .logic-row .ttl.types { color: #7c3aed; }
-    .logic-row p { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.75; color: var(--muted); }
-    .logic-row + .logic-row { border-top: 1px solid color-mix(in oklab, var(--border) 80%, transparent); }
-    .feat-list { margin: 1rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
-    .feat-list li { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1rem; border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); border: 1px solid color-mix(in oklab, var(--border) 80%, transparent); }
-    .feat-list .emo { width: 2rem; flex-shrink: 0; text-align: center; font-size: 1.25rem; line-height: 1.75rem; }
-    .feat-list b { display: block; font-size: 0.95rem; line-height: 1.35; }
-    .feat-list span { display: block; margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.75; color: var(--muted); }
     .about-end { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; padding: 0.5rem 0 1.5rem; text-align: center; }
     .about-powered a { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.35rem 0.6rem 0.35rem 0.35rem; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; }
     .about-powered .mark { width: 1.75rem; height: 1.75rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: color-mix(in oklab, var(--primary) 12%, var(--surface)); color: var(--primary); }
@@ -414,7 +415,7 @@
   <main id="home" class="wrap">
     <header class="top">
       <div class="brand">
-        <p class="mark">Postage combination calculator</p>
+        <p class="mark" id="brand-mark">Stamp combination calculator</p>
         <h1>
           <span class="title-pack" aria-hidden="true">📦</span>
           郵票組合計數機
@@ -673,7 +674,7 @@
         </svg>
       </div>
       <h2>郵票組合計數機</h2>
-      <p class="about-kicker"><i></i>POSTAGE COMBINATION CALCULATOR<i></i></p>
+      <p class="about-kicker"><i></i>STAMP COMBINATION CALCULATOR<i></i></p>
     </section>
     <section class="about-section">
       <h2 class="about-h">關於本程式</h2>
@@ -697,7 +698,6 @@
           </div>
         </div>
       </div>
-      <p class="about-copy">組合必須剛好等於目標郵費。同枚數時會優先整數面值，例如 $3 用 $2+$1，而不是 $2.8+$0.2。</p>
     </section>
     <section class="about-section">
       <h2 class="about-h">核心功能</h2>
@@ -1372,7 +1372,33 @@
     window.addEventListener("hashchange", () => {
       showPage(pageFromHash());
     });
-    window.addEventListener("resize", () => { fitCombo(); renderStock(); });
+    function fitBrandMark() {
+      const mark = document.getElementById("brand-mark");
+      const title = document.querySelector(".brand h1");
+      if (!mark || !title) return;
+      const pack = title.querySelector("span");
+      const packW = pack ? pack.getBoundingClientRect().width : 0;
+      const gap = parseFloat(getComputedStyle(title).gap) || 0;
+      const textNode = [...title.childNodes].find((node) => node.nodeType === 3 && node.textContent.trim());
+      let hanW = 0;
+      if (textNode) {
+        const range = document.createRange();
+        range.selectNodeContents(textNode);
+        hanW = range.getBoundingClientRect().width;
+      }
+      const packFallback = packW > 1 ? packW : parseFloat(getComputedStyle(pack || title).fontSize) * 1.2;
+      const target = Math.max(title.getBoundingClientRect().width, packFallback + gap + hanW);
+      mark.style.letterSpacing = "0px";
+      const gaps = Math.max((mark.textContent || "").length - 1, 1);
+      const extra = target - mark.getBoundingClientRect().width;
+      mark.style.letterSpacing = Math.max(0, extra / gaps) + "px";
+    }
+    fitBrandMark();
+    requestAnimationFrame(function () { requestAnimationFrame(fitBrandMark); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBrandMark);
+    window.addEventListener("load", fitBrandMark);
+    setTimeout(fitBrandMark, 300);
+    window.addEventListener("resize", () => { fitCombo(); renderStock(); fitBrandMark(); });
     (function setupInstall() {
       const btn = document.getElementById("install-btn");
       const sheet = document.getElementById("install-sheet");

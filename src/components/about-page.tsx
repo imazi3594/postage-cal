@@ -48,76 +48,73 @@ export function AboutPage() {
         <h1 className="flex h-10 items-center text-lg leading-none font-semibold tracking-tight text-ink">關於</h1>
       </header>
 
-      <div className="flex flex-col px-4 pt-1 pb-4 sm:px-6 sm:pb-6">
+      <div className="flex flex-col gap-12 px-4 pt-3 pb-8 sm:px-6">
 
-      <section className="stagger-in mt-1 overflow-visible text-center">
+      <section className="stagger-in overflow-visible text-center">
         <HeroArt />
-        <h2 className="mt-3 font-sans text-[1.65rem] font-bold tracking-tight text-ink">郵票組合計數機</h2>
-        <p className="mt-2.5 flex items-center justify-center gap-2.5 font-display text-[0.625rem] font-semibold tracking-[0.14em] text-primary">
+        <h2 className="mt-4 font-sans text-[1.65rem] font-bold tracking-tight text-ink">郵票組合計數機</h2>
+        <p className="mt-3 flex items-center justify-center gap-2.5 font-display text-[0.625rem] font-semibold tracking-[0.14em] text-primary">
           <span className="h-px w-7 bg-primary/45" aria-hidden />
-          POSTAGE COMBINATION CALCULATOR
+          STAMP COMBINATION CALCULATOR
           <span className="h-px w-7 bg-primary/45" aria-hidden />
         </p>
       </section>
 
-      <section className="stagger-in mt-8" style={{ animationDelay: "60ms" }}>
+      <section className="stagger-in" style={{ animationDelay: "60ms" }}>
         <SectionTitle>關於本程式</SectionTitle>
-        <p className="mt-3 text-[0.9375rem] leading-[1.85] text-muted">
+        <p className="mt-5 text-[0.9375rem] leading-[1.9] text-muted">
           這是一個郵票組合的智能計算工具。當您手邊有多種不同面值的郵票，卻不知道如何組合成目標郵費時，本程式能即時為您運算最理想的貼法：金額必須剛好相符，不多不少。
         </p>
       </section>
 
-      <section className="stagger-in mt-8" style={{ animationDelay: "110ms" }}>
+      <section className="stagger-in" style={{ animationDelay: "110ms" }}>
         <SectionTitle>計算邏輯與演算法</SectionTitle>
-        <div className="mt-4 overflow-hidden rounded-2xl bg-surface px-4 shadow-(--shadow-border)">
-          <div className="flex items-start gap-3.5 py-[1.05rem]">
+        <div className="mt-5 overflow-hidden rounded-2xl bg-surface px-4 shadow-(--shadow-border)">
+          <div className="flex items-start gap-3.5 py-5">
             <span className="w-8 shrink-0 text-center text-lg leading-7" aria-hidden>
               🔢
             </span>
             <div className="min-w-0">
               <p className="font-semibold leading-7 text-[#009247]">最少郵票</p>
-              <p className="mt-1 text-sm leading-[1.75] text-muted">優先尋找「最少郵票總數」的方案，節省信封空間。</p>
+              <p className="mt-1.5 text-sm leading-[1.8] text-muted">優先尋找「最少郵票總數」的方案，節省信封空間。</p>
             </div>
           </div>
           <div className="h-px bg-border/80" />
-          <div className="flex items-start gap-3.5 py-[1.05rem]">
+          <div className="flex items-start gap-3.5 py-5">
             <span className="w-8 shrink-0 text-center text-lg leading-7" aria-hidden>
               💲
             </span>
             <div className="min-w-0">
               <p className="font-semibold leading-7 text-[#7c3aed]">減少種類</p>
-              <p className="mt-1 text-sm leading-[1.75] text-muted">
+              <p className="mt-1.5 text-sm leading-[1.8] text-muted">
                 每少一種面值，容許枚數最多多一倍，以便一次撕下同款郵票。
               </p>
             </div>
           </div>
         </div>
-        <p className="mt-4 text-[0.9375rem] leading-[1.85] text-muted">
-          組合必須剛好等於目標郵費。同枚數時會優先整數面值，例如 $3 用 $2+$1，而不是 $2.8+$0.2。
-        </p>
       </section>
 
-      <section className="stagger-in mt-8" style={{ animationDelay: "160ms" }}>
+      <section className="stagger-in" style={{ animationDelay: "160ms" }}>
         <SectionTitle>核心功能</SectionTitle>
-        <ul className="mt-4 flex flex-col gap-3">
+        <ul className="mt-5 flex flex-col gap-3.5">
           {FEATURES.map((item) => (
             <li
               key={item.title}
-              className="flex items-start gap-3.5 rounded-2xl border border-border/80 bg-surface px-4 py-4 shadow-(--shadow-border)"
+              className="flex items-start gap-3.5 rounded-2xl border border-border/80 bg-surface px-4 py-5 shadow-(--shadow-border)"
             >
               <span className="w-8 shrink-0 text-center text-xl leading-7" aria-hidden>
                 {item.icon}
               </span>
               <div className="min-w-0 pt-0.5">
                 <p className="font-semibold leading-snug text-ink">{item.title}</p>
-                <p className="mt-1 text-sm leading-[1.75] text-muted">{item.body}</p>
+                <p className="mt-1.5 text-sm leading-[1.8] text-muted">{item.body}</p>
               </div>
             </li>
           ))}
         </ul>
       </section>
 
-      <footer className="stagger-in mt-10 flex flex-col items-center gap-3.5 pb-10 text-center" style={{ animationDelay: "250ms" }}>
+      <footer className="stagger-in flex flex-col items-center gap-4 pb-6 text-center" style={{ animationDelay: "250ms" }}>
         <a
           href="https://grok.com"
           target="_blank"
@@ -162,8 +159,8 @@ export function AboutPage() {
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <h2 className="flex items-center gap-2.5 font-sans text-[1.0625rem] font-bold tracking-tight text-ink">
-      <span className="h-4 w-[3px] shrink-0 rounded-full bg-primary" aria-hidden />
+    <h2 className="flex items-center gap-3 font-sans text-[1.0625rem] leading-none font-bold tracking-tight text-ink">
+      <span className="h-[1.05em] w-[3px] shrink-0 rounded-full bg-primary" aria-hidden />
       {children}
     </h2>
   );
