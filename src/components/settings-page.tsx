@@ -114,7 +114,7 @@ export function SettingsPage() {
 
   return (
     <div className="relative mx-auto flex w-full max-w-lg flex-col">
-      <header className="sticky top-0 z-10 flex items-center gap-1 bg-bg/90 px-4 py-3 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-10 flex items-center gap-1 bg-bg px-4 py-3 sm:px-6">
         <Link
           to="/"
           aria-label="返回計數機"

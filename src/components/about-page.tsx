@@ -37,7 +37,7 @@ export function AboutPage() {
 
   return (
     <div className="relative mx-auto flex w-full max-w-lg flex-col">
-      <header className="sticky top-0 z-10 flex items-center gap-1 bg-bg/90 px-4 py-3 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-10 flex items-center gap-1 bg-bg px-4 py-3 sm:px-6">
         <Link
           to="/"
           aria-label="返回計數機"
@@ -48,7 +48,7 @@ export function AboutPage() {
         <h1 className="flex h-10 items-center text-lg leading-none font-semibold tracking-tight text-ink">關於</h1>
       </header>
 
-      <div className="flex flex-col px-5 pt-1 pb-4 sm:px-8 sm:pb-6">
+      <div className="flex flex-col px-4 pt-1 pb-4 sm:px-6 sm:pb-6">
 
       <section className="stagger-in mt-1 overflow-visible text-center">
         <HeroArt />
