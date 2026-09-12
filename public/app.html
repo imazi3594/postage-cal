@@ -206,6 +206,7 @@
     .mode-switch button.mode-on { background: var(--primary-soft); color: var(--primary); font-weight: 700; opacity: 1; box-shadow: none; }
     .combo-stamp { animation: combo-stamp-in 300ms var(--ease) both; animation-delay: calc(var(--i, 0) * 42ms); }
     @keyframes combo-stamp-in { from { opacity: 0; transform: translateY(8px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .cluster { display: flex; align-items: center; justify-content: flex-start; gap: 0.25rem; width: max-content; flex-shrink: 0; padding: 0.25rem; transform-origin: left center; }
     .combo-block { flex-shrink: 0; }
     .pad { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
     .amount-row { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); border-radius: 0.75rem; padding: 0.5rem 0.75rem; flex-shrink: 0; }
@@ -385,6 +386,7 @@
     .stamp-awaiting { opacity: 0; pointer-events: none; }
     .stamp-pop { animation: stamp-pop 280ms cubic-bezier(0.22, 1, 0.36, 1); }
     @keyframes stamp-pop { from { transform: scale(0.62); opacity: 0; } 68% { transform: scale(1.08); opacity: 1; } to { transform: scale(1); opacity: 1; } }
+    .toast-host { pointer-events: none; position: fixed; inset: 1rem 1rem auto; z-index: 20; display: flex; justify-content: center; opacity: 0; transform: translateY(-0.5rem); transition: opacity 250ms var(--ease), transform 250ms var(--ease); }
     .toast-host.show { opacity: 1; transform: none; }
     .toast { display: flex; align-items: center; gap: 0.75rem; width: min(24rem, 100%); border-radius: 1rem; background: #fca5a5; color: #7f1d1d; padding: 0.9rem 1.25rem; box-shadow: var(--shadow); }
     .toast .bang { flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
@@ -1097,7 +1099,7 @@
       }, 1800);
     }
     function stampHTML(cents, opts) {
-      const { count = 1, size = "md", off = false } = opts || {};
+      const { count = 1, size = "md", off = false, appear } = opts || {};
       const known = DEFAULT_CENTS.indexOf(cents);
       const custom = known < 0;
       const tone = known >= 0 ? known : 0;
@@ -1108,7 +1110,9 @@
           ? `<span class="badge remove" aria-hidden="true">−</span>`
           : "";
       const oos = off ? `<span class="oos-tag" aria-hidden="true">缺貨</span>` : "";
-      return `<div class="stamp${size === "xs" ? " xs" : ""}${count > 1 || size === "md" ? " pad" : ""}"><div class="stamp-face ${size === "sm" ? "sm" : ""} ${size === "xs" ? "xs" : ""} ${off ? "off" : ""} ${custom ? "custom" : ""}" data-tone="${tone}" style="${custom ? `--stamp-hue:${hue}` : ""}"><span>${formatMoney(cents)}</span></div>${oos}${badge}</div>`;
+      const appearClass = appear != null ? " combo-stamp" : "";
+      const appearStyle = appear != null ? ` style="--i:${appear}"` : "";
+      return `<div class="stamp${size === "xs" ? " xs" : ""}${count > 1 || size === "md" ? " pad" : ""}${appearClass}"${appearStyle}><div class="stamp-face ${size === "sm" ? "sm" : ""} ${size === "xs" ? "xs" : ""} ${off ? "off" : ""} ${custom ? "custom" : ""}" data-tone="${tone}" style="${custom ? `--stamp-hue:${hue}` : ""}"><span>${formatMoney(cents)}</span></div>${oos}${badge}</div>`;
     }
     function pool() {
       return [...new Set([...enabled, ...extras])].sort((a, b) => a - b);
@@ -1138,7 +1142,7 @@
         clearStats();
         return;
       }
-      comboEl.innerHTML = `<div class="cluster">${combo.lines.map((line, i) => stampHTML(line.cents, { count: line.count }).replace('class="stamp', `class="stamp combo-stamp" style="--i:${i}"`)).join("")}</div>`;
+      comboEl.innerHTML = `<div class="cluster">${combo.lines.map((line, i) => stampHTML(line.cents, { count: line.count, appear: i })).join("")}</div>`;
       statsEl.textContent = `郵票${combo.stampCount}枚\u3000面值${combo.lines.length}種`;
       fitCombo();
     }

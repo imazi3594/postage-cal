@@ -1,4 +1,4 @@
-const CACHE = "stamp-calc-v58";
+const CACHE = "stamp-calc-v59";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting());
