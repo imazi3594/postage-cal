@@ -37,7 +37,7 @@ export function AboutPage() {
 
   return (
     <div className="relative mx-auto flex w-full max-w-lg flex-col">
-      <header className="sticky top-0 z-10 flex items-center gap-2 bg-bg/80 px-5 py-3 backdrop-blur-md sm:px-8">
+      <header className="sticky top-0 z-10 flex items-center gap-1 bg-bg/90 px-4 py-3 backdrop-blur-md sm:px-6">
         <Link
           to="/"
           aria-label="返回計數機"
@@ -45,7 +45,7 @@ export function AboutPage() {
         >
           <ArrowLeft className="size-5" />
         </Link>
-        <h1 className="text-lg font-semibold tracking-tight text-ink">關於</h1>
+        <h1 className="flex h-10 items-center text-lg leading-none font-semibold tracking-tight text-ink">關於</h1>
       </header>
 
       <div className="flex flex-col px-5 pt-1 pb-4 sm:px-8 sm:pb-6">

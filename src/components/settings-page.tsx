@@ -122,7 +122,7 @@ export function SettingsPage() {
         >
           <ArrowLeft className="size-5" />
         </Link>
-        <h1 className="text-lg font-semibold tracking-tight text-ink">設定</h1>
+        <h1 className="flex h-10 items-center text-lg leading-none font-semibold tracking-tight text-ink">設定</h1>
       </header>
 
       <div className="flex flex-col gap-4 px-4 pt-1 pb-4 sm:px-6 sm:pb-6">
