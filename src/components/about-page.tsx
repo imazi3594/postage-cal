@@ -5,7 +5,7 @@ import { loadSaved } from "@/lib/stamp-settings";
 import { applyCrisis, applySolveMode } from "@/lib/theme";
 
 const FEATURES = [
-  { icon: "✨", title: "自訂面值", body: "支援紀念郵票、特別版郵票，上限 $50。" },
+  { icon: "✨", title: "自訂面值", body: "支援紀念郵票、特別郵票或舊款郵票面額。" },
   { icon: "📦", title: "庫存管理", body: "可隨時將缺貨的通用郵票標示為缺貨，組合僅計算有貨面值。" },
   { icon: "🌐", title: "離線使用", body: "採用 PWA 技術，沒有網絡也能照常運算。" },
   { icon: "🌙", title: "深色模式", body: "支援淺色／深色主題，呵護雙眼。" },
@@ -87,7 +87,7 @@ export function AboutPage() {
             <div className="min-w-0">
               <p className="font-semibold leading-7 text-[#7c3aed]">減少種類</p>
               <p className="mt-1.5 text-sm leading-[1.8] text-muted">
-                每少一種面值，容許枚數最多多一倍，以便一次撕下同款郵票。
+                減少面值種類，以減少撕下郵票次數。但郵票數量會有所增加。
               </p>
             </div>
           </div>

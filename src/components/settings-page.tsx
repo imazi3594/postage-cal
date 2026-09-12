@@ -168,7 +168,7 @@ export function SettingsPage() {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h2 className="font-sans text-xl font-semibold">自訂面值</h2>
-            <p className="mt-1 text-sm text-muted">加入自訂面值郵票或特別郵票</p>
+            <p className="mt-1 text-sm text-muted">加入自訂郵票面值</p>
           </div>
           <Button
             type="button"
